@@ -9,16 +9,8 @@
 
 #   ========== Importation des modules et fichiers analogues ===========
 
-import pygame
-from pygame import *
-import lexou_main
-from lexou_main import *
-import balls
 from balls import *
-import spritesheet
-import pyganim
-#from platformer import *
-#from enemies import *
+from pyganim import *
 
 #   ================ Definition des variables globales =================
 
@@ -422,9 +414,9 @@ class Player(pygame.sprite.Sprite):
 
 #   ================ Attack sprite subclass =================
 
-    class Attack(Sprite):
+    class Attack(pygame.sprite.Sprite):
         def __init__(self, x, y, player):
-            Sprite.__init__(self)
+            pygame.sprite.Sprite.__init__(self)
             
             self.xcoord = x
             self.ycoord = y

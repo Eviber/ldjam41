@@ -1,20 +1,22 @@
 import pygame
-from pygame import *
+from lexou_main import get_input, input_down, input_left, input_up, input_right, input_A, input_B
 
 class Ball(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, image, x, y):
         pygame.sprite.Sprite.__init__(self)
+        self.image = image.sheet
         self.size = self.image.get_width
         self.pos_x = x
         self.pos_y = y
         self.vel_x = 0
         self.vel_y = 0
+        self.ang_mmt = 0 #positive is clockwise
         self.rotations = self.build_rotations
-        #index 0 is the default sprite orientation
+        self.cur_orient = 0
 
         self.onGround = False
         self.hasMomentum = False
-        self.isRolling
+        self.isRolling = False
 
     def build_rotations(self):
         img = self.image
@@ -30,6 +32,23 @@ class Ball(pygame.sprite.Sprite):
         vel_x = self.vel_x
         vel_y = self.vel_y
 
+        jumpspeed = 10
+        speed = 2
+
+        """input_down input_left input_up input_right input_A input_B"""
+        if input_down:
+            self.vel_y -= jumpspeed
+        if input_up:
+            self.pos_y += speed
+        if input_left:
+            self.pos_x -= speed
+            if self.pos_x < 0:
+                self.pos_x += 1280
+        if input_right:
+            self.pos_x += speed
+            if self.pos_x > 1280:
+                self.pos_x -= 1280
+
         #collision
         #onground
 
@@ -39,48 +58,42 @@ class Ball(pygame.sprite.Sprite):
 
 
 class Bomb(Ball):
-    def __init__(self):
-        Ball.__init__(self)
+    def __init__(self, x, y):
+        Ball.__init__(self, x, y)
 
 
+import spritesheet
 
-"""
-screen_width = 1280
-screen_height = 720
-
-pygame.init()
-screen = pygame.display.set_mode((screen_width,screen_height))
-
-BLACK = (0,0,0)
-
-ballImg = pygame.image.load("ball.jpg")
-ballPosition = [0,0]
-speed = 1
-
-
-def game_loop():
+def game_loop(screen, ball):
+    BLACK = (0,0,0)
+    framerate = 5
+    timer = pygame.time.Clock()
     while 1:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 exit()
 
         #get all the keys being pressed
-        keys = pygame.key.get_pressed()
+        get_input()
+        ball.update()
+
+        screen.fill(BLACK)
+        screen.blit(ball.image, (ball.pos_x, ball.pos_y))
+        pygame.display.update()
+        timer.tick(framerate)
 
 
-        #depending on what key the user presses, update ball x and y position accordingly
-        if keys[pygame.K_UP]:
-            ballPosition[1] -= speed
-        if keys[pygame.K_DOWN]:
-            ballPosition[1] += speed
-        if keys[pygame.K_LEFT]:
-            ballPosition[0] -= speed
-        if keys[pygame.K_RIGHT]:
-            ballPosition[0] += speed
+def main_ball():
+    screen_width = 1280
+    screen_height = 720
 
+    pygame.init()
+    screen = pygame.display.set_mode((screen_width,screen_height))
 
-        screen.fill(BLACK) #fill the screen with black
-        screen.blit(ballImg, ballPosition) #draw the ball
-        pygame.display.update() #update the screen
+    transparency = (0, 128, 128)
+    ballImg = spritesheet.spritesheet("ball.png")
+    ball = Ball(ballImg, 0, 0)
 
-game_loop()"""
+    game_loop(screen, ball)
+
+main_ball()

@@ -11,9 +11,8 @@ Created on Mon Nov 18 20:56:48 2013
 # I've added some code to fail if the file wasn't found..
 # Note: When calling images_at the rect is the format:
 # (x, y, x + offset, y + offset)
- 
-import pygame
 
+import pygame
 
 class spritesheet(object):
     def __init__(self, filename):

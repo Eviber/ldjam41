@@ -1,11 +1,4 @@
-import sys, pygame
-from pygame import *
-
-import spritesheet
-import player
-from player import *
-from pyganim import *
-
+import pygame
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self):
@@ -75,7 +68,14 @@ input_right = False
 input_A     = False
 input_B     = False
 
+
 def get_input():
+    global input_down
+    global input_left
+    global input_up
+    global input_right
+    global input_A
+    global input_B
     input_down  = False
     input_left  = False
     input_up    = False
@@ -88,12 +88,21 @@ def get_input():
         if e.type == KEYDOWN:
             if e.key in (K_ESCAPE, K_q):
                 sys.exit()
-            if e.key == K_UP:    input_up = True
-            if e.key == K_DOWN:  input_down = True
-            if e.key == K_LEFT:  input_left = True
-            if e.key == K_RIGHT: input_right = True
-            if e.key == K_SPACE: input_A = True
-            if e.key == K_LALT:  input_B = True
+            if e.key == K_UP:
+                input_up = True
+            if e.key == K_DOWN:
+                input_down = True
+            if e.key == K_LEFT:
+                input_left = True
+            if e.key == K_RIGHT:
+                input_right = True
+            if e.key == K_SPACE:
+                input_A = True
+            if e.key == K_LALT:
+                input_B = True
+
+
+from player import *
 
 def main():
     pygame.init()
@@ -115,15 +124,15 @@ def main():
         platform_y += 16
 
     entities = pygame.sprite.Group()
-    player = Player(16, 128, tigersheet)
+    player = Player(20, 50, tigersheet)
     entities.add(player)
     #entities.add(player sprite ?)
 
     while True:
         get_input()
 
-        #player.update()
-        #camera.update(player)
+        player.update()
+        camera.update(player)
 
         for e in platforms:
             screen.blit(e.image, camera.apply(e))
