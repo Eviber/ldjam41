@@ -13,6 +13,7 @@ class Platform(Sprite):
     def __init__(self, x, y):
         Sprite.__init__(self)
         self.image = pygame.Surface((16, 16))
+        self.image.fill(0xFFFFFF)
         self.rect = pygame.Rect(x, y, 16, 16)
 
 class Camera(object):
@@ -121,10 +122,10 @@ def main():
         #player.update()
         #camera.update(player)
 
-        #for e in platforms:
-        #    screen.blit(e.image, camera.apply(e))
-        #for e in entities:
-        #    screen.blit(e.image, camera.apply(e))
+        for e in platforms:
+            screen.blit(e.image, camera.apply(e))
+        for e in entities:
+            screen.blit(e.image, camera.apply(e))
 
         pygame.display.update()
         timer.tick(framerate)
