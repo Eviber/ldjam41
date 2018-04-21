@@ -2,6 +2,8 @@ import sys, pygame
 from pygame import *
 
 import spritesheet
+import player
+import pyganim
 
 
 
@@ -17,6 +19,7 @@ class Platform(Sprite):
         self.rect = pygame.Rect(x, y, 16, 16)
 
 class Camera(object):
+    #camera is a rectangle describing the coordinates of the window within the world space
     def __init__(self, width, height):
         self.state = pygame.Rect(0, 0, width, height)
 
@@ -111,8 +114,8 @@ def main():
         platform_x = 0
         platform_y += 16
 
-    #player = Player(16, 128)
-    #entities.add(player)
+    player = Player(16, 128)
+    entities.add(player)
     entities = pygame.sprite.Group()
     #entities.add(player sprite ?)
 
