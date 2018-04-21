@@ -2,7 +2,9 @@ import sys, pygame
 from pygame import *
 
 import spritesheet
-
+import player
+from player import *
+from pyganim import *
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -17,6 +19,7 @@ class Platform(Sprite):
         self.rect = pygame.Rect(x, y, 16, 16)
 
 class Camera(object):
+    #camera is a rectangle describing the coordinates of the window within the world space
     def __init__(self, width, height):
         self.state = pygame.Rect(0, 0, width, height)
 
@@ -96,7 +99,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(size, 0, 16)
     pygame.display.set_caption("Golf Rush")
-
+    tigersheet = spritesheet.spritesheet("./Example_PyGame_RondoPython/Richter.png")  # TODO TigerWood.png
     camera = Camera(levelWidth, levelHeight)
 
     platforms = pygame.sprite.Group()
@@ -111,9 +114,9 @@ def main():
         platform_x = 0
         platform_y += 16
 
-    #player = Player(16, 128)
-    #entities.add(player)
     entities = pygame.sprite.Group()
+    player = Player(16, 128, tigersheet)
+    entities.add(player)
     #entities.add(player sprite ?)
 
     while True:

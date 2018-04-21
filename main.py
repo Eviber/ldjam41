@@ -50,13 +50,17 @@ class CellGrid:
     def child_choice(self, mode, nbhood):
         if mode == 0:
             return random.randrange(self.colornb)
-        if mode == 1:
+        if mode == 1 or mode == 2:
             max_char = '0'
             max_count = nbhood.count('0')
             for i in "1234":
                 if nbhood.count(i) > max_count:
                     max_count = nbhood.count(i)
                     max_char = i
+                elif nbhood.count(i) == max_count and mode == 2:
+                    if random.randrange(2):
+                        max_count = nbhood.count(i)
+                        max_char = i
             return int(max_char)
 
     def update_rule(self):
@@ -98,7 +102,7 @@ class CellGrid:
         self.grid = grid
 
     def display(self):
-        print(self.grid)
+        #print(self.grid)
         for row in self.grid:
             for cell in row:
                 #print(cell.pos)
