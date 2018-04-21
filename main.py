@@ -1,127 +1,146 @@
 import pygame
-import random
 
-pygame.init()
-win_wd = 400
-win_hg = 300
-screen = pygame.display.set_mode((win_wd, win_hg))
-pygame.display.set_caption("A Nice Game")
-done = False
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
 
-done = False
-is_blue = True
-x = 30
-y = 30
+class Platform(Sprite):
+    def __init__(self, x, y):
+        Sprite.__init__(self)
+        self.image = pygame.Surface((16, 16))
+        self.image.fill(0xFFFFFF)
+        self.rect = pygame.Rect(x, y, 16, 16)
 
-clock = pygame.time.Clock()
+class Camera(object):
+    #camera is a rectangle describing the coordinates of the window within the world space
+    def __init__(self, width, height):
+        self.state = pygame.Rect(0, 0, width, height)
 
-class Cell:
-    def __init__(self, color, grid, pos):
-        self.color = color
-        self.grid = grid
-        self.pos = pos
+    def apply(self, target):
+        return target.rect.move(self.state.topleft)
 
-    def __repr__(self):
-        return str(self.color)
+    def update(self, target):
+        self.state = self.playerCamera(self.state, target.rect)
+        
+    def playerCamera(self, level, target_rect):
+        xcoord = target_rect[0]
+        ycoord = target_rect[1]
+        xlength = level[2]
+        ylength = level[3]
+        xcoord = -xcoord + (windowWidth/2)
+        ycoord = -ycoord + (windowHeight/2)
+        if xcoord > -16:
+            xcoord = -16
+        if xcoord < -(level.width-windowWidth)+16:
+            xcoord = -(level.width-windowWidth)+16
+        if ycoord > 0:
+            ycoord = 0
+        if ycoord < -(level.height-windowHeight):
+            ycoord = -(level.height-windowHeight)
+        return pygame.Rect(xcoord, ycoord, xlength, ylength)
 
+framerate = 5
+timer = pygame.time.Clock()
 
+size = (width, height) = (256, 224)
 
-class CellGrid:
+levelSize = (levelWidth, levelHeight) = (512, 224)
+level = [
+"P                              P",
+"P                              P",
+"P                              P",
+"P                              P",
+"P                              P",
+"P                              P",
+"P                              P",
+"P                              P",
+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+"P                              P",
+"P                              P",
+"P                              P",
+"P                              P"]
 
-    colors = [(60, 128, 255), (128, 200, 40), (224, 20, 28), (0,0,0), (255,255,255)]
-
-    def __init__(self, colornb, width, height, screen):
-        self.colornb = colornb
-        self.width = width
-        self.height = height
-        self.screen = screen
-        self.cell_height =  int(win_hg / height)
-        self.cell_width = int(win_wd / width)
-        self.grid = []
-        for y in range(height):
-            row = []
-            for x in range(width):
-                color = random.randrange(colornb)
-                row.append(Cell(color, self.grid, (x * self.cell_width, y * self.cell_height)))
-            self.grid.append(row)
-        self.update_dict = self.update_rule()
-        print(self.update_dict)
-
-    def child_choice(self, mode, nbhood):
-        if mode == 0:
-            return random.randrange(self.colornb)
-        if mode == 1 or mode == 2:
-            max_char = '0'
-            max_count = nbhood.count('0')
-            for i in "1234":
-                if nbhood.count(i) > max_count:
-                    max_count = nbhood.count(i)
-                    max_char = i
-                elif nbhood.count(i) == max_count and mode == 2:
-                    if random.randrange(2):
-                        max_count = nbhood.count(i)
-                        max_char = i
-            return int(max_char)
-
-    def update_rule(self):
-        dict = {}
-        colors = "01234"
-        for keys in range(pow(self.colornb, 5)):
-            s = list("     ")
-            for i in range(self.colornb):
-                s[0] = colors[i]
-                for j in range(self.colornb):
-                    s[1] = colors[j]
-                    for k in range(self.colornb):
-                        s[2] = colors[k]
-                        for l in range(self.colornb):
-                            s[3] = colors[l]
-                            for m in range(self.colornb):
-                                s[4] = colors[m]
-                                res = "".join(s)
-                                dict[res] = self.child_choice(1, res)
-        return dict
-
-    def update(self):
-        grid = []
-        for y in range(self.height):
-            row = []
-            for x in range(self.width):
-                s = ""
-                nx = 0 if x + 1 == self.width  else x+1
-                ny = 0 if y + 1 == self.height else y+1
-                #order in heredity string is center, north, south, west, east. The 2D plane loops at the borders.
-                s = s + str(self.grid[y  ][x  ].color)
-                s = s + str(self.grid[y-1][x  ].color)
-                s = s + str(self.grid[ny ][x  ].color)
-                s = s + str(self.grid[y  ][x-1].color)
-                s = s + str(self.grid[y  ][nx ].color)
-                color = self.update_dict[s]
-                row.append(Cell(color, self.grid, (x * self.cell_width, y * self.cell_height)))
-            grid.append(row)
-        self.grid = grid
-
-    def display(self):
-        #print(self.grid)
-        for row in self.grid:
-            for cell in row:
-                #print(cell.pos)
-                #print((self.cell_width, self.cell_height))
-                pygame.draw.rect(self.screen, self.colors[cell.color],
-                                 pygame.Rect(cell.pos, (self.cell_width, self.cell_height)))
+input_down  = False
+input_left  = False
+input_up    = False
+input_right = False
+input_A     = False
+input_B     = False
 
 
+def get_input():
+    global input_down
+    global input_left
+    global input_up
+    global input_right
+    global input_A
+    global input_B
+    input_down  = False
+    input_left  = False
+    input_up    = False
+    input_right = False
+    input_A     = False
+    input_B     = False
+    for e in pygame.event.get():
+        if e.type == QUIT:
+            sys.exit()
+        if e.type == KEYDOWN:
+            if e.key in (K_ESCAPE, K_q):
+                sys.exit()
+            if e.key == K_UP:
+                input_up = True
+            if e.key == K_DOWN:
+                input_down = True
+            if e.key == K_LEFT:
+                input_left = True
+            if e.key == K_RIGHT:
+                input_right = True
+            if e.key == K_SPACE:
+                input_A = True
+            if e.key == K_LALT:
+                input_B = True
 
-grid = CellGrid(3, 80, 60, screen)
 
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
+from player import *
 
+def main():
+    pygame.init()
+    screen = pygame.display.set_mode(size, 0, 16)
+    pygame.display.set_caption("Golf Rush")
+    tigersheet = spritesheet.spritesheet("./Example_PyGame_RondoPython/Richter.png")  # TODO TigerWood.png
+    camera = Camera(levelWidth, levelHeight)
 
-    screen.fill((0, 0, 0))
-    grid.display()
-    pygame.display.flip()
-    grid.update()
-    clock.tick(5)
+    platforms = pygame.sprite.Group()
+    platform_x = 0
+    platform_y = 0
+    for level_x in level:
+        for level_y in level_x:
+            if level_y == "P":
+                p = Platform(platform_x, platform_y)
+                platforms.add(p)
+            platform_x += 16
+        platform_x = 0
+        platform_y += 16
+
+    entities = pygame.sprite.Group()
+    player = Player(20, 50, tigersheet)
+    entities.add(player)
+    #entities.add(player sprite ?)
+
+    while True:
+        get_input()
+
+        player.update()
+        camera.update(player)
+
+        for e in platforms:
+            screen.blit(e.image, camera.apply(e))
+        for e in entities:
+            screen.blit(e.image, camera.apply(e))
+
+        pygame.display.update()
+        timer.tick(framerate)
+
+if(__name__ == "__main__"):
+    main()
