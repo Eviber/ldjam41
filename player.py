@@ -9,18 +9,18 @@
 
 #   ========== Importation des modules et fichiers analogues ===========
 
+import pygame
+from pygame import *
+import lexou_main
+from lexou_main import *
+import balls
+from balls import *
 import spritesheet
 import pyganim
-from platformer import *
-from enemies import *
+#from platformer import *
+#from enemies import *
 
 #   ================ Definition des variables globales =================
-
-tigersheet = spritesheet.spritesheet("TigerWood.png")
-# la spritesheet du joueur : toutes les frames d'animation de celui-ci
-
-axesheet = spritesheet.spritesheet("Bridge.png")
-# charger le fichier contenant les images necessaires au sprite hache
 
 alpha = (185,209,217)
 #transparency color
@@ -28,19 +28,19 @@ alpha = (185,209,217)
 #   =================== Definition du sprite joueur ====================
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, tigersheet):
         pygame.sprite.Sprite.__init__(self)
+        self.tigersheet = tigersheet
 
-        self.attack = self.Attack(x, y)
+        self.attack = self.Attack(x, y, self)
         self.bomb = self.ItemBomb(x, y)
 
 
-        self.xcoord = x
-        self.ycoord = y
-        # coordonnees du sprite joueur
+        self.pos_x = x
+        self.pos_y = y
 
-        self.xvel = 0
-        self.yvel = 0
+        self.vel_x = 0
+        self.vel_y = 0
 
         self.facingRight = True
         self.onGround = True
@@ -176,7 +176,7 @@ class Player(pygame.sprite.Sprite):
             if Abutton:
                 self.jump()
 
-            if Lbutton and not self.useditem and self.ammo > 0 and not self.bomb.isout:
+            if Lbutton and not self.useditem and self.ammo > 0 and not self.bomb.active:
                 self.useitem()
 
 
@@ -199,7 +199,7 @@ class Player(pygame.sprite.Sprite):
             self.jumped = False
         if not Bbutton and not self.swinging:
             self.swung = False
-        if not Bbutton and not self.usingitem and not self.bomb.isout:
+        if not Bbutton and not self.usingitem and not self.bomb.active:
             self.useditem = False
 
         if self.usingitem:
@@ -209,13 +209,13 @@ class Player(pygame.sprite.Sprite):
 
 #   =============== Movement & collisions ================
 
-        self.rect.x += self.xvel
-        self.xcoord = self.rect.x
-        self.collidewall(self.xvel, 0, platforms)
+        self.rect.x += self.vel_x
+        self.pos_x = self.rect.x
+        self.collidewall(self.vel_x, 0, platforms)
 
-        self.rect.y += self.yvel
-        self.ycoord = self.rect.y
-        self.collidewall(0, self.yvel, platforms)
+        self.rect.y += self.vel_y
+        self.pos_y = self.rect.y
+        self.collidewall(0, self.vel_y, platforms)
 
         self.collideenemy(enemies)
 
@@ -229,10 +229,10 @@ class Player(pygame.sprite.Sprite):
             self.jumpswinging or
             self.usingitem or
             self.jumpusingitem):
-            self.hitbox = pygame.Rect(self.xcoord+2, self.ycoord+2, 12, 30) #TODO FIX
+            self.hitbox = pygame.Rect(self.pos_x + 2, self.pos_y + 2, 12, 30) #TODO FIX
             
         elif (self.crouching):
-            self.hitbox = pygame.Rect(self.xcoord+2, self.ycoord+16, 12, 16) #TODO FIX
+            self.hitbox = pygame.Rect(self.pos_x + 2, self.pos_y + 16, 12, 16) #TODO FIX
 
 
 #   =================== Player image ======================
@@ -260,13 +260,13 @@ class Player(pygame.sprite.Sprite):
                            self.usingitem,
                            self.facingRight,
                            self.elapsed,
-                           self.xcoord, self.ycoord,
+                           self.pos_x, self.pos_y,
                            enemies)
         
-        if self.bomb.isout:
+        if self.bomb.active:
             self.bomb.update(self.elapsed, self.facingRight,
                              self.usingitem, self.useditem,
-                             self.xcoord, self.ycoord,
+                             self.pos_x, self.pos_y,
                              enemies)
 
 
@@ -283,10 +283,10 @@ class Player(pygame.sprite.Sprite):
                     self.rect.bottom = p.rect.top
                     self.onGround = True
                     self.jumping = False
-                    self.yvel = 0
+                    self.vel_y = 0
                 if yvel < 0:
                     self.rect.top = p.rect.bottom
-                    self.yvel = 0
+                    self.vel_y = 0
             if p.rect.collidepoint(self.rect.left, self.rect.bottom) or p.rect.collidepoint(self.rect.right, self.rect.bottom):
                 collideUnder = 1
         if collideUnder == 0:
@@ -304,7 +304,7 @@ class Player(pygame.sprite.Sprite):
             self.image = tigersheet.image_at((2, 70, 16, 32), alpha)
         self.idling = True
         self.crouching = False
-        self.xvel = 0
+        self.vel_x = 0
 
 
     def crouch(self):
@@ -315,20 +315,20 @@ class Player(pygame.sprite.Sprite):
         self.crouching = True
         self.idling = False
         self.taunting = False
-        self.xvel = 0
+        self.vel_x = 0
 
 
     def walk(self, left, right):
         self.walking = True
         if right:
-            self.xvel = 2
+            self.vel_x = 2
             if not self.facingRight:
                 self.facingRight = True
             if self.onGround:
                 self.image = self.animWalk
                 self.animWalk.play()
         if left:
-            self.xvel = -2
+            self.vel_x = -2
             if self.facingRight:
                 self.facingRight = False
             if self.onGround:
@@ -339,39 +339,41 @@ class Player(pygame.sprite.Sprite):
     #TODO add aerial DI ?
     def jump(self):
         if self.onGround and not self.jumped:
-            self.yvel = -5
+            self.vel_y = -5
             self.jumping = True
             self.jumped = True
             self.onGround = False
             self.crouching = False
             self.taunting = False
-        if self.jumped and self.yvel < 0:
-            self.yvel -= 0.2
+        if self.jumped and self.vel_y < 0:
+            self.vel_y -= 0.2
 
 
     def fall(self):
-        self.yvel += 0.5
-        if self.yvel > 25: self.yvel = 25
-        if self.yvel < 0:
-            if self.xvel == 0:
+        self.vel_y += 0.5
+        if self.vel_y > 25: self.vel_y = 25
+        if self.vel_y < 0:
+            if self.vel_x == 0:
                 self.image = tigersheet.image_at((2, 104, 16, 32), alpha)
             else:
                 self.image = tigersheet.image_at((20, 104, 16, 32), alpha)
-        if 2 >= self.yvel >= 0:
+        if 2 >= self.vel_y >= 0:
             self.image = tigersheet.image_at((38, 104, 16, 32), alpha)
-        if self.yvel > 2:
+        if self.vel_y > 2:
             self.image = tigersheet.image_at((56, 104, 16, 32), alpha)
 
 
 
     def swing(self):
+        # TODO implement
+        return
 
 
 
     def useitem(self):
         if not self.useditem and not self.bombout:
             self.ammo -= 1
-            self.bomb.isout = True
+            self.bomb.active = True
         self.usingitem = True
         self.useditem = True
         if not self.onGround:
@@ -384,7 +386,7 @@ class Player(pygame.sprite.Sprite):
             if self.usingitem:
                 self.animItemJump.play()
         if self.onGround:
-            self.xvel = 0
+            self.vel_x = 0
             self.image = self.animItemGround
             if self.jumpusingitem:
                 self.animItemGround.play()
@@ -399,20 +401,20 @@ class Player(pygame.sprite.Sprite):
     
     def takedamage(self, damage=0):
         if not self.takingDamage:
-            self.yvel = -4
+            self.vel_y = -4
             self.onGround = False
             self.health -= damage
         if self.facingRight:
-            self.xvel = -3
+            self.vel_x = -3
         if not self.facingRight:
-            self.xvel = 3
+            self.vel_x = 3
         self.takingDamage = True
         self.invulnerable = True
         if self.onGround:
             self.takingDamage = False
-        if self.yvel > 0:
+        if self.vel_y > 0:
             self.image = tigersheet.image_at((2, 614, 16, 32), alpha)
-        if self.yvel <= 0:
+        if self.vel_y <= 0:
             self.image = tigersheet.image_at((20, 614, 24, 24), alpha)
 
 
@@ -421,24 +423,25 @@ class Player(pygame.sprite.Sprite):
 #   ================ Attack sprite subclass =================
 
     class Attack(Sprite):
-        def __init__(self, x, y):
+        def __init__(self, x, y, player):
             Sprite.__init__(self)
             
             self.xcoord = x
             self.ycoord = y
+            self.player = player
             
             self.animSwing = pyganim.PygAnimation([
-                (tigersheet.image_at((2, 206, 16, 24), alpha), 0.1),
-                (tigersheet.image_at((36, 206, 24, 16), alpha), 0.05),
-                (tigersheet.image_at((94, 206, 40, 16), alpha), 0.05),
-                (tigersheet.image_at((152, 206, 48, 16), alpha), 0.2),
-                (tigersheet.image_at((218, 206, 16, 16), alpha), 0.05)], False)
+                (player.tigersheet.image_at((2, 206, 16, 24), alpha), 0.1),
+                (player.tigersheet.image_at((36, 206, 24, 16), alpha), 0.05),
+                (player.tigersheet.image_at((94, 206, 40, 16), alpha), 0.05),
+                (player.tigersheet.image_at((152, 206, 48, 16), alpha), 0.2),
+                (player.tigersheet.image_at((218, 206, 16, 16), alpha), 0.05)], False)
             self.animSwing.loop = False
 
             self.animItem = pyganim.PygAnimation([
-                (tigersheet.image_at((2, 274, 8, 16), alpha), 0.1),
-                (tigersheet.image_at((28, 274, 8, 8), alpha), 0.05),
-                (tigersheet.image_at((62, 274, 8, 16), alpha), 0.05)], False)
+                (player.tigersheet.image_at((2, 274, 8, 16), alpha), 0.1),
+                (player.tigersheet.image_at((28, 274, 8, 8), alpha), 0.05),
+                (player.tigersheet.image_at((62, 274, 8, 16), alpha), 0.05)], False)
             self.animItem.loop = False
 
             self.rect = pygame.Rect(x, y, 8, 8)
@@ -593,21 +596,8 @@ class Player(pygame.sprite.Sprite):
         def __init__(self, x, y):
             Sprite.__init__(self)
 
-            self.xcoord = x
-            self.ycoord = y
-            # coordonnees du sprite
 
-            self.xvel = 0
-            self.yvel = 0
             # vitesse horizontale et verticale du sprite
-
-            self.animSpin = pyganim.PygAnimation([
-                (axesheet.image_at((280,0,16,16), alpha), 0.1),
-                (axesheet.image_at((296,0,16,16), alpha), 0.1),
-                (axesheet.image_at((312,0,16,16), alpha), 0.1),
-                (axesheet.image_at((328,0,16,16), alpha), 0.1)])
-            self.animSpin.loop = True
-            # animation de la hache tournante
 
             self.rect = pygame.Rect(x, y, 16, 16)
             # le rectangle d'occupation du sprite

@@ -3,8 +3,8 @@ from pygame import *
 
 import spritesheet
 import player
-import pyganim
-
+from player import *
+from pyganim import *
 
 
 class Sprite(pygame.sprite.Sprite):
@@ -99,7 +99,7 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(size, 0, 16)
     pygame.display.set_caption("Golf Rush")
-
+    tigersheet = spritesheet.spritesheet("./Example_PyGame_RondoPython/Richter.png")  # TODO TigerWood.png
     camera = Camera(levelWidth, levelHeight)
 
     platforms = pygame.sprite.Group()
@@ -114,9 +114,9 @@ def main():
         platform_x = 0
         platform_y += 16
 
-    player = Player(16, 128)
-    entities.add(player)
     entities = pygame.sprite.Group()
+    player = Player(16, 128, tigersheet)
+    entities.add(player)
     #entities.add(player sprite ?)
 
     while True:
