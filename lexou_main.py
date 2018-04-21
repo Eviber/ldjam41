@@ -5,6 +5,16 @@ import spritesheet
 
 
 
+class Sprite(pygame.sprite.Sprite):
+    def __init__(self):
+        pygame.sprite.Sprite.__init__(self)
+
+class Platform(Sprite):
+    def __init__(self, x, y):
+        Sprite.__init__(self)
+        self.image = pygame.Surface((16, 16))
+        self.rect = pygame.Rect(x, y, 16, 16)
+
 class Camera(object):
     def __init__(self, width, height):
         self.state = pygame.Rect(0, 0, width, height)
@@ -32,17 +42,12 @@ class Camera(object):
             ycoord = -(level.height-windowHeight)
         return pygame.Rect(xcoord, ycoord, xlength, ylength)
 
-framerate = 60
-
-input_down  = False
-input_left  = False
-input_up    = False
-input_right = False
-input_A     = False
-input_B     = False
+framerate = 5
+timer = pygame.time.Clock()
 
 size = (width, height) = (256, 224)
 
+levelSize = (levelWidth, levelHeight) = (512, 224)
 level = [
 "P                              P",
 "P                              P",
@@ -59,7 +64,32 @@ level = [
 "P                              P",
 "P                              P"]
 
-done = False
+input_down  = False
+input_left  = False
+input_up    = False
+input_right = False
+input_A     = False
+input_B     = False
+
+def get_input():
+    input_down  = False
+    input_left  = False
+    input_up    = False
+    input_right = False
+    input_A     = False
+    input_B     = False
+    for e in pygame.event.get():
+        if e.type == QUIT:
+            sys.exit()
+        if e.type == KEYDOWN:
+            if e.key in (K_ESCAPE, K_q):
+                sys.exit()
+            if e.key == K_UP:    input_up = True
+            if e.key == K_DOWN:  input_down = True
+            if e.key == K_LEFT:  input_left = True
+            if e.key == K_RIGHT: input_right = True
+            if e.key == K_SPACE: input_A = True
+            if e.key == K_LALT:  input_B = True
 
 def main():
     pygame.init()
@@ -68,6 +98,9 @@ def main():
 
     camera = Camera(levelWidth, levelHeight)
 
+    platforms = pygame.sprite.Group()
+    platform_x = 0
+    platform_y = 0
     for level_x in level:
         for level_y in level_x:
             if level_y == "P":
@@ -77,53 +110,24 @@ def main():
         platform_x = 0
         platform_y += 16
 
-    player = Player(16, 128)
-    entities.add(player)
+    #player = Player(16, 128)
+    #entities.add(player)
     entities = pygame.sprite.Group()
     #entities.add(player sprite ?)
 
-    while not done:
-    # main game loop
-        timer.tick(framerate)
-
-        camera.update(player)
-
+    while True:
         get_input()
 
         #player.update()
+        #camera.update(player)
 
-        for e in entities:
-            screen.blit(e.image, camera.apply(e))
+        #for e in platforms:
+        #    screen.blit(e.image, camera.apply(e))
+        #for e in entities:
+        #    screen.blit(e.image, camera.apply(e))
 
         pygame.display.update()
-
-    raise SystemExit("QUIT")
-
-def get_input():
-    input_down  = False
-    input_left  = False
-    input_up    = False
-    input_right = False
-    input_A     = False
-    input_B     = False
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
-    for e in pygame.event.get():
-        if e.type == QUIT or (e.type == KEYDOWN and e.key == K_ESCAPE):
-            done = True
-        if e.type == KEYDOWN and e.key == K_UP:
-            input_up = True
-        if e.type == KEYDOWN and e.key == K_DOWN:
-            input_down = True
-        if e.type == KEYDOWN and e.key == K_LEFT:
-            input_left = True
-        if e.type == KEYDOWN and e.key == K_RIGHT:
-            input_right = True
-        if e.type == KEYDOWN and e.key == K_SPACE:
-            input_A = True
-        if e.type == KEYDOWN and e.key == K_LALT:
-            input_B = True
+        timer.tick(framerate)
 
 if(__name__ == "__main__"):
     main()
