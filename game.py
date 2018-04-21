@@ -1,6 +1,6 @@
 import sys
 from pygame import *
-from player import *
+from yplayer import *
 from random import randint
 
 
