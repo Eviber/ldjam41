@@ -163,7 +163,6 @@ def screenshake(duration, force_x, force_y):
     screenshake_frames = duration
     screenshake_x = force_x
     screenshake_y = force_y
-    print("screenshake called -> ", screenshake_frames, screenshake_x, screenshake_y)
 
 def get_input():
     global input_down
@@ -230,6 +229,7 @@ def main():
         get_input()
 
         player_landing = player.inair
+        player_speed = player.vel_y
         player.update(tiles, level_width, level_height,
             input_down,
             input_left,
@@ -238,12 +238,17 @@ def main():
             input_A,
             input_B)
         camera.update(player)
+        if player.inair and player.vel_y == 0:
+            screenshake(-player_speed / 20, 0, 3)
         if player_landing and not player.inair:
-            screenshake(10, 0, 5)
+            screenshake(player_speed / 20, 0, 3)
+            print("screenshake called -> ", screenshake_frames, screenshake_x, screenshake_y)
 
         screen.fill(bgcolor)
+        i = 0
         for e in tiles:
             screen.blit(e.image, camera.apply(e))
+            i += 1
         for e in entities:
             screen.blit(e.image, camera.apply(e))
 
@@ -270,19 +275,10 @@ class Camera(object):
         self.state = pygame.Rect(0, 0, width, height)
 
     def apply(self, target):
-        global screenshake_frames
         result = target.rect.move(self.state.topleft)
-        if isinstance(target, Player):
-            print("screenshake -> ", screenshake_frames)
         if (screenshake_frames > 0):
-            screenshake_frames -= 1
             shake = (screenshake_x, screenshake_y) if (framecount % 2 == 0) else (-screenshake_x, -screenshake_y)
-            if isinstance(target, Player):
-                print("camera -> ", result[0], result[1])
-                print("shake -> ", shake[0], shake[1])
             result = result.move(shake)
-            if isinstance(target, Player):
-                print("result -> ", result[0], result[1])
         return result
 
     def apply_parallax(self, target, offset_x, offset_y, parallax_x, parallax_y):
@@ -295,6 +291,9 @@ class Camera(object):
         self.state = self.playerCamera(self.state, target.rect)
         
     def playerCamera(self, level, target_rect):
+        global screenshake_frames
+        if (screenshake_frames > 0):
+            screenshake_frames -= 1
         xcoord = target_rect[0]
         ycoord = target_rect[1]
         xlength = level[2]
