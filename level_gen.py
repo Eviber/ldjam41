@@ -1,18 +1,16 @@
 import pygame
 import random
 import copy
+import spritesheet
 
 pygame.init()
-win_wd = 1200
-win_hg = 900
+win_wd = 1600
+win_hg = 1200
 screen = pygame.display.set_mode((win_wd, win_hg))
+tilesheet = spritesheet.spritesheet("tileset_ruins.png")
+tiles = [[tilesheet.image_at(pygame.Rect(x * 16, y * 16, 16, 16)) for x in range(3)] for y in range(3)]
 pygame.display.set_caption("A Nice Game")
 done = False
-
-done = False
-is_blue = True
-x = 30
-y = 30
 
 clock = pygame.time.Clock()
 
@@ -29,33 +27,53 @@ class Cell:
     def __eq__(self, other):
         return self.color == other.color
 
+    def __int__(self):
+        return self.color
+
 
 class CellGrid:
 
     colors = [(60, 128, 255), (128, 200, 40), (224, 20, 28), (0,0,0), (255,255,255)]
 
-    def __init__(self, colornb, width, height, screen, seed = None):
+    viridis = [(200, 200, 200),
+               (68, 1, 84),    (69, 55, 129),  (35, 138, 141),
+               (31, 150, 139), (41, 175, 127), (85, 198, 103),
+               (115, 208, 85), (184, 222, 41), (253, 231, 37)]
+
+    def __init__(self, colornb, width, height, screen, seed=None):
         self.colornb = colornb
-        self.width = width
+        self.width = width      #number of cells
         self.height = height
         self.screen = screen
-        self.cell_height =  int(win_hg / height)
-        self.cell_width = int(win_wd / width)
         self.grid = []
         if seed == None:
             for y in range(height):
                 row = []
                 for x in range(width):
                     color = random.randrange(colornb)
-                    row.append(Cell(color, self.grid, (x * self.cell_width, y * self.cell_height)))
+                    row.append(Cell(color, self.grid, (x, y)))
                 self.grid.append(row)
+            self.cell_width = int(screen.get_width() / width)  # size of cells
+            self.cell_height = int(screen.get_height() / height)
         else:
-            self.grid = [[Cell(int(x), self.grid, (x, y)) for x in y] for y in seed]
+            self.update_grid_with_strls(seed)
         self.update_dict = self.update_rule()
         #print(self.update_dict)
 
+    def update_grid_with_strls(self, sl):
+        height = len(sl)
+        width = len(sl[0])
+        self.grid = [[Cell(int(sl[y][x]), self.grid, (x, y)) for x in range(width)] for y in range(height)]
+        self.height = height
+        self.width = width
+        self.cell_width = int(screen.get_width() / width)
+        self.cell_height = int(screen.get_height() / height)
+        print(width, height)
+        print(self.cell_width, self.cell_height)
 
     def child_choice(self, mode, nbhood):
+
+        #modes after this line use rank 0 nbhood
 
         if mode == 0:
             return random.randrange(self.colornb)
@@ -73,7 +91,7 @@ class CellGrid:
                         max_char = i
             return int(max_char)
 
-        #2 colors is great level generation
+        #2 colors gives great level generation for this one
         elif mode == 3:
             counts = [nbhood.count(x) for x in "01234"]
             maxint = counts.index(max(counts))
@@ -139,10 +157,38 @@ class CellGrid:
 
             return self.child_choice(3, nbhood)
 
+        # modes after this line use rank 1 nbhood
+
+        # the following mode is rank 0 and is used for spritesheet definition; "SPRITE"
+        elif mode == "SPRITE":
+            if nbhood[0] == '0':
+                return 0
+            else:
+                s = nbhood[1:5]
+                if s == "0101":
+                    return 1
+                if s == "0111":
+                    return 2
+                if s == "0110":
+                    return 3
+                if s == "1101":
+                    return 4
+                if s == "1111":
+                    return 5
+                if s == "1110":
+                    return 6
+                if s == "1001":
+                    return 7
+                if s == "1011":
+                    return 8
+                if s == "1010":
+                    return 9
+            return 0
 
 
-    def update_rule(self):
-        mode = 7
+    def update_rule(self, mode=None):
+        if mode == None:
+            mode = 7
         dict = {}
         colors = "01234"
         for keys in range(pow(self.colornb, 5)):
@@ -161,33 +207,59 @@ class CellGrid:
                                 dict[res] = self.child_choice(mode, res)
         return dict
 
-    def update(self):
+    def get_nbhood(self, x, y, rank):
+        #rank == 0 => manhattan nbhood, dist 1 ; rank == 1 => square nbh, dist 1
+        s = ""
+        nx = 0 if x + 1 == self.width else x + 1
+        ny = 0 if y + 1 == self.height else y + 1
+        # order in heredity string is center, north, south, west, east. The 2D plane loops at the borders.
+        if rank == 0:
+            s = s + str(self.grid[y][x].color)
+            s = s + str(self.grid[y - 1][x].color)
+            s = s + str(self.grid[ny][x].color)
+            s = s + str(self.grid[y][x - 1].color)
+            s = s + str(self.grid[y][nx].color)
+        # order is lexicographic (left right then top down)
+        elif rank == 1:
+            s = s + str(self.grid[y - 1][x - 1].color)
+            s = s + str(self.grid[y - 1][x].color)
+            s = s + str(self.grid[y - 1][nx].color)
+            s = s + str(self.grid[y][x - 1].color)
+            s = s + str(self.grid[y][x].color)
+            s = s + str(self.grid[y][nx].color)
+            s = s + str(self.grid[ny][x - 1].color)
+            s = s + str(self.grid[ny][x].color)
+            s = s + str(self.grid[ny][nx].color)
+        return s
+
+    def update(self, rank=0, mode=None):
+        dict = self.update_dict if mode == None else self.update_rule(mode=mode)
         grid = []
         for y in range(self.height):
             row = []
             for x in range(self.width):
-                s = ""
-                nx = 0 if x + 1 == self.width  else x+1
-                ny = 0 if y + 1 == self.height else y+1
-                #order in heredity string is center, north, south, west, east. The 2D plane loops at the borders.
-                s = s + str(self.grid[y  ][x  ].color)
-                s = s + str(self.grid[y-1][x  ].color)
-                s = s + str(self.grid[ny ][x  ].color)
-                s = s + str(self.grid[y  ][x-1].color)
-                s = s + str(self.grid[y  ][nx ].color)
-                color = self.update_dict[s]
+                s = self.get_nbhood(x, y, rank)
+                color = dict[s]
                 row.append(Cell(color, self.grid, (x * self.cell_width, y * self.cell_height)))
             grid.append(row)
         self.grid = grid
 
-    def display(self):
-        #print(self.grid)
+    def display(self, mode=None):
+        colorarr = self.colors if mode==None else self.viridis
+
+        print("DEBUG DISPLAY")
+        print(self.grid[2][2])
+        print(self.cell_width)
+        print(self.cell_height)
         for row in self.grid:
             for cell in row:
                 #print(cell.pos)
-                #print((self.cell_width, self.cell_height))
-                pygame.draw.rect(self.screen, self.colors[cell.color],
-                                 pygame.Rect(cell.pos, (self.cell_width, self.cell_height)))
+                #print(self.cell_width)
+                #print(self.cell_height)
+                pygame.draw.rect(self.screen,
+                                 colorarr[cell.color],
+                                 pygame.Rect((cell.pos[0], cell.pos[1]),
+                                             (self.cell_width, self.cell_height)))
 
     def clean(self, boolgrid):
         #boolgrid should be false on unstable spots
@@ -195,6 +267,61 @@ class CellGrid:
             for x in range(self.width):
                 if not boolgrid[y][x]:
                     self.grid[y][x] = Cell(0, self.grid, (x, y))
+
+
+    def scale3x(self):
+        """
+        source wikipedia
+A B C --\  1 2 3
+D E F    > 4 5 6
+G H I --/  7 8 9
+ 1=E; 2=E; 3=E; 4=E; 5=E; 6=E; 7=E; 8=E; 9=E;
+ IF D==B AND D!=H AND B!=F => 1=D
+ IF (D==B AND D!=H AND B!=F AND E!=C) OR (B==F AND B!=D AND F!=H AND E!=A) => 2=B
+ IF B==F AND B!=D AND F!=H => 3=F
+ IF (H==D AND H!=F AND D!=B AND E!=A) OR (D==B AND D!=H AND B!=F AND E!=G) => 4=D
+ 5=E
+ IF (B==F AND B!=D AND F!=H AND E!=I) OR (F==H AND F!=B AND H!=D AND E!=C) => 6=F
+ IF H==D AND H!=F AND D!=B => 7=D
+ IF (F==H AND F!=B AND H!=D AND E!=G) OR (H==D AND H!=F AND D!=B AND E!=I) => 8=H
+ IF F==H AND F!=B AND H!=D => 9=F
+        """
+        tiles_9by9 = []
+        for y in range(self.height):
+            for x in range(self.width):
+                s = self.get_nbhood(x, y, 1)
+                c = s[4]
+                lc = [c, c, c, c, c, c, c, c, c]
+                if s[3] == s[1] and s[3] != s[7] and s[1] != s[5]:
+                    lc[0] = s[3]
+                if (s[3] == s[1] and s[3] != s[7] and s[1] != s[5] and c != s[2]) or (s[1] == s[5] and s[1] != s[3] and s[5] != s[7] and c != s[0]):
+                    lc[1] = s[1]
+                if s[1] == s[5] and s[1] != s[3] and s[5] != s[7]:
+                    lc[2] = s[5]
+                if ( s[7] == s[3] and s[7] != s[5] and s[3] != s[1] and c != s[0]) or ( s[3] == s[1] and s[3] != s[7] and s[1] != s[5] and c != s[6]):
+                    lc[3] = s[3]
+                    #sl[4] = c
+                if (s[1] == s[5] and s[1] != s[3] and s[5] != s[7] and c != s[8]) or ( s[5] == s[7] and s[5] != s[1] and s[7] != s[3] and c != s[2]):
+                    lc[5] = s[5]
+                if s[7] == s[3] and s[7] != s[5] and s[3] != s[1]:
+                    lc[6] = s[3]
+                if (s[5] == s[7] and s[5] != s[1] and s[7] != s[3] and c != s[6]) or ( s[7] == s[3] and s[7] != s[5] and s[3] != s[1] and c != s[8]):
+                    lc[7] = s[7]
+                if s[5] == s[7] and s[5] != s[1] and s[7] != s[3]:
+                    lc[8] = s[5]
+                tiles_9by9.append("".join(lc))
+        sl = []
+        for y in range(self.height):
+            row = ""
+            start = (y % 3) * 3
+            for x in range(self.width):
+                row += tiles_9by9[y * self.width + x][start:start+3]
+            sl.append(row)
+        self.update_grid_with_strls(sl)
+        self.cell_width = int(self.screen.get_width() / self.width)
+        self.cell_height = int(self.screen.get_height() / self.height)
+
+
 
     def __eq__(self, other):
         if self.width != other.width or self.height != other.height:
@@ -221,7 +348,9 @@ class CellGrid:
             s += row
         return s
 
+
     """
+# dim (160,120)
 seed = [
 "0000000000000000000001111111000111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "0000110000000000111111111111001111111000000000001100001100000000111111000111000001001011001111111001111001100011111100100000000000000111100000000110000110000000",
@@ -345,7 +474,8 @@ seed = [
 "0000000000000011000001111000000111111100000000111100000001110111111111110111110000000000011111111111111101100000000000110000000000000111111111111100111111011000" ]
     """
 
-seed = [
+#dim (160,120)
+seed1 = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 "1100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
@@ -467,37 +597,60 @@ seed = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",]
 
-#def random_walk(mode):
 
 
-random.seed(4201337)
-
-colornb = 2
-grid = CellGrid(colornb, 160, 120, screen) | CellGrid(colornb, 160, 120, screen, seed=seed) #, seed=seed)
-grid = CellGrid(colornb, 160, 120, screen, seed=grid)
-#print(grid)
-gparent = copy.copy(grid)
-grid.update()
-#print(grid)
-parent = copy.copy(grid)
 
 
-while not done:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            done = True
+def map_gen(seed=4201337):
+    random.seed(seed)
+    colornb = 2
+    x_cells = int(screen.get_width() / 10)
+    y_cells = int(screen.get_height() / 10)
 
-    screen.fill((0, 0, 0))
-    grid.display()
-    pygame.display.flip()
+    #grid is first a strls then a CellGrid
+    grid = CellGrid(colornb, x_cells, y_cells, screen) | CellGrid(colornb, x_cells, y_cells, screen, seed=seed1)
+    grid = CellGrid(colornb, x_cells, y_cells, screen, seed=grid)
+    #print(grid)
+    gparent = copy.copy(grid)
+
+
     grid.update()
-    print(grid)
-    if grid == gparent:
-        unstables = gparent & parent
-        grid.clean(unstables)
-        print(grid)
-        #break
-    else:
-        gparent = copy.copy(parent)
-        parent = copy.copy(grid)
-    clock.tick(5)
+    #print(grid)
+    parent = copy.copy(grid)
+
+    i = 0
+    status = 0
+
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+
+        if (status != 2):
+            grid.display()
+        pygame.display.flip()
+        if status == 0:
+            grid.update()
+            #print(grid)
+            if grid == gparent or i == 100:
+                unstables = gparent & parent
+                grid.clean(unstables)
+                print(grid)
+                status = 1
+            else:
+                gparent = copy.copy(parent)
+                parent = copy.copy(grid)
+        if status == 1:
+            #TODO floodfill ?
+            #tmp = zeros(grid.width, grid.height)
+            #loots = grid.get_areas
+            grid.scale3x()
+            print(grid)
+            grid.update(mode="SPRITE")
+            print(grid)
+            done = 1
+        i += 1
+
+    #grid.display("SPRITE")
+
+    return grid
