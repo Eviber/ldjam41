@@ -9,24 +9,23 @@ alpha = (211, 249, 188) # 0xD3F9BC
 sheet = spritesheet.spritesheet("tiger.png")
 anim_idle = sheet.image_at((  1,  1,64,64), alpha)
 anim_walk = pyganim.PygAnimation([
-            (sheet.image_at((  1, 66, 64, 64), alpha), 0.1),
-            (sheet.image_at(( 66, 66, 64, 64), alpha), 0.1),
-            (sheet.image_at((131, 66, 64, 64), alpha), 0.1),
-            (sheet.image_at((196, 66, 64, 64), alpha), 0.1),
-            (sheet.image_at((261, 66, 64, 64), alpha), 0.1),
-            (sheet.image_at((326, 66, 64, 64), alpha), 0.1)])
+                                (sheet.image_at((  1, 66, 64, 64), alpha), 0.1),
+                                (sheet.image_at(( 66, 66, 64, 64), alpha), 0.1),
+                                (sheet.image_at((131, 66, 64, 64), alpha), 0.1),
+                                (sheet.image_at((196, 66, 64, 64), alpha), 0.1),
+                                (sheet.image_at((261, 66, 64, 64), alpha), 0.1),
+                                (sheet.image_at((326, 66, 64, 64), alpha), 0.1)])
 anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), alpha),
                    sheet.image_at(( 66, 131, 64, 64), alpha),
                    sheet.image_at((131, 131, 64, 64), alpha)]
 anim_jump = sheet.image_at((261,131,64,64), alpha)
 anim_fall = sheet.image_at((326,131,64,64), alpha)
-anim_golfcharge = pyganim.PygAnimation([
-            (sheet.image_at((  1, 196, 64, 64), alpha), 0.2),
-            (sheet.image_at(( 66, 196, 64, 64), alpha), 0.2),
-            (sheet.image_at((131, 196, 64, 64), alpha), 0.2),
-            (sheet.image_at((196, 196, 64, 64), alpha), 0.2),
-            (sheet.image_at((261, 196, 64, 64), alpha), 0.2),
-            (sheet.image_at((326, 196, 64, 64), alpha), 0.2)])
+anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), alpha),
+                   sheet.image_at(( 66, 196, 64, 64), alpha),
+                   sheet.image_at((131, 196, 64, 64), alpha),
+                   sheet.image_at((196, 196, 64, 64), alpha),
+                   sheet.image_at((261, 196, 64, 64), alpha),
+                   sheet.image_at((326, 196, 64, 64), alpha)]
 anim_golf = [sheet.image_at(( 1, 261, 64, 64), alpha),
              sheet.image_at((66, 261, 64, 64), alpha)]
 
@@ -76,14 +75,14 @@ class Player(pygame.sprite.Sprite):
 
         if self.status == PlayerStatus.damage:
             pass
-        if self.status == PlayerStatus.jumpcharge:
+        elif self.status == PlayerStatus.jumpcharge:
             self.jump(input_A)
-        elif self.status == PlayerStatus.golfcharge:
+        elif self.status == PlayerStatus.golfcharge or self.status == PlayerStatus.golf:
             self.golf(input_B)
         elif input_A or input_down:
-        	self.jump(input_A)
+            self.jump(input_A)
         elif input_B:
-        	self.golf(input_B)
+            self.golf(input_B)
         elif input_left or input_right:
             self.walk(input_left, input_right)
         else:
@@ -138,7 +137,6 @@ class Player(pygame.sprite.Sprite):
                 if vel_y > 0:
                     self.vel_y = 0
                     self.hitbox.bottom = tile.rect.top
-                    self.status = PlayerStatus.idle
                     self.inair = False
                 if vel_y < 0:
                     self.vel_y = 0
@@ -185,7 +183,7 @@ class Player(pygame.sprite.Sprite):
                 self.jumpcharge += 5
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
-                self.image = anim_jumpcharge[int((self.jumpcharge + 1) / self.maxvel_y * 2)]
+                self.image = anim_jumpcharge[int((self.jumpcharge) / self.maxvel_y * 2)]
             else:
                 self.status = PlayerStatus.jump
                 self.vel_y = -self.jumpcharge
@@ -196,20 +194,22 @@ class Player(pygame.sprite.Sprite):
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
             self.golfcharge += 1
-            if self.golfcharge < self.maxgolf:
-                self.image = anim_golfcharge
-                anim_golfcharge.play()
-            else:
+            if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
-                anim_golfcharge.stop()
-        elif self.golfcharge > 0 or self.status == PlayerStatus.golf:
-            if self.image == anim_golf[0]:
+            self.image = anim_golfcharge[int((self.golfcharge) / self.maxgolf * 5)]
+        elif self.golfcharge > 0 or (self.golfcharge > -30 and self.status == PlayerStatus.golf):
+            #apply swing
+            if self.golfcharge > 0:
+                self.golfcharge = -1
+            elif self.golfcharge > -5:
                 self.image = anim_golf[0]
             else:
                 self.image = anim_golf[1]
             self.status = PlayerStatus.golf
             self.allow_golf = False
             #ball.vel_y = -(self.golfcharge * 10)
-            self.golfcharge = 0
+            self.golfcharge -= 1
         else:
+            self.golfcharge = 0
             self.allow_golf = True
+            self.status = PlayerStatus.idle
