@@ -1,5 +1,6 @@
 import pygame
 import random
+import copy
 
 pygame.init()
 win_wd = 1600
@@ -15,6 +16,7 @@ y = 30
 
 clock = pygame.time.Clock()
 
+
 class Cell:
     def __init__(self, color, grid, pos):
         self.color = color
@@ -23,6 +25,9 @@ class Cell:
 
     def __repr__(self):
         return str(self.color)
+
+    def __eq__(self, other):
+        return self.color == other.color
 
 
 class CellGrid:
@@ -79,7 +84,8 @@ class CellGrid:
                             else:
                                 return i if vrand else j
                 return maxint
-
+            if mode == 4:
+                return self.colornb - maxint - 1
 
 
 
@@ -132,19 +138,63 @@ class CellGrid:
                 pygame.draw.rect(self.screen, self.colors[cell.color],
                                  pygame.Rect(cell.pos, (self.cell_width, self.cell_height)))
 
+    def clean(self, boolgrid):
+        #boolgrid should be false on unstable spots
+        for y in range(self.height):
+            for x in range(self.width):
+                if not boolgrid[y][x]:
+                    self.grid[y][x] = Cell(0, self.grid, (x, y))
+
+    def __eq__(self, other):
+        if self.width != other.width or self.height != other.height:
+            return False
+        for y in range(self.height):
+            for x in range(self.width):
+                if self.grid[y][x] != other.grid[y][x]:
+                    return False
+        return True
+
+    def __and__(self, other):
+        return [[self.grid[y][x] == other.grid[y][x] for x in range(self.width)] for y in range(self.height)]
+
+    def __str__(self):
+        s = ""
+        for y in range(self.height):
+            row = ""
+            for x in range(self.width):
+                row += str(self.grid[y][x])
+            row = "\"" + row + "\",\n"
+            s += row
+        return s
 
 
 random.seed(4201337)
+
 grid = CellGrid(2, 160, 120, screen)
+print(grid)
+gparent = copy.copy(grid)
+grid.update()
+print(grid)
+parent = copy.copy(grid)
+
 
 while not done:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             done = True
 
-
     screen.fill((0, 0, 0))
     grid.display()
     pygame.display.flip()
     grid.update()
+    print(gparent)
+    print(grid)
+    if grid == gparent:
+        unstables = gparent & parent
+        grid.clean(unstables)
+        print(grid)
+        break
+    else:
+        gparent = copy.copy(parent)
+        parent = copy.copy(grid)
     clock.tick(5)
