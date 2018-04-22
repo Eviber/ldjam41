@@ -7,7 +7,7 @@ size = (win_width, win_height) = (1280, 720)
 bgcolor = (69, 69, 69)
 
 pygame.init()
-screen = pygame.display.set_mode(size, FULLSCREEN)
+screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Golf Rush")
 framerate = 60
 timer = pygame.time.Clock()
@@ -144,6 +144,20 @@ input_right = False
 input_A     = False
 input_B     = False
 
+fullscr     = False
+
+def toggle_fullscr():
+    global fullscr
+    global screen
+    if fullscr:
+        pygame.quit()
+        pygame.init()
+        screen = pygame.display.set_mode(size, 0)
+    else:
+        pygame.quit()
+        pygame.init()
+        screen = pygame.display.set_mode(size, FULLSCREEN)
+    fullscr = not fullscr
 
 def get_input():
     global input_down
@@ -158,6 +172,8 @@ def get_input():
         if e.type == KEYDOWN:
             if e.key in (K_ESCAPE, K_q):
                 sys.exit()
+            if e.key == K_f or e.key == K_F11:
+                toggle_fullscr()
             if e.key == K_UP:
                 input_up = True
             if e.key == K_DOWN:
