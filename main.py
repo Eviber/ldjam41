@@ -149,14 +149,7 @@ fullscr     = False
 def toggle_fullscr():
     global fullscr
     global screen
-    if fullscr:
-        pygame.quit()
-        pygame.init()
-        screen = pygame.display.set_mode(size, 0)
-    else:
-        pygame.quit()
-        pygame.init()
-        screen = pygame.display.set_mode(size, FULLSCREEN)
+    screen = pygame.display.set_mode(size, FULLSCREEN if fullscr else 0)
     fullscr = not fullscr
 
 def get_input():
