@@ -2,8 +2,8 @@ import pygame
 import random
 
 pygame.init()
-win_wd = 400
-win_hg = 300
+win_wd = 1600
+win_hg = 1200
 screen = pygame.display.set_mode((win_wd, win_hg))
 pygame.display.set_caption("A Nice Game")
 done = False
@@ -23,7 +23,6 @@ class Cell:
 
     def __repr__(self):
         return str(self.color)
-
 
 
 class CellGrid:
@@ -47,10 +46,13 @@ class CellGrid:
         self.update_dict = self.update_rule()
         print(self.update_dict)
 
+
     def child_choice(self, mode, nbhood):
+
         if mode == 0:
             return random.randrange(self.colornb)
-        if mode == 1 or mode == 2:
+
+        elif mode == 1 or mode == 2:
             max_char = '0'
             max_count = nbhood.count('0')
             for i in "1234":
@@ -63,7 +65,27 @@ class CellGrid:
                         max_char = i
             return int(max_char)
 
+        elif 3 <= mode:
+            counts = [nbhood.count(x) for x in "01234"]
+            maxint = counts.index(max(counts))
+            vrand = random.randrange(2)
+            #print(str(counts) + " __ " + str(maxint) + " __ " + str(vrand))
+            if mode == 3:
+                for i in range(self.colornb - 1):
+                    for j in range(i + 1, self.colornb):
+                        if counts[i] == counts[j]:
+                            if i == maxint or j == maxint:
+                                return maxint
+                            else:
+                                return i if vrand else j
+                return maxint
+
+
+
+
+
     def update_rule(self):
+        mode = 3
         dict = {}
         colors = "01234"
         for keys in range(pow(self.colornb, 5)):
@@ -79,7 +101,7 @@ class CellGrid:
                             for m in range(self.colornb):
                                 s[4] = colors[m]
                                 res = "".join(s)
-                                dict[res] = self.child_choice(1, res)
+                                dict[res] = self.child_choice(mode, res)
         return dict
 
     def update(self):
@@ -112,7 +134,8 @@ class CellGrid:
 
 
 
-grid = CellGrid(3, 80, 60, screen)
+random.seed(4201337)
+grid = CellGrid(2, 160, 120, screen)
 
 while not done:
     for event in pygame.event.get():
