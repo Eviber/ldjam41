@@ -1,6 +1,7 @@
 import sys, pygame, spritesheet
 from pygame import *
 from player import *
+from level_gen import *
 
 size = (win_width, win_height) = (640, 360)
 
@@ -16,7 +17,11 @@ platformcolor = (0x994422)
 bgcolor = (0, 0, 0)
 bgsheet = spritesheet.spritesheet("bg.png")
 bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
-tile_size = 32
+
+tile_size = 16
+tilesheet = spritesheet.spritesheet("tileset_ruins.png")
+tileset = [[tilesheet.image_at(pygame.Rect(x * tile_size, y * tile_size, tile_size, tile_size)) for x in range(3)] for y in range(3)]
+
 level = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1111110001100000111111111111111110011111110001100111111111110000011111100000111110000111100011110001110001100111110000000000000000111111110000001111000110000000",
@@ -139,6 +144,11 @@ level = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
 ]
+
+debug = 0
+if not debug:
+    level = map_gen(screen)
+
 level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
 
 input_down  = False
@@ -214,10 +224,30 @@ def main():
     tiles = pygame.sprite.Group()
     platform_x = 0
     platform_y = 0
-    for level_x in level:
-        for level_y in level_x:
-            if level_y == '1':
-                p = Platform(platform_x, platform_y)
+    for level_y in level:
+        for level_x in level_y:
+            if level_x.color == 1:
+                tile = tileset[0][0]
+            elif level_x.color == 2:
+                tile = tileset[0][1]
+            elif level_x.color == 3:
+                tile = tileset[0][2]
+            elif level_x.color == 4:
+                tile = tileset[1][0]
+            elif level_x.color == 5:
+                tile = tileset[1][1]
+            elif level_x.color == 6:
+                tile = tileset[1][2]
+            elif level_x.color == 7:
+                tile = tileset[2][0]
+            elif level_x.color == 8:
+                tile = tileset[2][1]
+            elif level_x.color == 9:
+                tile = tileset[2][2]
+            else:
+                tile = None
+            if tile is not None:
+                p = Platform(platform_x, platform_y, tile)
                 tiles.add(p)
             platform_x += tile_size
         platform_x = 0
@@ -263,10 +293,9 @@ class Sprite(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
 
 class Platform(Sprite):
-    def __init__(self, x, y):
+    def __init__(self, x, y, image):
         Sprite.__init__(self)
-        self.image = pygame.Surface((tile_size, tile_size))
-        self.image.fill(platformcolor)
+        self.image = image
         self.rect = pygame.Rect(x, y, tile_size, tile_size)
 
 class Camera(object):

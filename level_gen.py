@@ -1,19 +1,6 @@
 import pygame
 import random
 import copy
-import spritesheet
-
-pygame.init()
-win_wd = 1600
-win_hg = 1200
-screen = pygame.display.set_mode((win_wd, win_hg))
-tilesheet = spritesheet.spritesheet("tileset_ruins.png")
-tiles = [[tilesheet.image_at(pygame.Rect(x * 16, y * 16, 16, 16)) for x in range(3)] for y in range(3)]
-pygame.display.set_caption("A Nice Game")
-done = False
-
-clock = pygame.time.Clock()
-
 
 class Cell:
     def __init__(self, color, grid, pos):
@@ -46,7 +33,7 @@ class CellGrid:
         self.height = height
         self.screen = screen
         self.grid = []
-        if seed == None:
+        if seed is None:
             for y in range(height):
                 row = []
                 for x in range(width):
@@ -66,8 +53,8 @@ class CellGrid:
         self.grid = [[Cell(int(sl[y][x]), self.grid, (x, y)) for x in range(width)] for y in range(height)]
         self.height = height
         self.width = width
-        self.cell_width = int(screen.get_width() / width)
-        self.cell_height = int(screen.get_height() / height)
+        self.cell_width = int(self.screen.get_width() / width)
+        self.cell_height = int(self.screen.get_height() / height)
         print(width, height)
         print(self.cell_width, self.cell_height)
 
@@ -187,7 +174,7 @@ class CellGrid:
 
 
     def update_rule(self, mode=None):
-        if mode == None:
+        if mode is None:
             mode = 7
         dict = {}
         colors = "01234"
@@ -233,7 +220,7 @@ class CellGrid:
         return s
 
     def update(self, rank=0, mode=None):
-        dict = self.update_dict if mode == None else self.update_rule(mode=mode)
+        dict = self.update_dict if mode is None else self.update_rule(mode=mode)
         grid = []
         for y in range(self.height):
             row = []
@@ -245,7 +232,7 @@ class CellGrid:
         self.grid = grid
 
     def display(self, mode=None):
-        colorarr = self.colors if mode==None else self.viridis
+        colorarr = self.colors if mode is None else self.viridis
 
         print("DEBUG DISPLAY")
         print(self.grid[2][2])
@@ -475,7 +462,7 @@ seed = [
     """
 
 #dim (160,120)
-seed1 = [
+walltemplate = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
 "1100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
@@ -601,14 +588,14 @@ seed1 = [
 
 
 
-def map_gen(seed=4201337):
+def map_gen(screen, seed=4201337):
     random.seed(seed)
     colornb = 2
     x_cells = int(screen.get_width() / 10)
     y_cells = int(screen.get_height() / 10)
 
     #grid is first a strls then a CellGrid
-    grid = CellGrid(colornb, x_cells, y_cells, screen) | CellGrid(colornb, x_cells, y_cells, screen, seed=seed1)
+    grid = CellGrid(colornb, x_cells, y_cells, screen) | CellGrid(colornb, x_cells, y_cells, screen, seed=walltemplate)
     grid = CellGrid(colornb, x_cells, y_cells, screen, seed=grid)
     #print(grid)
     gparent = copy.copy(grid)
@@ -620,14 +607,15 @@ def map_gen(seed=4201337):
 
     i = 0
     status = 0
+    done = False
 
-    while not done:
+    while not done and i <= 100:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
 
-        if (status != 2):
-            grid.display()
+    #   if (status != 2):
+    #       grid.display()
         pygame.display.flip()
         if status == 0:
             grid.update()
@@ -652,5 +640,4 @@ def map_gen(seed=4201337):
         i += 1
 
     #grid.display("SPRITE")
-
-    return grid
+    return grid.grid
