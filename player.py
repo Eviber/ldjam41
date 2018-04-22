@@ -47,17 +47,10 @@ class Player(pygame.sprite.Sprite):
         if (input_left and xvel > 0) or (input_right and xvel < 0) or (input_left == input_right == False):
             xvel = 0
         if input_left:
-#            xvel -= 2
-#            if xvel > -20:
-#                xvel = -20
-#            if self.inair or xvel < -maxxvel:
-                xvel = -maxxvel
+            xvel = -maxxvel
         if input_right:
-#            xvel += 2
-#            if xvel < 20:
-#                xvel = 20
-#            if self.inair or xvel > maxxvel:
-                xvel = maxxvel
+            print("input")
+            xvel = maxxvel
         framerate = 1 / (1000/60)
         if input_A and not self.inair:
             xvel = 0
@@ -71,14 +64,20 @@ class Player(pygame.sprite.Sprite):
         self.vel_x = xvel
         self.vel_y = yvel
 
+        print(xvel, yvel)
         self.pos_x += xvel * framerate
         self.pos_y += yvel * framerate
 
         self.rect.x = self.pos_x + 16
         self.rect.y = self.pos_y + 16
 
-    def check_collisions(self, tiles):
-        onground = False
+    def check_collisions(self, tiles, lvl_w, lvl_h):
+        if self.rect.left < 0:
+            self.rect.left = 0
+        if self.rect.right > lvl_w:
+            self.rect.right = lvl_w
+        if self.rect.bottom > lvl_h:
+            self.rect.bottom = lvl_h
         for tile in tiles:
             if pygame.sprite.collide_rect(self, tile):
                 if self.vel_x > 0:
@@ -96,6 +95,4 @@ class Player(pygame.sprite.Sprite):
                     self.vel_y = 0
                     self.rect.top = tile.rect.bottom
             if tile.rect.collidepoint(self.rect.center[0], self.rect.bottom + 1):
-                onground = True
-        if not onground:
-            self.inair = True
+                self.inair = True

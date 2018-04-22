@@ -1,6 +1,7 @@
 import sys, pygame
 from pygame import *
 import spritesheet
+from player import *
 
 size = (win_width, win_height) = (256, 224)
 
@@ -105,9 +106,6 @@ def get_input():
             if e.key == K_LALT:
                 input_B = True
 
-
-from player import *
-
 def main():
     pygame.init()
     screen = pygame.display.set_mode(size, 0, 16)
@@ -142,7 +140,7 @@ def main():
             input_right,
             input_A,
             input_B)
-        player.check_collisions(tiles)
+        player.check_collisions(tiles, levelWidth, levelHeight)
         camera.update(player)
 
         screen.fill(bgcolor)
