@@ -92,40 +92,37 @@ class Player(pygame.sprite.Sprite):
         if abs(self.vel_y) > self.maxvel_y:
             self.vel_y = self.maxvel_y if self.maxvel_y > 0 else -self.maxvel_y
 
-        self.rect.x += int(self.vel_x * framerate)
+        self.rect.x += self.vel_x * framerate
         self.hitbox.midbottom = self.rect.midbottom
         self.check_collisions(tiles, self.vel_x, 0)
-        self.rect.y += int(self.vel_y * framerate)
+        self.rect.y += self.vel_y * framerate
         self.hitbox.midbottom = self.rect.midbottom
         self.check_collisions(tiles, 0, self.vel_y)
 
 
 
     def check_collisions(self, tiles, vel_x, vel_y):
+        floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
         floor_collide = False
         for tile in tiles:
             if self.hitbox.colliderect(tile.rect):
                 if vel_x > 0:
                     self.hitbox.right = tile.rect.left
-                    self.rect.midbottom = self.hitbox.midbottom
                 if vel_x < 0:
                     self.hitbox.left = tile.rect.right
-                    self.rect.midbottom = self.hitbox.midbottom
                 if vel_y > 0:
                     self.vel_y = 0
                     self.hitbox.bottom = tile.rect.top
-                    self.rect.midbottom = self.hitbox.midbottom
                     self.status = PlayerStatus.idle
                     self.inair = False
                 if vel_y < 0:
                     self.vel_y = 0
                     self.hitbox.top = tile.rect.bottom
-                    self.rect.midbottom = self.hitbox.midbottom
-            if (tile.rect.collidepoint(self.hitbox.left + 1, self.hitbox.bottom) or
-                tile.rect.collidepoint(self.hitbox.right - 2, self.hitbox.bottom)):
+            if (tile.rect.colliderect(floor)):
                 floor_collide = True
         if not floor_collide:
             self.inair = True
+        self.rect.midbottom = self.hitbox.midbottom
 
 
 
@@ -146,7 +143,7 @@ class Player(pygame.sprite.Sprite):
                 self.image = anim_walk
                 anim_walk.play()
         elif input_left:
-            self.vel_x = -self.maxvel_x
+            self.vel_x = -(self.maxvel_x / 2)
             self.flip = True
             if not self.inair:
                 self.status = PlayerStatus.walk
@@ -154,7 +151,7 @@ class Player(pygame.sprite.Sprite):
                 anim_walk.play()
 
     def fall(self):
-        self.vel_y += 16
+        self.vel_y += 12
         self.image = anim_jump
 
     def jump(self, input_A):
