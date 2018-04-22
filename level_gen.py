@@ -201,22 +201,22 @@ class CellGrid:
         ny = 0 if y + 1 == self.height else y + 1
         # order in heredity string is center, north, south, west, east. The 2D plane loops at the borders.
         if rank == 0:
-            s = s + str(self.grid[y][x].color)
-            s = s + str(self.grid[y - 1][x].color)
-            s = s + str(self.grid[ny][x].color)
-            s = s + str(self.grid[y][x - 1].color)
-            s = s + str(self.grid[y][nx].color)
+            s = s + str(self.grid[y    ][x    ].color)
+            s = s + str(self.grid[y - 1][x    ].color)
+            s = s + str(self.grid[ny   ][x    ].color)
+            s = s + str(self.grid[y    ][x - 1].color)
+            s = s + str(self.grid[y    ][nx   ].color)
         # order is lexicographic (left right then top down)
         elif rank == 1:
             s = s + str(self.grid[y - 1][x - 1].color)
-            s = s + str(self.grid[y - 1][x].color)
-            s = s + str(self.grid[y - 1][nx].color)
-            s = s + str(self.grid[y][x - 1].color)
-            s = s + str(self.grid[y][x].color)
-            s = s + str(self.grid[y][nx].color)
-            s = s + str(self.grid[ny][x - 1].color)
-            s = s + str(self.grid[ny][x].color)
-            s = s + str(self.grid[ny][nx].color)
+            s = s + str(self.grid[y - 1][x    ].color)
+            s = s + str(self.grid[y - 1][nx   ].color)
+            s = s + str(self.grid[y    ][x - 1].color)
+            s = s + str(self.grid[y    ][x    ].color)
+            s = s + str(self.grid[y    ][nx   ].color)
+            s = s + str(self.grid[ny   ][x - 1].color)
+            s = s + str(self.grid[ny   ][x    ].color)
+            s = s + str(self.grid[ny   ][nx   ].color)
         return s
 
     def update(self, rank=0, mode=None):
@@ -461,6 +461,7 @@ seed = [
 "0000000000000011000001111000000111111100000000111100000001110111111111110111110000000000011111111111111101100000000000110000000000000111111111111100111111011000" ]
     """
 
+"""
 #dim (160,120)
 walltemplate = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
@@ -584,17 +585,23 @@ walltemplate = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",]
 
+"""
+
+def gen_walltemplate(x, y):
+    res = []
+    #s = [c for ]
 
 
 
-
-def map_gen(screen, seed=4201337):
+def map_gen(screen, mapsize=(1600,1200), seed=4201337):
+    #full map's size in pixels
     random.seed(seed)
     colornb = 2
-    x_cells = int(screen.get_width() / 10)
-    y_cells = int(screen.get_height() / 10)
+    x_cells = int(mapsize[0] / 10)
+    y_cells = int(mapsize[1] / 10)
 
     #grid is first a strls then a CellGrid
+    walltemplate = gen_walltemplate(x_cells, y_cells)
     grid = CellGrid(colornb, x_cells, y_cells, screen) | CellGrid(colornb, x_cells, y_cells, screen, seed=walltemplate)
     grid = CellGrid(colornb, x_cells, y_cells, screen, seed=grid)
     #print(grid)

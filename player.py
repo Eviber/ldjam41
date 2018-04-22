@@ -141,6 +141,9 @@ class Player(pygame.sprite.Sprite):
                 if vel_y < 0:
                     self.vel_y = 0
                     self.hitbox.top = tile.rect.bottom
+            if self.rect.colliderect(tile.rect) and self.status == PlayerStatus.golf:
+                #TODO spawn pebble
+                tiles.remove(tile)
             if (tile.rect.colliderect(floor)):
                 floor_collide = True
         if not floor_collide:
