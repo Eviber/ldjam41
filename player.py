@@ -15,10 +15,9 @@ anim_walk = pyganim.PygAnimation([
             (sheet.image_at((196, 66, 64, 64), alpha), 0.1),
             (sheet.image_at((261, 66, 64, 64), alpha), 0.1),
             (sheet.image_at((326, 66, 64, 64), alpha), 0.1)])
-anim_jumpcharge = pyganim.PygAnimation([
-            (sheet.image_at((  1, 131, 64, 64), alpha), 0.2),
-            (sheet.image_at(( 66, 131, 64, 64), alpha), 0.2),
-            (sheet.image_at((131, 131, 64, 64), alpha), 0.2)])
+anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), alpha),
+            sheet.image_at(( 66, 131, 64, 64), alpha),
+            sheet.image_at((131, 131, 64, 64), alpha)]
 anim_jump = sheet.image_at((261,131,64,64), alpha)
 anim_fall = sheet.image_at((326,131,64,64), alpha)
 anim_golfcharge = pyganim.PygAnimation([
@@ -54,7 +53,7 @@ class Player(pygame.sprite.Sprite):
         self.vel_x = 0.0
         self.vel_y = 0.0
         self.maxvel_x = 35
-        self.maxvel_y = 250
+        self.maxvel_y = 500
 
         self.status = PlayerStatus.idle
 
@@ -64,7 +63,6 @@ class Player(pygame.sprite.Sprite):
         self.golfcharge = 0
         self.maxgolf = 70
 
-        self.allow_jump = True
         self.allow_golf = True
 
 
@@ -81,14 +79,14 @@ class Player(pygame.sprite.Sprite):
             pass
         if self.status == PlayerStatus.jumpcharge:
             self.jump(input_A)
-        if self.status == PlayerStatus.golfcharge:
+        elif self.status == PlayerStatus.golfcharge:
             self.golf(input_B)
-        elif input_left or input_right:
-            self.walk(input_left, input_right)
         elif input_A:
         	self.jump(input_A)
         elif input_B:
         	self.golf(input_B)
+        elif input_left or input_right:
+            self.walk(input_left, input_right)
         else:
             self.idle()
 
@@ -179,25 +177,20 @@ class Player(pygame.sprite.Sprite):
             self.image = anim_fall
 
     def jump(self, input_A):
-        if not input_A:
-            self.allow_jump = True
         if not self.inair:
             if input_A:
                 if self.status != PlayerStatus.jumpcharge:
                     self.status = PlayerStatus.jumpcharge
                     self.jumpcharge = 30
                 self.vel_x = 0
-                self.jumpcharge += 1
+                self.jumpcharge += 10
                 if self.jumpcharge < self.maxvel_y:
-                    self.image = anim_jumpcharge
-                    anim_jumpcharge.play()
+                    self.image = anim_jumpcharge[round(self.jumpcharge / self.maxvel_y * 2)]
                 else:
                     self.jumpcharge = self.maxvel_y
-                    anim_jumpcharge.stop()
-            if (self.jumpcharge >= self.maxvel_y):
+            elif self.jumpcharge > 0:
                 self.status = PlayerStatus.jump
-                self.allow_jump = False
-                self.vel_y = -(self.jumpcharge * 10)
+                self.vel_y = -self.jumpcharge
                 self.jumpcharge = 0
                 self.inair = True
 

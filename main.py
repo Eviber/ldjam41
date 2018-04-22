@@ -2,9 +2,10 @@ import sys, pygame
 from pygame import *
 from player import *
 
-size = (win_width, win_height) = (1280, 720)
+size = (win_width, win_height) = (640, 360)
 
-bgcolor = (69, 69, 69)
+bgcolor = (100, 150, 100)
+platformcolor = (0x994422)
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -243,7 +244,7 @@ class Platform(Sprite):
     def __init__(self, x, y):
         Sprite.__init__(self)
         self.image = pygame.Surface((tile_size, tile_size))
-        self.image.fill(0xFFFFFF)
+        self.image.fill(platformcolor)
         self.rect = pygame.Rect(x, y, tile_size, tile_size)
 
 class Camera(object):
