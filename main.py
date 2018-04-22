@@ -11,6 +11,7 @@ pygame.init()
 screen = pygame.display.set_mode(size)
 pygame.display.set_caption("Golf Rush")
 framerate = 60
+framecount = 0
 timer = pygame.time.Clock()
 
 tile_size = 32
@@ -146,12 +147,23 @@ input_A     = False
 input_B     = False
 
 fullscr     = False
-
 def toggle_fullscr():
     global fullscr
     global screen
     screen = pygame.display.set_mode(size, 0 if fullscr else FULLSCREEN)
     fullscr = not fullscr
+
+screenshake_frames = 0
+screenshake_x = 0
+screenshake_y = 0
+def screenshake(duration, force_x, force_y):
+    global screenshake_frames
+    global screenshake_x
+    global screenshake_y
+    screenshake_frames = duration
+    screenshake_x = force_x
+    screenshake_y = force_y
+    print("screenshake called -> ", screenshake_frames, screenshake_x, screenshake_y)
 
 def get_input():
     global input_down
@@ -195,6 +207,7 @@ def get_input():
                 input_B = False
 
 def main():
+    global framecount
     camera = Camera(level_width, level_height)
 
     tiles = pygame.sprite.Group()
@@ -216,6 +229,7 @@ def main():
     while True:
         get_input()
 
+        player_landing = player.inair
         player.update(tiles, level_width, level_height,
             input_down,
             input_left,
@@ -224,6 +238,8 @@ def main():
             input_A,
             input_B)
         camera.update(player)
+        if player_landing and not player.inair:
+            screenshake(10, 0, 5)
 
         screen.fill(bgcolor)
         for e in tiles:
@@ -233,6 +249,7 @@ def main():
 
         pygame.display.update()
         timer.tick(framerate)
+        framecount += 1
 
 
 
@@ -253,7 +270,26 @@ class Camera(object):
         self.state = pygame.Rect(0, 0, width, height)
 
     def apply(self, target):
-        return target.rect.move(self.state.topleft)
+        global screenshake_frames
+        result = target.rect.move(self.state.topleft)
+        if isinstance(target, Player):
+            print("screenshake -> ", screenshake_frames)
+        if (screenshake_frames > 0):
+            screenshake_frames -= 1
+            shake = (screenshake_x, screenshake_y) if (framecount % 2 == 0) else (-screenshake_x, -screenshake_y)
+            if isinstance(target, Player):
+                print("camera -> ", result[0], result[1])
+                print("shake -> ", shake[0], shake[1])
+            result = result.move(shake)
+            if isinstance(target, Player):
+                print("result -> ", result[0], result[1])
+        return result
+
+    def apply_parallax(self, target, offset_x, offset_y, parallax_x, parallax_y):
+        return (pygame.Rect(
+            target.rect.left + offset_x + self.state[0] * parallax_x,
+            target.rect.top + offset_y + self.state[1] * parallax_y,
+            self.state[2], self.state[3]))
 
     def update(self, target):
         self.state = self.playerCamera(self.state, target.rect)
