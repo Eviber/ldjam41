@@ -78,11 +78,11 @@ class Player(pygame.sprite.Sprite):
         if self.status == PlayerStatus.damage:
             pass
         if self.status == PlayerStatus.jumpcharge:
-            self.jump(input_A)
+            self.jump(input_A, input_down)
         elif self.status == PlayerStatus.golfcharge:
             self.golf(input_B)
-        elif input_A:
-        	self.jump(input_A)
+        elif input_A or input_down:
+        	self.jump(input_A, input_down)
         elif input_B:
         	self.golf(input_B)
         elif input_left or input_right:
@@ -176,9 +176,13 @@ class Player(pygame.sprite.Sprite):
         else:
             self.image = anim_fall
 
-    def jump(self, input_A):
+    def jump(self, input_A, input_down):
         if not self.inair:
             if input_A:
+                self.status = PlayerStatus.jump
+                self.vel_y = -100 if self.jumpcharge == 0 else -self.jumpcharge
+                self.jumpcharge = 0
+            elif input_down:
                 if self.status != PlayerStatus.jumpcharge:
                     self.status = PlayerStatus.jumpcharge
                     self.jumpcharge = 100
@@ -187,11 +191,9 @@ class Player(pygame.sprite.Sprite):
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
                 self.image = anim_jumpcharge[int((self.jumpcharge + 1) / self.maxvel_y * 2)]
-            elif self.jumpcharge > 0:
-                self.status = PlayerStatus.jump
-                self.vel_y = -self.jumpcharge
+            else:
                 self.jumpcharge = 0
-                self.inair = True
+                self.status = PlayerStatus.idle
 
     def golf(self, input_B):
         if input_B:
