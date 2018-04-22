@@ -1,5 +1,5 @@
 import pygame
-from lexou_main import get_input, input_down, input_left, input_up, input_right, input_A, input_B
+from main import get_input, input_down, input_left, input_up, input_right, input_A, input_B
 
 class Ball(pygame.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -61,7 +61,7 @@ class Bomb(Ball):
     def __init__(self, x, y):
         Ball.__init__(self, x, y)
 
-
+"""
 import spritesheet
 
 def game_loop(screen, ball):
@@ -97,3 +97,4 @@ def main_ball():
     game_loop(screen, ball)
 
 main_ball()
+"""

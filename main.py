@@ -1,4 +1,10 @@
-import pygame
+import sys, pygame
+from pygame import *
+import spritesheet
+
+size = (win_width, win_height) = (256, 224)
+
+bgcolor = (69, 69, 69)
 
 class Sprite(pygame.sprite.Sprite):
     def __init__(self):
@@ -27,33 +33,31 @@ class Camera(object):
         ycoord = target_rect[1]
         xlength = level[2]
         ylength = level[3]
-        xcoord = -xcoord + (windowWidth/2)
-        ycoord = -ycoord + (windowHeight/2)
+        xcoord = -xcoord + (win_width/2)
+        ycoord = -ycoord + (win_height/2)
         if xcoord > -16:
             xcoord = -16
-        if xcoord < -(level.width-windowWidth)+16:
-            xcoord = -(level.width-windowWidth)+16
+        if xcoord < -(level.width-win_width)+16:
+            xcoord = -(level.width-win_width)+16
         if ycoord > 0:
             ycoord = 0
-        if ycoord < -(level.height-windowHeight):
-            ycoord = -(level.height-windowHeight)
+        if ycoord < -(level.height-win_height):
+            ycoord = -(level.height-win_height)
         return pygame.Rect(xcoord, ycoord, xlength, ylength)
 
-framerate = 5
+framerate = 60
 timer = pygame.time.Clock()
-
-size = (width, height) = (256, 224)
 
 levelSize = (levelWidth, levelHeight) = (512, 224)
 level = [
 "P                              P",
 "P                              P",
+"P                            PPP",
 "P                              P",
 "P                              P",
-"P                              P",
-"P                              P",
-"P                              P",
-"P                              P",
+"P                         P    P",
+"P     P                   P    P",
+"P    PPP            PP    P    P",
 "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 "PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
 "P                              P",
@@ -108,33 +112,41 @@ def main():
     pygame.init()
     screen = pygame.display.set_mode(size, 0, 16)
     pygame.display.set_caption("Golf Rush")
-    tigersheet = spritesheet.spritesheet("./Example_PyGame_RondoPython/Richter.png")  # TODO TigerWood.png
     camera = Camera(levelWidth, levelHeight)
+    tigersheet = spritesheet.spritesheet("tiger.png")
 
-    platforms = pygame.sprite.Group()
+    tiles = pygame.sprite.Group()
     platform_x = 0
     platform_y = 0
     for level_x in level:
         for level_y in level_x:
             if level_y == "P":
                 p = Platform(platform_x, platform_y)
-                platforms.add(p)
+                tiles.add(p)
             platform_x += 16
         platform_x = 0
         platform_y += 16
 
     entities = pygame.sprite.Group()
-    player = Player(20, 50, tigersheet)
+    player = Player(20, 20, tigersheet)
     entities.add(player)
     #entities.add(player sprite ?)
 
     while True:
         get_input()
 
-        player.update()
+        player.update(
+            input_down,
+            input_left,
+            input_up,
+            input_right,
+            input_A,
+            input_B)
+        player.check_collisions(tiles)
         camera.update(player)
 
-        for e in platforms:
+        screen.fill(bgcolor)
+        for e in tiles:
             screen.blit(e.image, camera.apply(e))
         for e in entities:
             screen.blit(e.image, camera.apply(e))
