@@ -18,7 +18,7 @@ bgcolor = (0, 0, 0)
 bgsheet = spritesheet.spritesheet("bg.png")
 bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
-tile_size = 16
+tile_size = 32
 tilesheet = spritesheet.spritesheet("tileset_ruins.png")
 tileset = [[tilesheet.image_at(pygame.Rect(x * tile_size, y * tile_size, tile_size, tile_size)) for x in range(3)] for y in range(3)]
 

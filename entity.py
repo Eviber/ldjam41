@@ -40,21 +40,26 @@ class Entity(pygame.sprite.Sprite):
             self.vel_y = self.maxvel_y if self.maxvel_y > 0 else -self.maxvel_y
 
         self.rect.x += self.vel_x * framerate
-        self.hitbox.midbottom = self.rect.midbottom
-        self.check_collisions(tiles, self.vel_x, 0)
+        self.check_collisions_x(tiles, self.vel_x)
         self.rect.y += self.vel_y * framerate
-        self.hitbox.midbottom = self.rect.midbottom
-        self.check_collisions(tiles, 0, self.vel_y)
+        self.check_collisions_y(tiles, self.vel_y)
 
-    def check_collisions(self, tiles, vel_x, vel_y):
-        floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
-        floor_collide = False
+    def check_collisions_x(self, tiles, vel_x):
+        self.hitbox.midbottom = self.rect.midbottom
         for tile in tiles:
             if self.hitbox.colliderect(tile.rect):
                 if vel_x > 0:
                     self.hitbox.right = tile.rect.left
                 if vel_x < 0:
                     self.hitbox.left = tile.rect.right
+        self.rect.midbottom = self.hitbox.midbottom
+
+    def check_collisions_y(self, tiles, vel_y):
+        self.hitbox.midbottom = self.rect.midbottom
+        floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
+        floor_collide = False
+        for tile in tiles:
+            if self.hitbox.colliderect(tile.rect):
                 if vel_y > 0:
                     self.vel_y = 0
                     self.hitbox.bottom = tile.rect.top
@@ -62,7 +67,7 @@ class Entity(pygame.sprite.Sprite):
                 if vel_y < 0:
                     self.vel_y = 0
                     self.hitbox.top = tile.rect.bottom
-            if (tile.rect.colliderect(floor)):
+            if (floor.colliderect(tile.rect)):
                 floor_collide = True
         if not floor_collide:
             self.inair = True
