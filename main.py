@@ -242,7 +242,6 @@ def main():
             screenshake(-player_speed / 20, 0, 3)
         if player_landing and not player.inair:
             screenshake(player_speed / 20, 0, 3)
-            print("screenshake called -> ", screenshake_frames, screenshake_x, screenshake_y)
 
         screen.fill(bgcolor)
         i = 0
@@ -292,8 +291,14 @@ class Camera(object):
         
     def playerCamera(self, level, target_rect):
         global screenshake_frames
+        global screenshake_x
+        global screenshake_y
         if (screenshake_frames > 0):
             screenshake_frames -= 1
+            if (screenshake_frames < screenshake_x):
+                screenshake_x -= 1
+            if (screenshake_frames < screenshake_y):
+                screenshake_y -= 1
         xcoord = target_rect[0]
         ycoord = target_rect[1]
         xlength = level[2]
