@@ -1,11 +1,9 @@
-import sys, pygame
+import sys, pygame, spritesheet
 from pygame import *
 from player import *
 
 size = (win_width, win_height) = (640, 360)
 
-bgcolor = (100, 150, 100)
-platformcolor = (0x994422)
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -14,6 +12,10 @@ framerate = 60
 framecount = 0
 timer = pygame.time.Clock()
 
+platformcolor = (0x994422)
+bgcolor = (0, 0, 0)
+bgsheet = spritesheet.spritesheet("bg.png")
+bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 tile_size = 32
 level = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
@@ -239,15 +241,14 @@ def main():
             input_B)
         camera.update(player)
         if player.inair and player.vel_y == 0:
-            screenshake(-player_speed / 20, 0, 3)
+            screenshake(-player_speed / 50, 0, 3)
         if player_landing and not player.inair:
-            screenshake(player_speed / 20, 0, 3)
+            screenshake(player_speed / 30, 0, 3)
 
         screen.fill(bgcolor)
-        i = 0
+        screen.blit(bg, camera.apply_parallax(0, 0, 0.2, 0.2))
         for e in tiles:
             screen.blit(e.image, camera.apply(e))
-            i += 1
         for e in entities:
             screen.blit(e.image, camera.apply(e))
 
@@ -280,10 +281,10 @@ class Camera(object):
             result = result.move(shake)
         return result
 
-    def apply_parallax(self, target, offset_x, offset_y, parallax_x, parallax_y):
+    def apply_parallax(self, offset_x, offset_y, parallax_x, parallax_y):
         return (pygame.Rect(
-            target.rect.left + offset_x + self.state[0] * parallax_x,
-            target.rect.top + offset_y + self.state[1] * parallax_y,
+            offset_x + self.state[0] * parallax_x,
+            offset_y + self.state[1] * parallax_y,
             self.state[2], self.state[3]))
 
     def update(self, target):
