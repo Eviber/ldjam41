@@ -1,6 +1,7 @@
 import pygame
 import pyganim
 import spritesheet
+from main import level_width, level_height, tile_size
 
 framerate = 1 / (1000/60)
 
@@ -19,20 +20,22 @@ class Entity(pygame.sprite.Sprite):
         self.flip = False
         self.inair = True
 
-    def update(self, tiles, level_width, level_height):
+    def update(self, tiles):
         if (self.inair):
             self.fall()
         else:
             self.idle()
-        self.update_rect(tiles, level_width, level_height)
+        self.update_rect(tiles)
 
-    def update_rect(self, tiles, level_width, level_height):
+    def update_rect(self, tiles):
+        lvl_w = level_width * tile_size
+        lvl_h = level_height * tile_size
         if self.rect.left < 0:
             self.rect.left = 0
-        if self.rect.right > level_width:
-            self.rect.right = level_width
-        if self.rect.bottom > level_height:
-            self.rect.bottom = level_height
+        if self.rect.right > lvl_w:
+            self.rect.right = lvl_w
+        if self.rect.bottom > lvl_h:
+            self.rect.bottom = lvl_h
 
         if abs(self.vel_x) > self.maxvel_x:
             self.vel_x = self.maxvel_x if self.maxvel_x > 0 else -self.maxvel_x
@@ -46,29 +49,31 @@ class Entity(pygame.sprite.Sprite):
 
     def check_collisions_x(self, tiles, vel_x):
         self.hitbox.midbottom = self.rect.midbottom
-        for tile in tiles:
-            if self.hitbox.colliderect(tile.rect):
-                if vel_x > 0:
-                    self.hitbox.right = tile.rect.left
-                if vel_x < 0:
-                    self.hitbox.left = tile.rect.right
+        for row in tiles:
+            for tile in row:
+                if self.hitbox.colliderect(tile.rect):
+                    if vel_x > 0:
+                        self.hitbox.right = tile.rect.left
+                    if vel_x < 0:
+                        self.hitbox.left = tile.rect.right
         self.rect.midbottom = self.hitbox.midbottom
 
     def check_collisions_y(self, tiles, vel_y):
         self.hitbox.midbottom = self.rect.midbottom
         floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
         floor_collide = False
-        for tile in tiles:
-            if self.hitbox.colliderect(tile.rect):
-                if vel_y > 0:
-                    self.vel_y = 0
-                    self.hitbox.bottom = tile.rect.top
-                    self.inair = False
-                if vel_y < 0:
-                    self.vel_y = 0
-                    self.hitbox.top = tile.rect.bottom
-            if (floor.colliderect(tile.rect)):
-                floor_collide = True
+        for row in tiles:
+            for tile in row:
+                if self.hitbox.colliderect(tile.rect):
+                    if vel_y > 0:
+                        self.vel_y = 0
+                        self.hitbox.bottom = tile.rect.top
+                        self.inair = False
+                    if vel_y < 0:
+                        self.vel_y = 0
+                        self.hitbox.top = tile.rect.bottom
+                if (floor.colliderect(tile.rect)):
+                    floor_collide = True
         if not floor_collide:
             self.inair = True
         self.rect.midbottom = self.hitbox.midbottom

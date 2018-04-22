@@ -219,55 +219,56 @@ def get_input():
 
 def make_level():
     tiles = []
-    platform_x = 0
-    platform_y = 0
-    for level_y in level:
-        for level_x in level_y:
-            if level_x.color == 1:
+    tile_x = 0
+    tile_y = 0
+    for row in level:
+        tiles.append([])
+        for char in row:
+            if char.color == 1:
                 tile = tileset[0][0]
-            elif level_x.color == 2:
+            elif char.color == 2:
                 tile = tileset[0][1]
-            elif level_x.color == 3:
+            elif char.color == 3:
                 tile = tileset[0][2]
-            elif level_x.color == 4:
+            elif char.color == 4:
                 tile = tileset[1][0]
-            elif level_x.color == 5:
+            elif char.color == 5:
                 tile = tileset[1][1]
-            elif level_x.color == 6:
+            elif char.color == 6:
                 tile = tileset[1][2]
-            elif level_x.color == 7:
+            elif char.color == 7:
                 tile = tileset[2][0]
-            elif level_x.color == 8:
+            elif char.color == 8:
                 tile = tileset[2][1]
-            elif level_x.color == 9:
+            elif char.color == 9:
                 tile = tileset[2][2]
             else:
                 tile = None
             if tile is not None:
-                p = Platform(platform_x, platform_y, tile)
-                tiles.append(p)
-            platform_x += tile_size
-        platform_x = 0
-        platform_y += tile_size
+                tiles[tile_y].append(Platform(tile_x * tile_size, tile_y * tile_size, tile))
+            tile_x += 1
+        tile_x = 0
+        tile_y += 1
     return tiles
 
-def render():
+def render(camera, tiles, entities):
     screen.fill(bgcolor)
     screen.blit(bg, camera.apply_parallax(0, 0, 0.2, 0.2))
     rect = None
-    for e in tiles:
-        rect = camera.apply(e)
-        if (rect.colliderect(screen_rect)):
-            screen.blit(e.image, rect)
+    for row in tiles:
+        for tile in row:
+            rect = camera.apply(tile.rect)
+            if (rect.colliderect(screen_rect)):
+                screen.blit(tile.image, rect)
     for e in entities:
-        rect = camera.apply(e)
+        rect = camera.apply(e.rect)
         if (rect.colliderect(screen_rect)):
             screen.blit(e.image, rect)
 
 
 def main():
     global framecount
-    camera = Camera(level_width, level_height)
+    camera = Camera(level_width * tile_size, level_height * tile_size)
 
     tiles = make_level()
     player = Player(200, 200)
@@ -279,7 +280,7 @@ def main():
 
         player_landing = player.inair
         player_speed = player.vel_y
-        player.update(tiles, level_width, level_height,
+        player.update(tiles,
             input_down,
             input_left,
             input_up,
@@ -292,7 +293,7 @@ def main():
         if player_landing and not player.inair:
             screenshake(player_speed / 30, 0, 3)
 
-        render()
+        render(camera, tiles, entities)
         pygame.display.update()
 
         timer.tick(framerate)
@@ -311,7 +312,7 @@ class Camera(object):
         self.state = pygame.Rect(0, 0, width, height)
 
     def apply(self, target):
-        result = target.rect.move(self.state.topleft)
+        result = target.move(self.state.topleft)
         if (screenshake_frames > 0):
             shake = (screenshake_x, screenshake_y) if (framecount % 2 == 0) else (-screenshake_x, -screenshake_y)
             result = result.move(shake)
