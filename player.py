@@ -19,13 +19,13 @@ anim_walk = PygAnimation([
 
 from enum import Enum
 class PlayerStatus(Enum):
-	idle = 0
-	walk = 1
-	jumpcharge = 2
-	jump = 3
-	golfcharge = 4
-	golf = 5
-	damage = 6
+	idle		= 0
+	walk		= 1
+	jumpcharge	= 2
+	jump		= 3
+	golfcharge	= 4
+	golf		= 5
+	damage		= 6
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -34,16 +34,19 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x, y, 64, 64)
         self.hitbox = pygame.Rect(0, 0, 32, 48)
         self.hitbox.midbottom = self.rect.midbottom
-        self.vel_x = 0
-        self.vel_y = 0
-        self.maxvel_x = 50
-        self.maxvel_y = 800
+        self.vel_x = 0.0
+        self.vel_y = 0.0
+        self.maxvel_x = 30
+        self.maxvel_y = 250
 
         self.status = PlayerStatus.idle
 
         self.flip = False
         self.inair = True
         self.jumpcharge = 0
+
+        self.allow_jump = True
+        self.allow_golf = True
 
 
 
@@ -89,10 +92,10 @@ class Player(pygame.sprite.Sprite):
         if abs(self.vel_y) > self.maxvel_y:
             self.vel_y = self.maxvel_y if self.maxvel_y > 0 else -self.maxvel_y
 
-        self.rect.x += self.vel_x * framerate
+        self.rect.x += int(self.vel_x * framerate)
         self.hitbox.midbottom = self.rect.midbottom
         self.check_collisions(tiles, self.vel_x, 0)
-        self.rect.y += self.vel_y * framerate
+        self.rect.y += int(self.vel_y * framerate)
         self.hitbox.midbottom = self.rect.midbottom
         self.check_collisions(tiles, 0, self.vel_y)
 
@@ -103,11 +106,9 @@ class Player(pygame.sprite.Sprite):
         for tile in tiles:
             if self.hitbox.colliderect(tile.rect):
                 if vel_x > 0:
-                    self.vel_x = 0
                     self.hitbox.right = tile.rect.left
                     self.rect.midbottom = self.hitbox.midbottom
                 if vel_x < 0:
-                    self.vel_x = 0
                     self.hitbox.left = tile.rect.right
                     self.rect.midbottom = self.hitbox.midbottom
                 if vel_y > 0:
@@ -153,10 +154,12 @@ class Player(pygame.sprite.Sprite):
                 anim_walk.play()
 
     def fall(self):
-        self.vel_y += 20
+        self.vel_y += 16
         self.image = anim_jump
 
     def jump(self, input_A):
+        if not input_A:
+            self.allow_jump = True
         if not self.inair:
             if input_A:
                 self.status = PlayerStatus.jumpcharge
@@ -164,8 +167,10 @@ class Player(pygame.sprite.Sprite):
                 self.jumpcharge += 10
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
-            elif self.jumpcharge >= 10:
+            if ((self.jumpcharge >= self.maxvel_y) or
+                (self.jumpcharge >= 10 and not input_A)):
                 self.status = PlayerStatus.jump
+                self.allow_jump = False
                 self.vel_y = -self.jumpcharge
                 self.jumpcharge = 0
                 self.inair = True

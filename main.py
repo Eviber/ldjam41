@@ -13,24 +13,24 @@ framerate = 60
 timer = pygame.time.Clock()
 
 tile_size = 16
-level_size = (level_width, level_height) = (32 * tile_size, 16 * tile_size)
+level_size = (level_width, level_height) = (48 * tile_size, 16 * tile_size)
 level = [
-"P                              P",
-"P                              P",
-"P                            PPP",
-"P                              P",
-"P                              P",
-"P                         P    P",
-"P      P                  P    P",
-"P     PPP           PP    P    P",
-"PPPPPPPPPPPPPPPPPPPPPPPPPPPPP  P",
-"PPPPPPPPPPPPPPPPPPPPPPPPPPPPP  P",
-"P                     P        P",
-"P                P             P",
-"P          P                   P",
-"P                              P",
-"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
-"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"]
+"P                                              P",
+"P                                              P",
+"P                 P  P                       PPP",
+"P                                              P",
+"P               P      P                       P",
+"P                PPPPPP                   P    P",
+"P      P                                  P    P",
+"P     PPP                           PP    P    P",
+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP  P",
+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP  P",
+"P     P    PPPP                       P        P",
+"P                                              P",
+"P                                              P",
+"P       PP       PPPP         P                P",
+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP",
+"PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP"]
 
 input_down  = False
 input_left  = False
