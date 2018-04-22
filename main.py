@@ -4,7 +4,7 @@ from player import *
 from level_gen import *
 
 size = (win_width, win_height) = (640, 360)
-
+screen_rect = pygame.Rect(0, 0, win_width, win_height)
 
 pygame.init()
 screen = pygame.display.set_mode(size)
@@ -217,11 +217,8 @@ def get_input():
             if e.key == K_LALT:
                 input_B = False
 
-def main():
-    global framecount
-    camera = Camera(level_width, level_height)
-
-    tiles = pygame.sprite.Group()
+def make_level():
+    tiles = []
     platform_x = 0
     platform_y = 0
     for level_y in level:
@@ -248,11 +245,31 @@ def main():
                 tile = None
             if tile is not None:
                 p = Platform(platform_x, platform_y, tile)
-                tiles.add(p)
+                tiles.append(p)
             platform_x += tile_size
         platform_x = 0
         platform_y += tile_size
+    return tiles
 
+def render():
+    screen.fill(bgcolor)
+    screen.blit(bg, camera.apply_parallax(0, 0, 0.2, 0.2))
+    rect = None
+    for e in tiles:
+        rect = camera.apply(e)
+        if (rect.colliderect(screen_rect)):
+            screen.blit(e.image, rect)
+    for e in entities:
+        rect = camera.apply(e)
+        if (rect.colliderect(screen_rect)):
+            screen.blit(e.image, rect)
+
+
+def main():
+    global framecount
+    camera = Camera(level_width, level_height)
+
+    tiles = make_level()
     player = Player(200, 200)
     entities = pygame.sprite.Group()
     entities.add(player)
@@ -275,26 +292,16 @@ def main():
         if player_landing and not player.inair:
             screenshake(player_speed / 30, 0, 3)
 
-        screen.fill(bgcolor)
-        screen.blit(bg, camera.apply_parallax(0, 0, 0.2, 0.2))
-        for e in tiles:
-            screen.blit(e.image, camera.apply(e))
-        for e in entities:
-            screen.blit(e.image, camera.apply(e))
-
+        render()
         pygame.display.update()
+
         timer.tick(framerate)
         framecount += 1
 
 
 
-class Sprite(pygame.sprite.Sprite):
-    def __init__(self):
-        pygame.sprite.Sprite.__init__(self)
-
-class Platform(Sprite):
+class Platform(object):
     def __init__(self, x, y, image):
-        Sprite.__init__(self)
         self.image = image
         self.rect = pygame.Rect(x, y, tile_size, tile_size)
 
