@@ -181,13 +181,12 @@ class Player(pygame.sprite.Sprite):
             if input_A:
                 if self.status != PlayerStatus.jumpcharge:
                     self.status = PlayerStatus.jumpcharge
-                    self.jumpcharge = 30
+                    self.jumpcharge = 100
                 self.vel_x = 0
-                self.jumpcharge += 10
-                if self.jumpcharge < self.maxvel_y:
-                    self.image = anim_jumpcharge[round(self.jumpcharge / self.maxvel_y * 2)]
-                else:
+                self.jumpcharge += 5
+                if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
+                self.image = anim_jumpcharge[int((self.jumpcharge + 1) / self.maxvel_y * 2)]
             elif self.jumpcharge > 0:
                 self.status = PlayerStatus.jump
                 self.vel_y = -self.jumpcharge
