@@ -4,6 +4,7 @@ from level_gen import map_gen
 
 pygame.init()
 pygame.display.set_caption("Golf Rush")
+pygame.mixer.init(44000)
 
 class Gl:
     debug = 0
