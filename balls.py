@@ -31,10 +31,7 @@ class Ball(Entity):
 
     def fall(self):
         self.vel_y += 12
-        if self.vel_x < 0:
-            self.vel_x += 1
-        if self.vel_x > 0:
-            self.vel_x -= 1
+        self.vel_x = 0.995 * self.vel_x
 
     def hit(self, xvel, yvel):
         self.vel_x += xvel if not self.player.flip else -xvel
