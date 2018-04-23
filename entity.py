@@ -1,6 +1,7 @@
 import pygame
 import pyganim
 import spritesheet
+from math import sqrt
 from config import *
 
 
@@ -58,15 +59,14 @@ class Entity(pygame.sprite.Sprite):
                     if vel_x > 0:
                         self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
                         if hasattr(self, "bounce_sfx"):
-                            #distance = math.sqrt((self.rect.x - Gl.camera.state.center.x)**2 + (self.rect.y - Gl.camera.state.center.y)**2)
-                            self.bounce_sfx.set_volume(self.vel_x / self.maxvel_x)
+                            self.bounce_sfx.set_volume(self.vel_x / self.maxvel_x * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.right = tile.rect.left
                         tiles.append(Gl.tiles[col][row])
                     if vel_x < 0:
                         self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y)
+                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.left = tile.rect.right
                         tiles.append(Gl.tiles[col][row])
@@ -83,7 +83,7 @@ class Entity(pygame.sprite.Sprite):
                     if vel_y > 0:
                         self.vel_y = 0 if not hasattr(self, "bounce_y") else -self.vel_y * self.bounce_y
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y)
+                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.bottom = tile.rect.top
                         tiles.append(Gl.tiles[col][row])
@@ -91,7 +91,7 @@ class Entity(pygame.sprite.Sprite):
                     if vel_y < 0:
                         self.vel_y = 0 if not hasattr(self, "bounce_y") else -self.vel_y * self.bounce_y
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y)
+                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.top = tile.rect.bottom
                         tiles.append(Gl.tiles[col][row])
@@ -100,6 +100,15 @@ class Entity(pygame.sprite.Sprite):
         if not floor_collide:
             self.inair = True
         return tiles
+
+    def get_volume_distance(self):
+        distance = sqrt((self.rect.x - Gl.camera.state.center[0])**2 + (self.rect.y - Gl.camera.state.center[1])**2)
+        distance = -1 / Gl.win_width * distance + 1
+        if (distance < 0):
+            distance = 0
+        return distance
+
+
 
     def idle(self):
         pass
