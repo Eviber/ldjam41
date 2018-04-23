@@ -71,11 +71,12 @@ class Bomb(Ball):
         global img_bomb
         Ball.__init__(self, Gl.ball_bomb, 16, x, y, player)
         self.can_explode = True
+        self.xploradius = 3
 
     def explode(self):
-        for row in range(int(self.hitbox.center[0] / Gl.tile_size) - 5, int(self.hitbox.center[0] / Gl.tile_size) + 5):
-            for col in range(int(self.hitbox.center[1] / Gl.tile_size) - 5, int(self.hitbox.center[1] / Gl.tile_size) + 5):
-                if (Gl.tiles[col][row] and hypot(Gl.tiles[col][row].rect.center[0] - self.hitbox.center[0], Gl.tiles[col][row].rect.center[1] - self.hitbox.center[1]) < (5 * Gl.tile_size)):
+        for row in range(int(self.hitbox.center[0] / Gl.tile_size) - self.xploradius, int(self.hitbox.center[0] / Gl.tile_size) + self.xploradius):
+            for col in range(int(self.hitbox.center[1] / Gl.tile_size) - self.xploradius, int(self.hitbox.center[1] / Gl.tile_size) + self.xploradius):
+                if (Gl.tiles[col][row] and hypot(Gl.tiles[col][row].rect.center[0] - self.hitbox.center[0], Gl.tiles[col][row].rect.center[1] - self.hitbox.center[1]) < (self.xploradius * Gl.tile_size)):
                     Gl.tiles[col][row] = None
         self.kill()
 
