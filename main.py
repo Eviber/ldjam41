@@ -6,11 +6,13 @@ from camera import *
 def render(camera, entities):
     Gl.screen.fill(Gl.bgcolor)
     Gl.screen.blit(Gl.bg, camera.apply_parallax(0, 0, 0.2, 0.2))
-    for row in Gl.tiles:
-        for tile in row:
-            rect = camera.apply(tile.rect)
-            if (rect.colliderect(Gl.screen_rect)):
-                Gl.screen.blit(tile.image, rect)
+    for row in range(-int(camera.state.x / Gl.tile_size), -int((camera.state.x - Gl.win_width) / Gl.tile_size) + 1):
+        for col in range(-int(camera.state.y / Gl.tile_size), -int((camera.state.y - Gl.win_height) / Gl.tile_size) + 1):
+            if Gl.tiles[col][row] != None:
+                rect = camera.apply(Gl.tiles[col][row].rect)
+                if (rect.colliderect(Gl.screen_rect)):
+                    Gl.screen.blit(Gl.tiles[col][row].image, rect)
+                Gl.screen.blit(Gl.tiles[col][row].image, rect)
     for e in entities:
         rect = camera.apply(e.rect)
         if (rect.colliderect(Gl.screen_rect)):
