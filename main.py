@@ -127,9 +127,6 @@ def main():
         timer.tick(framerate)
         framecount += 1
 
-
-
-
 class Camera(object):
     #camera is a rectangle describing the coordinates of the window within the world space
     def __init__(self, width, height):
@@ -150,7 +147,7 @@ class Camera(object):
 
     def update(self, target):
         self.state = self.playerCamera(self.state, target.rect)
-        
+
     def playerCamera(self, level, target_rect):
         global screenshake_frames
         global screenshake_x
@@ -176,8 +173,6 @@ class Camera(object):
         if ycoord < -(level.height-win_height):
             ycoord = -(level.height-win_height)
         return pygame.Rect(xcoord, ycoord, xlength, ylength)
-
-
 
 if(__name__ == "__main__"):
     main()

@@ -71,7 +71,7 @@ class Player(Entity):
             self.golf(input_B)
         elif self.status == PlayerStatus.slide:
             self.slide()
-        elif input_A or input_down:
+        elif input_A:
             self.jump(input_A)
         elif input_B:
             self.golf(input_B)
@@ -122,10 +122,10 @@ class Player(Entity):
                     self.status = PlayerStatus.jumpcharge
                     self.jumpcharge = 100
                 self.vel_x = 0
-                self.jumpcharge += 5
+                self.jumpcharge += 10
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
-                self.image = anim_jumpcharge[int((self.jumpcharge) / self.maxvel_y * 2)]
+                self.image = anim_jumpcharge[int(self.jumpcharge / self.maxvel_y * 2)]
             else:
                 self.status = PlayerStatus.jump
                 self.vel_y = -self.jumpcharge
