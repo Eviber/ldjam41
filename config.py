@@ -52,6 +52,7 @@ class Gl:
     sfx_ball_bounce = pygame.mixer.Sound("sfx_ball_bounce.wav")
     sfx_golf_hit    = pygame.mixer.Sound("sfx_golf_hit.wav")
     sfx_golf_swing  = pygame.mixer.Sound("sfx_golf_swing.wav")
+    sfx_jump        = pygame.mixer.Sound("sfx_jump.wav")
     sfx_land        = pygame.mixer.Sound("sfx_land.wav")
     sfx_tiger       = pygame.mixer.Sound("sfx_tiger.wav")
 

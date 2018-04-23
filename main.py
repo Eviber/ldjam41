@@ -51,6 +51,7 @@ def update_entities(player, entities):
         for e in entities:
             if isinstance(e, Ball) and e.rect.colliderect(player.rect):
                 e.hit(player.golfcharge, player.golfcharge)
+                Gl.camera.screenshake(player.golfcharge / 50, 2, 0)
                 Gl.sfx_golf_hit.play()
 
 
