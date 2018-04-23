@@ -7,8 +7,9 @@ from config import *
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, image, x, y):
+    def __init__(self, image, x, y, entities):
         pygame.sprite.Sprite.__init__(self)
+        self.entities = entities
         self.image = image
         self.rect = image.get_rect().move(x, y)
         self.hitbox = self.rect
