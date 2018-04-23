@@ -1,4 +1,5 @@
 from entity import *
+from math import hypot
 
 class Ball(Entity):
     def __init__(self, image, size, x, y, player):
@@ -74,7 +75,8 @@ class Bomb(Ball):
     def explode(self):
         for row in range(int(self.hitbox.center[0] / Gl.tile_size) - 5, int(self.hitbox.center[0] / Gl.tile_size) + 5):
             for col in range(int(self.hitbox.center[1] / Gl.tile_size) - 5, int(self.hitbox.center[1] / Gl.tile_size) + 5):
-                Gl.tiles[col][row] = None
+                if (hypot(Gl.tiles[col][row].rect.center[0] - self.hitbox.center[0], Gl.tiles[col][row].rect.center[1] - self.hitbox.center[1]) < (5 * Gl.tile_size))
+                    Gl.tiles[col][row] = None
         self.kill()
 
 
