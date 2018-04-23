@@ -26,6 +26,9 @@ class Ball(Entity):
             res.append(pygame.transform.rotate(img, i * incr))
         return res
 
+    def update_momentum(self):
+        self.hasMomentum = self.vel_x * self.vel_x + self.vel_y * self.vel_y > 10
+
     def fall(self):
         self.vel_y += 12
         if self.vel_x < 0:
@@ -39,6 +42,7 @@ class Ball(Entity):
 
     def update(self):
         #TODO global tiles
+        self.update_momentum()
         if self.inair:
             self.fall()
         else:

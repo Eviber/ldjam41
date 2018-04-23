@@ -53,7 +53,7 @@ class Gl:
 
     @classmethod
     def toggle_fullscr(cls):
-        cls.screen = pygame.display.set_mode(cls.size, 0 if cls.fullscr else cls.FULLSCREEN)
+        cls.screen = pygame.display.set_mode(cls.size, 0 if cls.fullscr else FULLSCREEN)
         cls.fullscr = not cls.fullscr
 
     @classmethod
