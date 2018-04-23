@@ -44,11 +44,11 @@ class Gl:
     sheet_tiles = spritesheet.spritesheet("tileset.png")
     sheet_tiger = spritesheet.spritesheet("tiger.png")
     sheet_balls = spritesheet.spritesheet("balls.png")
-    sheet_fx = spritesheet.spritesheet("fx.png")
+    sheet_fx    = spritesheet.spritesheet("fx.png")
 
     sfx_ball_bounce = pygame.mixer.Sound("sfx_ball_bounce.wav")
     sfx_golf_hit    = pygame.mixer.Sound("sfx_golf_hit.wav")
-    sfx_golf_miss   = pygame.mixer.Sound("sfx_golf_miss.wav")
+    sfx_golf_swing  = pygame.mixer.Sound("sfx_golf_swing.wav")
     sfx_land        = pygame.mixer.Sound("sfx_land.wav")
     sfx_tiger       = pygame.mixer.Sound("sfx_tiger.wav")
 

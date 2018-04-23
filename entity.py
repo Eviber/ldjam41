@@ -58,6 +58,7 @@ class Entity(pygame.sprite.Sprite):
                     if vel_x > 0:
                         self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
                         if hasattr(self, "bounce_sfx"):
+                            #distance = math.sqrt((self.rect.x - Gl.camera.state.center.x)**2 + (self.rect.y - Gl.camera.state.center.y)**2)
                             self.bounce_sfx.set_volume(self.vel_x / self.maxvel_x)
                             self.bounce_sfx.play()
                         self.hitbox.right = tile.rect.left
