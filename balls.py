@@ -37,13 +37,13 @@ class Ball(Entity):
         self.vel_x += xvel if self.player.flip else -xvel
         self.vel_y -= yvel
 
-    def update(self, tiles):
+    def update(self):
         #TODO global tiles
         if self.inair:
             self.fall()
         else:
             self.idle()
-        self.update_rect(tiles)
+        self.update_rect()
 
 class Bomb(Ball):
     def __init__(self, x, y):

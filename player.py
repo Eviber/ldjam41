@@ -54,7 +54,7 @@ class Player(Entity):
         self.maxgolf = 70
 
 
-    def update(self, tiles,
+    def update(self,
         input_down,
         input_left,
         input_up,
@@ -82,7 +82,7 @@ class Player(Entity):
         if self.inair:
             self.fall()
 
-        self.update_rect(tiles)
+        self.update_rect()
 
         if isinstance(self.image, pyganim.PygAnimation):
             #self.elapsed = self.image.elapsed

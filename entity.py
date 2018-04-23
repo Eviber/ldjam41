@@ -20,14 +20,14 @@ class Entity(pygame.sprite.Sprite):
         self.flip = False
         self.inair = True
 
-    def update(self, tiles):
+    def update(self):
         if (self.inair):
             self.fall()
         else:
             self.idle()
         self.update_rect(tiles)
 
-    def update_rect(self, tiles):
+    def update_rect(self):
         lvl_w = level_width * tile_size
         lvl_h = level_height * tile_size
         if self.rect.left < 0:
@@ -43,11 +43,11 @@ class Entity(pygame.sprite.Sprite):
             self.vel_y = self.maxvel_y if self.maxvel_y > 0 else -self.maxvel_y
 
         self.rect.x += self.vel_x * framerate
-        self.check_collisions_x(tiles, self.vel_x)
+        self.check_collisions_x(self.vel_x)
         self.rect.y += self.vel_y * framerate
-        self.check_collisions_y(tiles, self.vel_y)
+        self.check_collisions_y(self.vel_y)
 
-    def check_collisions_x(self, tiles, vel_x):
+    def check_collisions_x(self, vel_x):
         self.hitbox.midbottom = self.rect.midbottom
         for row in tiles:
             for tile in row:
@@ -62,7 +62,7 @@ class Entity(pygame.sprite.Sprite):
                             self.vel_x = -self.vel_x * 0.6
         self.rect.midbottom = self.hitbox.midbottom
 
-    def check_collisions_y(self, tiles, vel_y):
+    def check_collisions_y(self, vel_y):
         self.hitbox.midbottom = self.rect.midbottom
         floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
         floor_collide = False

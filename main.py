@@ -58,40 +58,6 @@ def get_input():
             if e.key == K_LALT:
                 input_B = False
 
-def make_level():
-    tiles = []
-    tile_x = 0
-    tile_y = 0
-    for row in level:
-        tiles.append([])
-        for char in row:
-            if char.color == 1:
-                tile = tileset[0][0]
-            elif char.color == 2:
-                tile = tileset[0][1]
-            elif char.color == 3:
-                tile = tileset[0][2]
-            elif char.color == 4:
-                tile = tileset[1][0]
-            elif char.color == 5:
-                tile = tileset[1][1]
-            elif char.color == 6:
-                tile = tileset[1][2]
-            elif char.color == 7:
-                tile = tileset[2][0]
-            elif char.color == 8:
-                tile = tileset[2][1]
-            elif char.color == 9:
-                tile = tileset[2][2]
-            else:
-                tile = None
-            if tile is not None:
-                tiles[tile_y].append(Platform(tile_x * tile_size, tile_y * tile_size, tile))
-            tile_x += 1
-        tile_x = 0
-        tile_y += 1
-    return tiles
-
 def render(camera, tiles, entities):
     screen.fill(bgcolor)
     screen.blit(bg, camera.apply_parallax(0, 0, 0.2, 0.2))
@@ -120,7 +86,6 @@ def main():
     global framecount
     camera = Camera(level_width * tile_size, level_height * tile_size)
 
-    tiles = make_level()
     player = Player(300, 300)
     entities = pygame.sprite.Group()
     entities.add(player)
@@ -134,7 +99,7 @@ def main():
         player_status = player.status
         player_landing = player.inair
         player_speed = player.vel_y
-        player.update(tiles,
+        player.update(
             input_down,
             input_left,
             input_up,
@@ -153,7 +118,7 @@ def main():
 
         for e in entities:
             if isinstance(e, Ball):
-                ball.update(tiles)
+                ball.update()
             elif not isinstance(e, Player):
                 e.update();
         render(camera, tiles, entities)
@@ -164,10 +129,6 @@ def main():
 
 
 
-class Platform(object):
-    def __init__(self, x, y, image):
-        self.image = image
-        self.rect = pygame.Rect(x, y, tile_size, tile_size)
 
 class Camera(object):
     #camera is a rectangle describing the coordinates of the window within the world space
