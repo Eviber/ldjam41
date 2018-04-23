@@ -53,12 +53,12 @@ class Entity(pygame.sprite.Sprite):
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_x > 0:
-                        self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
+                        self.vel_x = 0 if not hasattr(self, "bounce") else -self.vel_x * self.bounce
                         if hasattr(self, "bounce_sfx") and self.vel_x > self.bounce_threshold:
                             self.bounce_sfx.play()
                         self.hitbox.right = tile.rect.left
                     if vel_x < 0:
-                        self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
+                        self.vel_x = 0 if not hasattr(self, "bounce") else -self.vel_x * self.bounce
                         if hasattr(self, "bounce_sfx") and self.vel_x > -self.bounce_threshold:
                             self.bounce_sfx.play()
                         self.hitbox.left = tile.rect.right
@@ -69,20 +69,23 @@ class Entity(pygame.sprite.Sprite):
         for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
             for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
                 tile = Gl.tiles[col][row]
+                if tile and floor.colliderect(tile.rect):
+                    floor_collide = True
+                    if hasattr(self, "bounce") and vel_y < 80:
+                        self.isrolling = True
+
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
-                        self.vel_y = 0 if not hasattr(self, "bounce_y") else -self.vel_y * self.bounce_y
+                        self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * self.bounce * (not self.isrolling)
                         if hasattr(self, "bounce_sfx") and self.vel_y > self.bounce_threshold:
                             self.bounce_sfx.play()
                         self.hitbox.bottom = tile.rect.top
-                        self.inair = False
+                        self.inair = False if not hasattr(self, "bounce") else self.hasMomentum
                     if vel_y < 0:
-                        self.vel_y = 0 if not hasattr(self, "bounce_y") else -self.vel_y * self.bounce_y
+                        self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * self.bounce
                         if hasattr(self, "bounce_sfx") and self.vel_y > -self.bounce_threshold:
                             self.bounce_sfx.play()
                         self.hitbox.top = tile.rect.bottom
-                if tile and floor.colliderect(tile.rect):
-                    floor_collide = True
         if not floor_collide:
             self.inair = True
 
