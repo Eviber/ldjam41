@@ -88,7 +88,7 @@ class Bomb(Ball):
                     Gl.tiles[col][row].rect.center[1] - self.hitbox.center[1]) < self.xploradius):
                     Gl.tiles[col][row] = None
                     Gl.sfx_explosion.play()
-                    Gl.fx.play(Gl.fx_explosion_normal_big , row * Gl.tile_size - 64, col * Gl.tile_size - 64)
+                    Gl.play_fx(Gl.fx_explosion_normal_big, row * Gl.tile_size - 64, col * Gl.tile_size - 64)
 
 
 
