@@ -53,15 +53,18 @@ timer = pygame.time.Clock()
 
 platformcolor = (0x994422)
 bgcolor = (0, 0, 0)
+alpha = (211, 249, 188) # 0xD3F9BC
+
 bgsheet = spritesheet.spritesheet("bg.png")
 bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
 tile_size = 32
 tilesheet = spritesheet.spritesheet("tileset_ruins.png")
-tileset = [[tilesheet.image_at(pygame.Rect(x * tile_size, y * tile_size, tile_size, tile_size)) for x in range(3)] for y in range(3)]
+tileset = [[tilesheet.image_at(pygame.Rect(x * tile_size, y * tile_size, tile_size, tile_size), alpha) for x in range(3)] for y in range(3)]
 
-ballsheet = spritesheet.spritesheet("ball_golf.png")
-img_ball = ballsheet.image_at((0, 0, 16, 16))
+ballsheet = spritesheet.spritesheet("balls.png")
+ball_golf = ballsheet.image_at((1, 1, 16, 16), alpha)
+ball_poke = ballsheet.image_at((18, 1, 16, 16), alpha)
 
 level = map_gen(screen)
 print(level)
@@ -79,31 +82,5 @@ fullscr     = False
 screenshake_frames = 0
 screenshake_x = 0
 screenshake_y = 0
-
-alpha = (211, 249, 188) # 0xD3F9BC
-
-sheet = spritesheet.spritesheet("tiger.png")
-
-anim_idle = sheet.image_at((  1,  1,64,64), alpha)
-anim_walk = pyganim.PygAnimation([
-        (sheet.image_at((  1, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at(( 66, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((131, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((196, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((261, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((326, 66, 64, 64), alpha), 0.1)])
-anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), alpha),
-            sheet.image_at(( 66, 131, 64, 64), alpha),
-            sheet.image_at((131, 131, 64, 64), alpha)]
-anim_jump = sheet.image_at((261,131,64,64), alpha)
-anim_fall = sheet.image_at((326,131,64,64), alpha)
-anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), alpha),
-            sheet.image_at(( 66, 196, 64, 64), alpha),
-            sheet.image_at((131, 196, 64, 64), alpha),
-            sheet.image_at((196, 196, 64, 64), alpha),
-            sheet.image_at((261, 196, 64, 64), alpha),
-            sheet.image_at((326, 196, 64, 64), alpha)]
-anim_golf = [sheet.image_at(( 1, 261, 64, 64), alpha),
-            sheet.image_at((66, 261, 64, 64), alpha)]
 
 sfx_jump = pygame.mixer.Sound("sfx_jump.wav")

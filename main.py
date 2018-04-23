@@ -106,6 +106,15 @@ def render(camera, tiles, entities):
         if (rect.colliderect(screen_rect)):
             screen.blit(e.image, rect)
 
+#sheet_fx = spritesheet.spritesheet("fx.png")
+#fx_explosion_ground_big = [(sheet_fx.image_at((1 + x,   1,  85,  54), alpha), 0.1) for x in range(0, 11,  86)]
+#fx_explosion_normal_big = [(sheet_fx.image_at((1 + x,  58, 100,  84), alpha), 0.1) for x in range(0,  8, 101)]
+#fx_explosion_aerial_big = [(sheet_fx.image_at((1 + x, 145, 100, 100), alpha), 0.1) for x in range(0,  8, 101)]
+#fx_explosion_ground = [(sheet_fx.image_at((1 + x, 248, 52,  33), alpha), 0.1) for x in range(0, 11, 86)]
+#fx_explosion_normal = [(sheet_fx.image_at((1 + x, 284, 63,  84), alpha), 0.1) for x in range(0,  8, 64)]
+#fx_explosion_aerial = [(sheet_fx.image_at((1 + x, 340, 70, 100), alpha), 0.1) for x in range(0,  8, 71)]
+#fx_dust_large = [(sheet_fx.image_at((1 + x, 413, 26, 25), alpha), 0.1) for x in range(0,  6, 26)]
+#fx_dust_small = [(sheet_fx.image_at((1 + x, 441, 19, 11), alpha), 0.1) for x in range(0,  6, 20)]
 
 def main():
     init()
@@ -118,7 +127,7 @@ def main():
     entities = pygame.sprite.Group()
     entities.add(player)
 
-    ball = Ball(img_ball, 16, 320, 250, player)
+    ball = Ball(ball_golf, 16, 320, 250, player)
     entities.add(ball)
 
     while True:
