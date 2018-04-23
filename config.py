@@ -28,7 +28,7 @@ class Gl:
     bgsheet = spritesheet.spritesheet("bg.png")
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
-    tile_size = 32
+    tile_size = 16
     seed = randint(0, 100000000)
     print("seed -> ", seed)
     level = map_gen(screen, seed = seed)
@@ -114,7 +114,7 @@ class Gl:
 
     @classmethod
     def set_fx(cls):
-        cls.fx = Effect(cls)
+        cls.fx = []
         cls.fx_explosion_ground_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x *  86,   1,  85,  54), cls.alpha), 0.06) for x in range(0, 11)], False)
         cls.fx_explosion_normal_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101,  58, 100,  84), cls.alpha), 0.08) for x in range(0,  8)], False)
         cls.fx_explosion_aerial_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101, 145, 100, 100), cls.alpha), 0.06) for x in range(0,  8)], False)
@@ -124,6 +124,20 @@ class Gl:
         cls.fx_dust_large  = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 27, 413, 26, 25), cls.alpha), 0.08) for x in range(0,  6)], False)
         cls.fx_dust_small  = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 20, 441, 19, 11), cls.alpha), 0.07) for x in range(0,  5)], False)
         cls.fx_dust_double = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 55, 455, 54, 11), cls.alpha), 0.06) for x in range(0,  5)], False)
+
+    @classmethod
+    def play_fx(cls, anim, x, y, flip_x = False, flip_y = False):
+        fx = Effect(cls)
+        fx.play(anim, x, y, flip_x, flip_y)
+        cls.fx.append(fx)
+
+    @classmethod
+    def update_fx(cls):
+        for fx in cls.fx:
+            fx.update()
+            if fx.playing:
+                cls.screen.blit(fx.image, cls.camera.apply(fx.rect))
+
 
 
 

@@ -19,8 +19,6 @@ def render(entities):
             rect = Gl.camera.apply(e.fx.rect)
             if (rect.colliderect(Gl.screen_rect)):
                 Gl.screen.blit(e.fx.image, rect)
-    if Gl.fx.playing:
-        Gl.screen.blit(Gl.fx.image, Gl.camera.apply(Gl.fx.rect))
 
 
 
@@ -33,7 +31,6 @@ def update_entities(player, entities):
         e.update()
         if e.fx:
             e.fx.update()
-    Gl.fx.update()
 
     if player.vel_y < 0 and not player_inair and player.inair: # player jump
         player.fx.play(Gl.fx_dust_large, player.rect.midbottom[0] - 10, player.rect.y + 60, player.flip)
@@ -60,9 +57,9 @@ def update_entities(player, entities):
                         Gl.tiles[row][col] = None
                         Gl.sfx_explosion.play()
                         if Gl.tiles[row + 1][col] is None:
-                            Gl.fx.play(Gl.fx_explosion_aerial_big , col * Gl.tile_size - 32, row * Gl.tile_size - 32, player.flip)
+                            Gl.play_fx(Gl.fx_explosion_aerial_big, col * Gl.tile_size - 32, row * Gl.tile_size - 32, player.flip)
                         else:
-                            Gl.fx.play(Gl.fx_explosion_ground_big , col * Gl.tile_size - 32, row * Gl.tile_size - 22, player.flip)
+                            Gl.play_fx(Gl.fx_explosion_ground_big, col * Gl.tile_size - 32, row * Gl.tile_size - 22, player.flip)
                     else:
                         Gl.sfx_golf_hit.play()
 
@@ -82,10 +79,11 @@ def main():
 
         if Gl.input_B and Gl.input_down:
             entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player))
-        update_entities(player, entities)
 
+        update_entities(player, entities)
         Gl.camera.update(player)
         render(entities)
+        Gl.update_fx();
         pygame.display.update()
 
         Gl.timer.tick(Gl.framerate)
