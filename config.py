@@ -18,12 +18,14 @@ class Gl:
     frameincr = 1 / (1000 / 60)
     timer = pygame.time.Clock()
 
-
     #WE GODDA SHIPPIT
     #IT GOES OUT TOMORROW!!
     #BUT AHM NOT DUN WIT DA GRAPHIX!!!
     alpha = (211, 249, 188) # 0xD3F9BC
-    platformcolor = (0x994422)
+
+    icon = pygame.image.load("icon.gif")
+    pygame.display.set_icon(icon)
+
     bgcolor = (0, 0, 0)
     bgsheet = spritesheet.spritesheet("bg.png")
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
