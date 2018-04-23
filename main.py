@@ -56,8 +56,9 @@ def main():
     player = Player(300, 300)
     entities.add(player)
 
-    entities.add(Ball(Gl.ball_golf, 16, 320, 250, player))
-    entities.add(Ball(Gl.ball_poke, 16, 350, 250, player))
+    entities.add(Ball(Gl.ball_golf, 10, 320, 250, player))
+    entities.add(Ball(Gl.ball_poke, 16, 340, 250, player))
+
 
     while True:
         Gl.get_input()

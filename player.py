@@ -45,6 +45,7 @@ class Player(Entity):
         self.maxvel_y = 500
 
         self.status = PlayerStatus.idle
+        self.prev_status = PlayerStatus.idle
 
         self.jumpcharge = 0
         self.golfcharge = 0
@@ -105,7 +106,7 @@ class Player(Entity):
                 anim_walk.play()
 
     def fall(self):
-        self.vel_y += 12
+        self.vel_y += self.fall_speed
         if self.vel_y <= 0:
             self.image = anim_jump
         else:
@@ -131,8 +132,8 @@ class Player(Entity):
         if Gl.input_B and self.status != PlayerStatus.golf:
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
-            self.golfcharge += 3
-            print(self.golfcharge)
+            self.golfcharge += 10
+            #print(self.golfcharge)
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int(self.golfcharge / self.maxgolf * 5)]
