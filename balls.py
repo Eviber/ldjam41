@@ -76,6 +76,7 @@ class Bomb(Ball):
 
     def explode(self):
         self.kill()
+        Gl.camera.screenshake(30, 5, 5)
         for e in self.entities:
             if (isinstance(e, Bomb) and hypot(e.hitbox.center[0] - self.hitbox.center[0],
                     e.hitbox.center[1] - self.hitbox.center[1]) < self.xploradius):
