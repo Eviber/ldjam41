@@ -30,7 +30,7 @@ class Gl:
     bgsheet = spritesheet.spritesheet("bg.png")
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
-    tile_size = 16
+    tile_size = 32
     seed = randint(0, 100000000)
     print("seed -> ", seed)
     level = map_gen(screen, seed = seed)
