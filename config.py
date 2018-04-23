@@ -111,14 +111,15 @@ class Gl:
 
     @classmethod
     def set_fx(cls):
-        cls.fx_explosion_ground_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x,   1,  85,  54), cls.alpha), 0.1) for x in range(0, 11,  86)])
-        cls.fx_explosion_normal_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x,  58, 100,  84), cls.alpha), 0.1) for x in range(0,  8, 101)])
-        cls.fx_explosion_aerial_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 145, 100, 100), cls.alpha), 0.1) for x in range(0,  8, 101)])
-        cls.fx_explosion_ground = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 248, 52,  33), cls.alpha), 0.1) for x in range(0, 11, 86)])
-        cls.fx_explosion_normal = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 284, 63,  84), cls.alpha), 0.1) for x in range(0,  8, 64)])
-        cls.fx_explosion_aerial = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 340, 70, 100), cls.alpha), 0.1) for x in range(0,  8, 71)])
-        cls.fx_dust_large = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 413, 26, 25), cls.alpha), 0.1) for x in range(0,  6, 26)])
-        cls.fx_dust_small = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 441, 19, 11), cls.alpha), 0.1) for x in range(0,  6, 20)])
+        cls.fx_explosion_ground_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x *  86,   1,  85,  54), cls.alpha), 0.1) for x in range(0, 11)], False)
+        cls.fx_explosion_normal_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101,  58, 100,  84), cls.alpha), 0.1) for x in range(0,  8)], False)
+        cls.fx_explosion_aerial_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101, 145, 100, 100), cls.alpha), 0.1) for x in range(0,  8)], False)
+        cls.fx_explosion_ground = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 53, 248, 52,  33), cls.alpha), 0.1) for x in range(0, 11)], False)
+        cls.fx_explosion_normal = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 64, 284, 63,  84), cls.alpha), 0.1) for x in range(0,  8)], False)
+        cls.fx_explosion_aerial = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 71, 340, 70, 100), cls.alpha), 0.1) for x in range(0,  8)], False)
+        cls.fx_dust_large = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 27, 413, 26, 25), cls.alpha), 0.08) for x in range(0,  6)], False)
+        cls.fx_dust_small = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 20, 441, 19, 11), cls.alpha), 0.08) for x in range(0,  6)], False)
+
 
 
 class Tile(object):

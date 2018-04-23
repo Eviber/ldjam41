@@ -17,14 +17,20 @@ class Effect(pygame.sprite.Sprite):
 
     def update(self):
         if self.playing:
-            self.image = self.anim.getCurrentFrame()
-            if self.flip_x or self.flip_y:
-                self.image = pygame.transform.flip(self.image, self.flip_x, self.flip_y)
+            if self.anim.isFinished():
+                self.image = None
+                self.rect = None
+                self.anim = None
+                self.playing = False
+            else:
+                self.image = self.anim.getCurrentFrame()
+                if self.flip_x or self.flip_y:
+                    self.image = pygame.transform.flip(self.image, self.flip_x, self.flip_y)
 
     def play(self, anim, x, y, flip_x = False, flip_y = False):
-        self.anim = anim
         self.image = anim._images[0]
         self.rect = self.image.get_rect().move(x, y)
+        self.anim = anim
         self.flip_x = flip_x
         self.flip_y = flip_y
         self.anim.play()
