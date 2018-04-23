@@ -29,7 +29,7 @@ class Gl:
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
     tile_size = 32
-    tilesheet = spritesheet.spritesheet("tileset_ruins.png")
+    tilesheet = spritesheet.spritesheet("tileset.png")
     ballsheet = spritesheet.spritesheet("balls.png")
     sheet_fx = spritesheet.spritesheet("fx.png")
 
@@ -49,7 +49,7 @@ class Gl:
     screenshake_x = 0
     screenshake_y = 0
 
-    sfx_jump = pygame.mixer.Sound("sfx_jump.wav")
+    #sfx_jump = pygame.mixer.Sound("sfx_jump.wav")
 
     @classmethod
     def toggle_fullscr(cls):
