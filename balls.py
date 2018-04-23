@@ -80,15 +80,22 @@ class Bomb(Ball):
                 if (isinstance(e, Bomb) and hypot(e.hitbox.center[0] - self.hitbox.center[0],
                           e.hitbox.center[1] - self.hitbox.center[1]) < self.xploradius):
                     e.explode()
-
-        for row in range(int((self.hitbox.center[0] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[0] + self.xploradius) / Gl.tile_size)):
-            for col in range(int((self.hitbox.center[1] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[1] + self.xploradius) / Gl.tile_size)):
+        rows = range(int((self.hitbox.center[0] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[0] + self.xploradius) / Gl.tile_size))
+        cols = range(int((self.hitbox.center[1] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[1] + self.xploradius) / Gl.tile_size))
+        lvl_w = Gl.level_width / Gl.tile_size
+        lvl_h = Gl.level_height / Gl.tile_size
+        for row in rows:
+            if row < 0 or row > lvl_h:
+                break
+            for col in cols:
+                if col < 0 or col > lvl_w:
+                    break
                 if (Gl.tiles[col][row] and hypot(
                     Gl.tiles[col][row].rect.center[0] - self.hitbox.center[0],
                     Gl.tiles[col][row].rect.center[1] - self.hitbox.center[1]) < self.xploradius):
                     Gl.tiles[col][row] = None
                     Gl.sfx_explosion.play()
-                    Gl.play_fx(Gl.fx_explosion_normal_big, row * Gl.tile_size - 64, col * Gl.tile_size - 64)
+                    Gl.play_fx(Gl.fx_explosion_normal_big, row * Gl.tile_size - randint(32, 96), col * Gl.tile_size - randint(32, 96))
 
 
 
