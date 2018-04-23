@@ -117,8 +117,6 @@ def render(camera, tiles, entities):
 #fx_dust_small = [(sheet_fx.image_at((1 + x, 441, 19, 11), alpha), 0.1) for x in range(0,  6, 20)]
 
 def main():
-    init()
-    print(level)
     global framecount
     camera = Camera(level_width * tile_size, level_height * tile_size)
 
