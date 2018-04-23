@@ -24,7 +24,7 @@ def update_entities(player, entities):
     player_speed = player.vel_y
 
     for e in entities:
-        e.update();
+        e.update()
 
     if player.vel_y == 0 and player.inair: # player hit ceiling
         Gl.camera.screenshake(-player_speed / 50, 0, 3)

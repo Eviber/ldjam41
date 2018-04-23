@@ -13,6 +13,7 @@ class Gl:
     screen = pygame.display.set_mode(size)
     framerate = 60
     framecount = 0
+    frameincr = 1 / (1000 / 60)
     timer = pygame.time.Clock()
 
 
@@ -94,7 +95,7 @@ class Gl:
         cls.tileset =[[cls.sheet_tiles.image_at(pygame.Rect(x * cls.tile_size, y * cls.tile_size, cls.tile_size, cls.tile_size), cls.alpha) for x in range(3)] for y in range(3)]
 
     @classmethod
-    def set_tiles(cls, tiles):
+    def set_camera_and_tiles(cls, tiles):
         cls.camera = camera.Camera(cls.level_width, cls.level_height)
         cls.tiles = tiles
 
@@ -157,11 +158,9 @@ def make_level():
         tile_y += 1
     return tiles
 
-
-
 import camera
 
 Gl.set_tileset()
-Gl.set_tiles(make_level())
+Gl.set_camera_and_tiles(make_level())
 Gl.set_balls()
 Gl.set_fx()
