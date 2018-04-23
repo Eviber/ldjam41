@@ -4,13 +4,14 @@ class Ball(Entity):
     def __init__(self, image, size, x, y, player):
         Entity.__init__(self, image, size, x, y)
         self.size = self.image.get_width
-        self.maxvel_x = 0
-        self.maxvel_y = 0
+        self.maxvel_x = 200
+        self.maxvel_y = 200
         self.ang_mmt = 0 #positive is clockwise
         #self.rotations = self.build_rotations #wtf dude
         self.cur_orient = 0
         self.player = player
 
+        self.bounce = True
         self.hasMomentum = False
         self.isRolling = False
         self.exploding = False
@@ -34,10 +35,10 @@ class Ball(Entity):
 
     def hit(self, xvel, yvel):
         self.vel_x += xvel
-        self.vel_y += yvel
+        self.vel_y -= yvel
 
-    def update(self):
-        global tiles
+    def update(self, tiles):
+        #TODO global tiles
         if self.inair:
             self.fall()
         else:
