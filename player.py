@@ -51,7 +51,8 @@ class Player(Entity):
 
         self.jumpcharge = 0
         self.golfcharge = 0
-        self.maxgolf = 70
+        self.golfanim   = 0
+        self.maxgolf    = 1000
 
 
     def update(self,
@@ -138,17 +139,16 @@ class Player(Entity):
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int((self.golfcharge) / self.maxgolf * 5)]
-        elif self.golfcharge > 0 or (self.golfcharge > -30 and self.status == PlayerStatus.golf):
+        elif self.status == PlayerStatus.golfcharge or (self.golfanim < 30 and self.status == PlayerStatus.golf):
             #apply swing
-            if self.golfcharge > 0:
-                self.golfcharge = -1
-            elif self.golfcharge > -5:
+            self.status = PlayerStatus.golf
+            if self.golfanim < 5:
                 self.image = anim_golf[0]
             else:
                 self.image = anim_golf[1]
-            self.status = PlayerStatus.golf
-            self.golfcharge -= 100
+            self.golfanim += 1
         else:
+            self.golfanim = 0
             self.golfcharge = 0
             self.status = PlayerStatus.idle
 
