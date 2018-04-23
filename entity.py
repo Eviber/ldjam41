@@ -47,8 +47,8 @@ class Entity(pygame.sprite.Sprite):
         self.check_collisions_y(self.vel_y)
 
     def check_collisions_x(self, vel_x):
-        for row in range(-int(Gl.camera.state.x / Gl.tile_size), -int((Gl.camera.state.x - Gl.win_width) / Gl.tile_size) + 1):
-            for col in range(-int(Gl.camera.state.y / Gl.tile_size), -int((Gl.camera.state.y - Gl.win_height) / Gl.tile_size) + 1):
+        for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
+            for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_x > 0:
@@ -61,8 +61,8 @@ class Entity(pygame.sprite.Sprite):
     def check_collisions_y(self, vel_y):
         floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
         floor_collide = False
-        for row in range(-int(Gl.camera.state.x / Gl.tile_size), -int((Gl.camera.state.x - Gl.win_width) / Gl.tile_size) + 1):
-            for col in range(-int(Gl.camera.state.y / Gl.tile_size), -int((Gl.camera.state.y - Gl.win_height) / Gl.tile_size) + 1):
+        for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
+            for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
