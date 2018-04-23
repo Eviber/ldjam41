@@ -51,7 +51,7 @@ class Entity(pygame.sprite.Sprite):
         self.hitbox.midbottom = self.rect.midbottom
         for row in tiles:
             for tile in row:
-                if self.hitbox.colliderect(tile.rect):
+                if tile and self.hitbox.colliderect(tile.rect):
                     if vel_x > 0:
                         self.hitbox.right = tile.rect.left
                         if hasattr(self, "bounce"):
@@ -68,7 +68,7 @@ class Entity(pygame.sprite.Sprite):
         floor_collide = False
         for row in tiles:
             for tile in row:
-                if self.hitbox.colliderect(tile.rect):
+                if tile and self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
                         self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * 0.7
                         self.hitbox.bottom = tile.rect.top
@@ -76,7 +76,7 @@ class Entity(pygame.sprite.Sprite):
                     if vel_y < 0:
                         self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * 0.7
                         self.hitbox.top = tile.rect.bottom
-                if (floor.colliderect(tile.rect)):
+                if tile and floor.colliderect(tile.rect):
                     floor_collide = True
         if not floor_collide:
             self.inair = True

@@ -62,11 +62,14 @@ def render(camera, tiles, entities):
     screen.fill(bgcolor)
     screen.blit(bg, camera.apply_parallax(0, 0, 0.2, 0.2))
     rect = None
-    for row in tiles:
-        for tile in row:
-            rect = camera.apply(tile.rect)
-            if (rect.colliderect(screen_rect)):
-                screen.blit(tile.image, rect)
+    print(-int(camera.state.x / tile_size), -int((camera.state.x - win_width) / tile_size) + 1, -int(camera.state.y / tile_size), -int((camera.state.y - win_height) / tile_size) + 1)
+    for row in range(-int(camera.state.x / tile_size), -int((camera.state.x - win_width) / tile_size) + 1):
+        for col in range(-int(camera.state.y / tile_size), -int((camera.state.y - win_height) / tile_size) + 1):
+            if tiles[col][row] != None:
+                rect = camera.apply(tiles[col][row].rect)
+                if (rect.colliderect(screen_rect)):
+                    screen.blit(tiles[col][row].image, rect)
+                screen.blit(tiles[col][row].image, rect)
     for e in entities:
         rect = camera.apply(e.rect)
         if (rect.colliderect(screen_rect)):

@@ -90,6 +90,8 @@ def make_level():
                 tile = None
             if tile is not None:
                 tiles[tile_y].append(Tile(tile_x * tile_size, tile_y * tile_size, tile))
+            else:
+                tiles[tile_y].append(None)
             tile_x += 1
         tile_x = 0
         tile_y += 1
