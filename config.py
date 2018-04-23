@@ -1,9 +1,11 @@
 import sys, pygame, spritesheet, pyganim
+from random import randint
 from pygame import *
 from level_gen import map_gen
 
 pygame.init()
 pygame.display.set_caption("Golf Rush")
+pygame.mixer.init(44000)
 
 class Gl:
     debug = 0
@@ -27,7 +29,9 @@ class Gl:
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
     tile_size = 32
-    level = map_gen(screen)
+    seed = randint(0, 100000000)
+    print("seed -> ", seed)
+    level = map_gen(screen, seed = seed)
     level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
 
     fullscr = False
@@ -42,11 +46,11 @@ class Gl:
     sheet_tiles = spritesheet.spritesheet("tileset.png")
     sheet_tiger = spritesheet.spritesheet("tiger.png")
     sheet_balls = spritesheet.spritesheet("balls.png")
-    sheet_fx = spritesheet.spritesheet("fx.png")
+    sheet_fx    = spritesheet.spritesheet("fx.png")
 
     sfx_ball_bounce = pygame.mixer.Sound("sfx_ball_bounce.wav")
     sfx_golf_hit    = pygame.mixer.Sound("sfx_golf_hit.wav")
-    sfx_golf_miss   = pygame.mixer.Sound("sfx_golf_miss.wav")
+    sfx_golf_swing  = pygame.mixer.Sound("sfx_golf_swing.wav")
     sfx_land        = pygame.mixer.Sound("sfx_land.wav")
     sfx_tiger       = pygame.mixer.Sound("sfx_tiger.wav")
 

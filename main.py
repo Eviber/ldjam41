@@ -25,14 +25,16 @@ def update_entities(player, entities):
 
     for e in entities:
         e.update()
-
+    if player.vel_y < 0 and not player_inair and player.inair:
+        Gl.camera.screenshake(player.vel_y / 50, 0, 2)
     if player.vel_y == 0 and player.inair: # player hit ceiling
         Gl.camera.screenshake(-player_speed / 50, 0, 3)
     if player_inair and not player.inair: # player landing
         Gl.camera.screenshake(player_speed / 30, 0, 3)
+        Gl.sfx_land.set_volume(player_speed / player.maxvel_y)
         Gl.sfx_land.play()
     if player_status == PlayerStatus.golfcharge and player.status == PlayerStatus.golf:
-        Gl.sfx_golf_miss.play()
+        Gl.sfx_golf_swing.play()
         for e in entities:
             if isinstance(e, Ball) and e.rect.colliderect(player.rect):
                 e.hit(player.golfcharge, player.golfcharge)
@@ -45,12 +47,13 @@ def main():
 
     player = Player(300, 300)
     entities.add(player)
+    
+    playerfx = Entity(Gl.fx_dust_large._images[0], player.rect.x, player.rect.y)
+    playerfx.fall_speed = 0
 
     entities.add(Ball(Gl.ball_golf, 10, 320, 250, player))
     entities.add(Ball(Gl.ball_poke, 16, 340, 250, player))
-    #playerfx = Entity(Gl.fx_dust_large._images[0], player.rect.x, player.rect.y)
-    #playerfx.fall_speed = 0
-    #entities.add(playerfx)
+
 
     while True:
         Gl.get_input()

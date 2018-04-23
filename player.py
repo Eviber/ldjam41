@@ -78,8 +78,12 @@ class Player(Entity):
         self.update_rect()
         self.rect.midbottom = self.hitbox.midbottom
 
+        if self.status == PlayerStatus.golf:
+            for row in range(int(self.hitbox.x / Gl.tile_size) - (self.flip == True), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + (self.flip == False)):
+                for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size)):
+                    Gl.tiles[col][row] = None
+
         if isinstance(self.image, pyganim.PygAnimation):
-            #self.elapsed = self.image.elapsed
             self.image = self.image.getCurrentFrame()
         if self.flip:
             self.image = pygame.transform.flip(self.image, True, False)
