@@ -12,10 +12,10 @@ def render(entities):
     lvl_w = Gl.level_width / Gl.tile_size
     lvl_h = Gl.level_height / Gl.tile_size
     for row in rows:
-        if row < 0 or row > lvl_w:
+        if row < 0 or row > lvl_h:
             break
         for col in cols:
-            if col < 0 or col > lvl_h:
+            if col < 0 or col > lvl_w:
                 break
             if Gl.tiles[col][row] != None:
                 Gl.screen.blit(Gl.tiles[col][row].image, Gl.camera.apply(Gl.tiles[col][row].rect))
