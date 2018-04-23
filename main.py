@@ -53,16 +53,18 @@ def update_entities(player, entities):
                 e.hit(player.golfcharge, player.golfcharge)
                 Gl.camera.screenshake(player.golfcharge / 50, 2, 0)
                 Gl.sfx_golf_hit.play()
-        if player.golfcharge >= player.maxgolf - 100:
-            for col in range(int(player.hitbox.x / Gl.tile_size) - (player.flip == True), int((player.hitbox.x + player.hitbox.w) / Gl.tile_size) + (player.flip == False)):
-                for row in range(int(player.hitbox.y / Gl.tile_size), int((player.hitbox.y + player.hitbox.h) / Gl.tile_size)):
-                    if Gl.tiles[row][col]:
+        for col in range(int(player.hitbox.x / Gl.tile_size) - (player.flip == True), int((player.hitbox.x + player.hitbox.w) / Gl.tile_size) + (player.flip == False)):
+            for row in range(int(player.hitbox.y / Gl.tile_size), int((player.hitbox.y + player.hitbox.h) / Gl.tile_size)):
+                if Gl.tiles[row][col]:
+                    if player.golfcharge >= player.maxgolf - 100:
                         Gl.tiles[row][col] = None
                         Gl.sfx_explosion.play()
                         if Gl.tiles[row + 1][col] is None:
                             Gl.fx.play(Gl.fx_explosion_aerial_big , (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size, player.flip)
                         else:
                             Gl.fx.play(Gl.fx_explosion_ground_big , (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size + 10, player.flip)
+                    else:
+                        Gl.sfx_golf_hit.play()
 
 
 
