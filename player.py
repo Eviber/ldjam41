@@ -1,35 +1,30 @@
+import pygame, pyganim, spritesheet, config
 from entity import *
 from balls import *
-import pyganim
-import spritesheet
-from config import *
 from enum import Enum
 
-sheet = spritesheet.spritesheet("tiger.png")
-
-
-anim_idle = sheet.image_at((  1,  1,64,64), Gl.alpha)
+anim_idle = Gl.sheet_tiger.image_at((  1,  1,64,64), Gl.alpha)
 anim_walk = pyganim.PygAnimation([
-        (sheet.image_at((  1, 66, 64, 64), Gl.alpha), 0.1),
-        (sheet.image_at(( 66, 66, 64, 64), Gl.alpha), 0.1),
-        (sheet.image_at((131, 66, 64, 64), Gl.alpha), 0.1),
-        (sheet.image_at((196, 66, 64, 64), Gl.alpha), 0.1),
-        (sheet.image_at((261, 66, 64, 64), Gl.alpha), 0.1),
-        (sheet.image_at((326, 66, 64, 64), Gl.alpha), 0.1)])
-anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), Gl.alpha),
-            sheet.image_at(( 66, 131, 64, 64), Gl.alpha),
-            sheet.image_at((131, 131, 64, 64), Gl.alpha)]
-anim_jump = sheet.image_at((261,131,64,64), Gl.alpha)
-anim_fall = sheet.image_at((326,131,64,64), Gl.alpha)
-anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), Gl.alpha),
-            sheet.image_at(( 66, 196, 64, 64), Gl.alpha),
-            sheet.image_at((131, 196, 64, 64), Gl.alpha),
-            sheet.image_at((196, 196, 64, 64), Gl.alpha),
-            sheet.image_at((261, 196, 64, 64), Gl.alpha),
-            sheet.image_at((326, 196, 64, 64), Gl.alpha)]
-anim_golf = [sheet.image_at((  1, 261, 64, 64), Gl.alpha),
-             sheet.image_at(( 66, 261, 64, 64), Gl.alpha),
-             sheet.image_at((131, 261, 64, 64), Gl.alpha)]
+        (Gl.sheet_tiger.image_at((  1, 66, 64, 64), Gl.alpha), 0.1),
+        (Gl.sheet_tiger.image_at(( 66, 66, 64, 64), Gl.alpha), 0.1),
+        (Gl.sheet_tiger.image_at((131, 66, 64, 64), Gl.alpha), 0.1),
+        (Gl.sheet_tiger.image_at((196, 66, 64, 64), Gl.alpha), 0.1),
+        (Gl.sheet_tiger.image_at((261, 66, 64, 64), Gl.alpha), 0.1),
+        (Gl.sheet_tiger.image_at((326, 66, 64, 64), Gl.alpha), 0.1)])
+anim_jumpcharge = [Gl.sheet_tiger.image_at((  1, 131, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at(( 66, 131, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at((131, 131, 64, 64), Gl.alpha)]
+anim_jump = Gl.sheet_tiger.image_at((261,131,64,64), Gl.alpha)
+anim_fall = Gl.sheet_tiger.image_at((326,131,64,64), Gl.alpha)
+anim_golfcharge = [Gl.sheet_tiger.image_at((  1, 196, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at(( 66, 196, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at((131, 196, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at((196, 196, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at((261, 196, 64, 64), Gl.alpha),
+            Gl.sheet_tiger.image_at((326, 196, 64, 64), Gl.alpha)]
+anim_golf = [Gl.sheet_tiger.image_at((  1, 261, 64, 64), Gl.alpha),
+             Gl.sheet_tiger.image_at(( 66, 261, 64, 64), Gl.alpha),
+             Gl.sheet_tiger.image_at((131, 261, 64, 64), Gl.alpha)]
 
 class PlayerStatus(Enum):
     damage     = 0
@@ -43,7 +38,7 @@ class PlayerStatus(Enum):
 
 class Player(Entity):
     def __init__(self, x, y):
-        Entity.__init__(self, anim_idle, 64, x, y)
+        Entity.__init__(self, anim_idle, x, y)
         self.hitbox = pygame.Rect(0, 0, 32, 48)
         self.hitbox.midbottom = self.rect.midbottom
         self.maxvel_x = 35
@@ -80,6 +75,7 @@ class Player(Entity):
             self.fall()
 
         self.update_rect()
+        self.rect.midbottom = self.hitbox.midbottom
 
         if isinstance(self.image, pyganim.PygAnimation):
             #self.elapsed = self.image.elapsed

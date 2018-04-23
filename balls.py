@@ -2,7 +2,7 @@ from entity import *
 
 class Ball(Entity):
     def __init__(self, image, size, x, y, player):
-        Entity.__init__(self, image, size, x, y)
+        Entity.__init__(self, image, x, y)
         self.size = self.image.get_width
         self.maxvel_x = 200
         self.maxvel_y = 200
@@ -11,10 +11,9 @@ class Ball(Entity):
         self.cur_orient = 0
         self.player = player
 
-        self.bounce = True
-        self.hasMomentum = False
-        self.isRolling = False
-        self.exploding = False
+        self.bounce_x = 0.6
+        self.bounce_y = 0.7
+        self.isrolling = False
 
     def build_rotations(self):
         img = self.image
@@ -34,22 +33,28 @@ class Ball(Entity):
             self.vel_x -= 1
 
     def hit(self, xvel, yvel):
-        self.vel_x += xvel if self.player.flip else -xvel
+        self.vel_x += xvel if not self.player.flip else -xvel
+        print(self.player.flip, xvel, self.vel_x)
         self.vel_y -= yvel
 
     def update(self):
-        #TODO global tiles
         if self.inair:
             self.fall()
         else:
             self.idle()
+
         self.update_rect()
+        self.rect.center = self.hitbox.center
+
+
 
 class Bomb(Ball):
     def __init__(self, x, y):
         global img_bomb
         Ball.__init__(self, img_bomb, 16, x, y)
-        self.exploding = True
+        self.exploding = False
+
+
 
 class Pebble(Ball):
     def __init__(self, x, y):

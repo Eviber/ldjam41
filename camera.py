@@ -1,16 +1,18 @@
-import pygame, config
-from config import *
-from player import *
+import pygame
+from config import Gl
 
 class Camera(object):
     #camera is a rectangle describing the coordinates of the window within the world space
     def __init__(self, width, height):
         self.state = pygame.Rect(0, 0, width, height)
+        self.screenshake_frames = 0
+        self.screenshake_x = 0
+        self.screenshake_y = 0
 
     def apply(self, target):
         result = target.move(self.state.topleft)
-        if (Gl.screenshake_frames > 0):
-            shake = (Gl.screenshake_x, Gl.screenshake_y) if (Gl.framecount % 4 < 2) else (-Gl.screenshake_x, -Gl.screenshake_y)
+        if (self.screenshake_frames > 0):
+            shake = (self.screenshake_x, self.screenshake_y) if (Gl.framecount % 4 < 2) else (-self.screenshake_x, -self.screenshake_y)
             result = result.move(shake)
         return result
 
@@ -24,25 +26,30 @@ class Camera(object):
         self.state = self.playerCamera(self.state, target.rect)
 
     def playerCamera(self, level, target_rect):
-        if (Gl.screenshake_frames > 0):
-            Gl.screenshake_frames -= 1
-            if (Gl.screenshake_frames < Gl.screenshake_x):
-                Gl.screenshake_x -= 1
-            if (Gl.screenshake_frames < Gl.screenshake_y):
-                Gl.screenshake_y -= 1
-        xcoord = target_rect[0]
-        ycoord = target_rect[1]
+        if (self.screenshake_frames > 0):
+            self.screenshake_frames -= 1
+            if (self.screenshake_frames < self.screenshake_x):
+                self.screenshake_x -= 1
+            if (self.screenshake_frames < self.screenshake_y):
+                self.screenshake_y -= 1
+        x = target_rect[0]
+        y = target_rect[1]
         xlength = level[2]
         ylength = level[3]
-        xcoord = -xcoord + (Gl.win_width/2)
-        ycoord = -ycoord + (Gl.win_height/2)
-        if xcoord > -16:
-            xcoord = -16
-        if xcoord < -(level.width-Gl.win_width)+16:
-            xcoord = -(level.width-Gl.win_width)+16
-        if ycoord > 0:
-            ycoord = 0
-        if ycoord < -(level.height-Gl.win_height):
-            ycoord = -(level.height-Gl.win_height)
-        return pygame.Rect(xcoord, ycoord, xlength, ylength)
+        x = -x + (Gl.win_width / 2)
+        y = -y + (Gl.win_height / 2)
+        if x > -16:
+            x = -16
+        if x < -(level.width - Gl.win_width) + 16:
+            x = -(level.width - Gl.win_width) + 16
+        if y > 0:
+            y = 0
+        if y < -(level.height - Gl.win_height):
+            y = -(level.height - Gl.win_height)
+        return pygame.Rect(x, y, xlength, ylength)
+
+    def screenshake(self, duration, force_x, force_y):
+        self.screenshake_frames = duration
+        self.screenshake_x = force_x
+        self.screenshake_y = force_y
         
