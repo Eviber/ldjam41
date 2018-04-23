@@ -45,9 +45,9 @@ class Ball(Entity):
 
 class Bomb(Ball):
     def __init__(self, x, y):
-        Ball. __init__(self, img_bomb, 16, x, y):
+        Ball.__init__(self, img_bomb, 16, x, y)
         self.exploding = True
 
 class Pebble(Ball):
     def __init__(self, x, y):
-        Ball. __init__(self, img_pebble, 8, x, y):
+        Ball.__init__(self, img_pebble, 8, x, y)
