@@ -1,53 +1,14 @@
-import sys, pygame, spritesheet
+import sys, pygame, spritesheet, config
+from config import *
 from pygame import *
 from player import *
-from level_gen import *
 
-size = (win_width, win_height) = (640, 360)
-screen_rect = pygame.Rect(0, 0, win_width, win_height)
-
-pygame.init()
-screen = pygame.display.set_mode(size)
-pygame.display.set_caption("Golf Rush")
-framerate = 60
-framecount = 0
-timer = pygame.time.Clock()
-
-platformcolor = (0x994422)
-bgcolor = (0, 0, 0)
-bgsheet = spritesheet.spritesheet("bg.png")
-bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
-
-tile_size = 32
-tilesheet = spritesheet.spritesheet("tileset_ruins.png")
-tileset = [[tilesheet.image_at(pygame.Rect(x * tile_size, y * tile_size, tile_size, tile_size)) for x in range(3)] for y in range(3)]
-
-ballsheet = spritesheet.spritesheet("ball_golf.png")
-img_ball = ballsheet.image_at((0, 0, 8, 8))
-
-debug = 0
-if not debug:
-    level = map_gen(screen)
-
-level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
-
-input_down  = False
-input_left  = False
-input_up    = False
-input_right = False
-input_A     = False
-input_B     = False
-
-fullscr     = False
 def toggle_fullscr():
     global fullscr
     global screen
     screen = pygame.display.set_mode(size, 0 if fullscr else FULLSCREEN)
     fullscr = not fullscr
 
-screenshake_frames = 0
-screenshake_x = 0
-screenshake_y = 0
 def screenshake(duration, force_x, force_y):
     global screenshake_frames
     global screenshake_x
@@ -147,6 +108,8 @@ def render(camera, tiles, entities):
 
 
 def main():
+    init()
+    print(level)
     global framecount
     camera = Camera(level_width * tile_size, level_height * tile_size)
 

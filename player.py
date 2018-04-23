@@ -2,34 +2,8 @@ from entity import *
 from balls import *
 import pyganim
 import spritesheet
+from config import *
 from enum import Enum
-
-alpha = (211, 249, 188) # 0xD3F9BC
-
-sheet = spritesheet.spritesheet("tiger.png")
-anim_idle = sheet.image_at((  1,  1,64,64), alpha)
-anim_walk = pyganim.PygAnimation([
-                                (sheet.image_at((  1, 66, 64, 64), alpha), 0.1),
-                                (sheet.image_at(( 66, 66, 64, 64), alpha), 0.1),
-                                (sheet.image_at((131, 66, 64, 64), alpha), 0.1),
-                                (sheet.image_at((196, 66, 64, 64), alpha), 0.1),
-                                (sheet.image_at((261, 66, 64, 64), alpha), 0.1),
-                                (sheet.image_at((326, 66, 64, 64), alpha), 0.1)])
-anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), alpha),
-                   sheet.image_at(( 66, 131, 64, 64), alpha),
-                   sheet.image_at((131, 131, 64, 64), alpha)]
-anim_jump = sheet.image_at((261,131,64,64), alpha)
-anim_fall = sheet.image_at((326,131,64,64), alpha)
-anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), alpha),
-                   sheet.image_at(( 66, 196, 64, 64), alpha),
-                   sheet.image_at((131, 196, 64, 64), alpha),
-                   sheet.image_at((196, 196, 64, 64), alpha),
-                   sheet.image_at((261, 196, 64, 64), alpha),
-                   sheet.image_at((326, 196, 64, 64), alpha)]
-anim_golf = [sheet.image_at(( 1, 261, 64, 64), alpha),
-             sheet.image_at((66, 261, 64, 64), alpha)]
-
-sfx_jump = pygame.mixer.Sound("sfx_jump.wav")
 
 class PlayerStatus(Enum):
     damage     = 0

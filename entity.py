@@ -1,7 +1,7 @@
 import pygame
 import pyganim
 import spritesheet
-from main import level_width, level_height, tile_size
+from config import *
 
 framerate = 1 / (1000/60)
 
