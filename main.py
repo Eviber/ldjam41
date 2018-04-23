@@ -32,14 +32,11 @@ def update_entities(player, entities):
         Gl.camera.screenshake(player_speed / 30, 0, 3)
         Gl.sfx_land.play()
     if player_status == PlayerStatus.golfcharge and player.status == PlayerStatus.golf:
-        hit = False
+        Gl.sfx_golf_miss.play()
         for e in entities:
             if isinstance(e, Ball) and e.rect.colliderect(player.rect):
                 e.hit(player.golfcharge, player.golfcharge)
                 Gl.sfx_golf_hit.play()
-                hit = True
-        if not hit:
-            Gl.sfx_golf_miss.play()
 
 
 
