@@ -50,7 +50,7 @@ class Player(Entity):
         self.jumpcharge = 0
         self.golfcharge = 0
         self.golfanim   = 0
-        self.maxgolf    = 1000
+        self.maxgolf    = 500
 
 
     def update(self):

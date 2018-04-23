@@ -36,17 +36,17 @@ def update_entities(player, entities):
     Gl.fx.update()
 
     if player.vel_y < 0 and not player_inair and player.inair: # player jump
-        player.fx.play(Gl.fx_dust_small, player.rect.midbottom[0] - 10, player.rect.y + 60, player.flip)
+        player.fx.play(Gl.fx_dust_large, player.rect.midbottom[0] - 10, player.rect.y + 60, player.flip)
         Gl.camera.screenshake(player.vel_y / 50, 0, 2)
     if player.vel_y == 0 and player.inair: # player hit ceiling
         Gl.camera.screenshake(-player_speed / 50, 0, 3)
     if player_inair and not player.inair: # player landing
-        player.fx.play(Gl.fx_dust_large, player.rect.midbottom[0] - 13, player.rect.y + 40, player.flip)
+        player.fx.play(Gl.fx_dust_double, player.rect.midbottom[0] - 21, player.rect.y + 54, player.flip)
         Gl.camera.screenshake(player_speed / 30, 0, 3)
         Gl.sfx_land.set_volume(player_speed / player.maxvel_y)
         Gl.sfx_land.play()
     if player_status == PlayerStatus.golfcharge and player.status == PlayerStatus.golf:
-        player.fx.play(Gl.fx_dust_large, player.rect.x - 10 if player.flip else player.rect.x + 50, player.rect.y + 40, player.flip)
+        player.fx.play(Gl.fx_dust_large, player.rect.x + (-10 if player.flip else 50), player.rect.y + 40, player.flip)
         Gl.sfx_golf_swing.play()
         for e in entities:
             if isinstance(e, Ball) and e.rect.colliderect(player.rect):
