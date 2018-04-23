@@ -128,7 +128,7 @@ class Player(Entity):
                 self.jumpcharge = 0
 
     def golf(self):
-        if Gl.input_B:
+        if Gl.input_B and  self.status != PlayerStatus.golf:
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
             self.golfcharge += 100
@@ -138,9 +138,9 @@ class Player(Entity):
         elif self.status == PlayerStatus.golfcharge or (self.golfanim < 20 and self.status == PlayerStatus.golf):
             #apply swing
             self.status = PlayerStatus.golf
-            if self.golfanim < 4:
+            if self.golfanim < 3:
                 self.image = anim_golf[0]
-            elif self.golfanim < 8:
+            elif self.golfanim < 6:
                 self.image = anim_golf[1]
             else:
                 self.image = anim_golf[2]
