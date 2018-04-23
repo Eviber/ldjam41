@@ -75,12 +75,13 @@ def main():
     entities.add(player)
 
     entities.add(Ball(Gl.ball_golf, 10, 320, 250, player))
-    entities.add(Bomb(340, 250, player))
 
 
     while True:
         Gl.get_input()
 
+        if Gl.input_B and Gl.input_down:
+            entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player))
         update_entities(player, entities)
 
         Gl.camera.update(player)
