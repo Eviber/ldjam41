@@ -63,7 +63,7 @@ def main():
     entities.add(player)
 
     entities.add(Ball(Gl.ball_golf, 10, 320, 250, player))
-    entities.add(Ball(Gl.ball_poke, 16, 340, 250, player))
+    entities.add(Bomb(340, 250, player))
 
 
     while True:

@@ -110,6 +110,7 @@ class Gl:
     def set_balls(cls):
         cls.ball_golf = cls.sheet_balls.image_at((4, 4, 10, 10), cls.alpha)
         cls.ball_poke = cls.sheet_balls.image_at((18, 1, 16, 16), cls.alpha)
+        cls.ball_bomb = cls.ball_poke
 
     @classmethod
     def set_fx(cls):

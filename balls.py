@@ -17,6 +17,7 @@ class Ball(Entity):
         self.friction = 0.3         #ground friction dampening coef
         self.isrolling = False
         self.hasMomentum = False
+        self.can_explode = True
 
     def build_rotations(self):
         img = self.image
@@ -46,6 +47,9 @@ class Ball(Entity):
         print("face left : " if self.player.flip else "face right :", xvel, self.vel_x)
         self.vel_y -= yvel
 
+    def explode(self):
+        pass
+
     def update(self):
         self.update_momentum()
         if self.inair:
@@ -54,20 +58,28 @@ class Ball(Entity):
             self.roll()
         else:
             self.idle()
-        self.update_rect()
+        collided = len(self.update_rect())
+        if (self.can_explode and collided and self.vel_x * self.vel_x + self.vel_y * self.vel_y > 10000):
+            self.explode()
         self.rect.center = self.hitbox.center
 
 
 
 class Bomb(Ball):
-    def __init__(self, x, y):
+    def __init__(self, x, y, player):
         global img_bomb
-        Ball.__init__(self, img_bomb, 16, x, y)
-        self.exploding = False
+        Ball.__init__(self, Gl.ball_bomb, 16, x, y, player)
+        self.can_explode = True
+
+    def explode(self):
+        for row in range(int(self.hitbox.center[0] / Gl.tile_size) - 5, int(self.hitbox.center[0] / Gl.tile_size) + 5):
+            for col in range(int(self.hitbox.center[1] / Gl.tile_size) - 5, int(self.hitbox.center[1] / Gl.tile_size) + 5):
+                Gl.tiles[col][row] = None
+        self.kill()
 
 
 
 class Pebble(Ball):
-    def __init__(self, x, y):
+    def __init__(self, x, y, player):
         global img_pebble
-        Ball.__init__(self, img_pebble, 8, x, y)
+        Ball.__init__(self, img_pebble, 8, x, y, player)
