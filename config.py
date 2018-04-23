@@ -1,13 +1,9 @@
+import sys, pygame, spritesheet, pyganim
 from pygame import *
-import pygame
-import spritesheet, pyganim
 from level_gen import map_gen
-import sys
 
 pygame.init()
-
 pygame.display.set_caption("Golf Rush")
-
 
 class Gl:
     debug = 0
@@ -20,21 +16,20 @@ class Gl:
     timer = pygame.time.Clock()
 
 
-    #WE GODDA SHIPPIT IT GOES OUT TOMORROW BUT IM NOT DAN WID DAH GRAPHICS
+    #WE GODDA SHIPPIT
+    #IT GOES OUT TOMORROW!!
+    #BUT AHM NOT DUN WIT DA GRAPHIX!!!
+    alpha = (211, 249, 188) # 0xD3F9BC
     platformcolor = (0x994422)
     bgcolor = (0, 0, 0)
-    alpha = (211, 249, 188) # 0xD3F9BC
-
     bgsheet = spritesheet.spritesheet("bg.png")
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
     tile_size = 32
-    tilesheet = spritesheet.spritesheet("tileset.png")
-    ballsheet = spritesheet.spritesheet("balls.png")
-    sheet_fx = spritesheet.spritesheet("fx.png")
-
     level = map_gen(screen)
     level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
+
+    fullscr = False
 
     input_down  = False
     input_left  = False
@@ -43,24 +38,20 @@ class Gl:
     input_A     = False
     input_B     = False
 
-    fullscr     = False
+    sheet_tiles = spritesheet.spritesheet("tileset.png")
+    sheet_tiger = spritesheet.spritesheet("tiger.png")
+    sheet_balls = spritesheet.spritesheet("balls.png")
+    sheet_fx = spritesheet.spritesheet("fx.png")
 
-    screenshake_frames = 0
-    screenshake_x = 0
-    screenshake_y = 0
-
-    #sfx_jump = pygame.mixer.Sound("sfx_jump.wav")
+    sfx_golf_hit  = pygame.mixer.Sound("sfx_golf_hit.wav")
+    sfx_golf_miss = pygame.mixer.Sound("sfx_golf_miss.wav")
+    sfx_land      = pygame.mixer.Sound("sfx_land.wav")
+    sfx_tiger     = pygame.mixer.Sound("sfx_tiger.wav")
 
     @classmethod
     def toggle_fullscr(cls):
         cls.screen = pygame.display.set_mode(cls.size, 0 if cls.fullscr else FULLSCREEN)
         cls.fullscr = not cls.fullscr
-
-    @classmethod
-    def screenshake(cls, duration, force_x, force_y):
-        cls.screenshake_frames = duration
-        cls.screenshake_x = force_x
-        cls.screenshake_y = force_y
 
     @classmethod
     def get_input(cls):
@@ -100,16 +91,17 @@ class Gl:
 
     @classmethod
     def set_tileset(cls):
-            cls.tileset =[[cls.tilesheet.image_at(pygame.Rect(x * cls.tile_size, y * cls.tile_size, cls.tile_size, cls.tile_size), cls.alpha) for x in range(3)] for y in range(3)]
+        cls.tileset =[[cls.sheet_tiles.image_at(pygame.Rect(x * cls.tile_size, y * cls.tile_size, cls.tile_size, cls.tile_size), cls.alpha) for x in range(3)] for y in range(3)]
 
     @classmethod
     def set_tiles(cls, tiles):
+        cls.camera = camera.Camera(cls.level_width, cls.level_height)
         cls.tiles = tiles
 
     @classmethod
     def set_balls(cls):
-        cls.ball_golf = cls.ballsheet.image_at((1, 1, 16, 16), cls.alpha)
-        cls.ball_poke = cls.ballsheet.image_at((18, 1, 16, 16), cls.alpha)
+        cls.ball_golf = cls.sheet_balls.image_at((1, 1, 16, 16), cls.alpha)
+        cls.ball_poke = cls.sheet_balls.image_at((18, 1, 16, 16), cls.alpha)
 
     @classmethod
     def set_fx(cls):
@@ -124,7 +116,7 @@ class Gl:
 
 
 class Tile(object):
-    def __init__(self, x, y, image):
+    def __init__(self, image, x, y):
         self.image = image
         self.rect = pygame.Rect(x, y, Gl.tile_size, Gl.tile_size)
 
@@ -156,14 +148,18 @@ def make_level():
                 tile = Gl.tileset[2][2]
             else:
                 tile = None
-            if tile is not None:
-                tiles[tile_y].append(Tile(tile_x * Gl.tile_size, tile_y * Gl.tile_size, tile))
-            else:
+            if tile is None:
                 tiles[tile_y].append(None)
+            else:
+                tiles[tile_y].append(Tile(tile, tile_x * Gl.tile_size, tile_y * Gl.tile_size))
             tile_x += 1
         tile_x = 0
         tile_y += 1
     return tiles
+
+
+
+import camera
 
 Gl.set_tileset()
 Gl.set_tiles(make_level())
