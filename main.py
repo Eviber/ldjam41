@@ -63,9 +63,6 @@ def main():
         Gl.timer.tick(Gl.framerate)
         Gl.framecount += 1
 
-
-
-
 class Camera(object):
     #camera is a rectangle describing the coordinates of the window within the world space
     def __init__(self, width, height):
@@ -86,7 +83,7 @@ class Camera(object):
 
     def update(self, target):
         self.state = self.playerCamera(self.state, target.rect)
-        
+
     def playerCamera(self, level, target_rect):
         if (Gl.screenshake_frames > 0):
             Gl.screenshake_frames -= 1
@@ -109,8 +106,6 @@ class Camera(object):
         if ycoord < -(level.height-Gl.win_height):
             ycoord = -(level.height-Gl.win_height)
         return pygame.Rect(xcoord, ycoord, xlength, ylength)
-
-
 
 if(__name__ == "__main__"):
     main()

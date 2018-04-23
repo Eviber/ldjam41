@@ -52,7 +52,8 @@ class Player(Entity):
 
         self.jumpcharge = 0
         self.golfcharge = 0
-        self.maxgolf = 70
+        self.golfanim   = 0
+        self.maxgolf    = 1000
 
 
     def update(self):
@@ -65,7 +66,7 @@ class Player(Entity):
             self.golf()
         elif self.status == PlayerStatus.slide:
             self.slide()
-        elif Gl.input_A or Gl.input_down:
+        elif Gl.input_A:
             self.jump()
         elif Gl.input_B:
             self.golf()
@@ -116,7 +117,7 @@ class Player(Entity):
                     self.status = PlayerStatus.jumpcharge
                     self.jumpcharge = 100
                 self.vel_x = 0
-                self.jumpcharge += 5
+                self.jumpcharge += 10
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
                 self.image = anim_jumpcharge[int(self.jumpcharge / self.maxvel_y * 2)]
@@ -133,17 +134,16 @@ class Player(Entity):
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int((self.golfcharge) / self.maxgolf * 5)]
-        elif self.golfcharge > 0 or (self.golfcharge > -30 and self.status == PlayerStatus.golf):
+        elif self.status == PlayerStatus.golfcharge or (self.golfanim < 30 and self.status == PlayerStatus.golf):
             #apply swing
-            if self.golfcharge > 0:
-                self.golfcharge = -1
-            elif self.golfcharge > -5:
+            self.status = PlayerStatus.golf
+            if self.golfanim < 5:
                 self.image = anim_golf[0]
             else:
                 self.image = anim_golf[1]
-            self.status = PlayerStatus.golf
-            self.golfcharge -= 100
+            self.golfanim += 1
         else:
+            self.golfanim = 0
             self.golfcharge = 0
             self.status = PlayerStatus.idle
 
