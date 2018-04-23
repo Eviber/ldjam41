@@ -7,27 +7,29 @@ from enum import Enum
 
 sheet = spritesheet.spritesheet("tiger.png")
 
-anim_idle = sheet.image_at((  1,  1,64,64), alpha)
+
+anim_idle = sheet.image_at((  1,  1,64,64), Gl.alpha)
 anim_walk = pyganim.PygAnimation([
-        (sheet.image_at((  1, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at(( 66, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((131, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((196, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((261, 66, 64, 64), alpha), 0.1),
-        (sheet.image_at((326, 66, 64, 64), alpha), 0.1)])
-anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), alpha),
-            sheet.image_at(( 66, 131, 64, 64), alpha),
-            sheet.image_at((131, 131, 64, 64), alpha)]
-anim_jump = sheet.image_at((261,131,64,64), alpha)
-anim_fall = sheet.image_at((326,131,64,64), alpha)
-anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), alpha),
-            sheet.image_at(( 66, 196, 64, 64), alpha),
-            sheet.image_at((131, 196, 64, 64), alpha),
-            sheet.image_at((196, 196, 64, 64), alpha),
-            sheet.image_at((261, 196, 64, 64), alpha),
-            sheet.image_at((326, 196, 64, 64), alpha)]
-anim_golf = [sheet.image_at(( 1, 261, 64, 64), alpha),
-            sheet.image_at((66, 261, 64, 64), alpha)]
+        (sheet.image_at((  1, 66, 64, 64), Gl.alpha), 0.1),
+        (sheet.image_at(( 66, 66, 64, 64), Gl.alpha), 0.1),
+        (sheet.image_at((131, 66, 64, 64), Gl.alpha), 0.1),
+        (sheet.image_at((196, 66, 64, 64), Gl.alpha), 0.1),
+        (sheet.image_at((261, 66, 64, 64), Gl.alpha), 0.1),
+        (sheet.image_at((326, 66, 64, 64), Gl.alpha), 0.1)])
+anim_jumpcharge = [sheet.image_at((  1, 131, 64, 64), Gl.alpha),
+            sheet.image_at(( 66, 131, 64, 64), Gl.alpha),
+            sheet.image_at((131, 131, 64, 64), Gl.alpha)]
+anim_jump = sheet.image_at((261,131,64,64), Gl.alpha)
+anim_fall = sheet.image_at((326,131,64,64), Gl.alpha)
+anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), Gl.alpha),
+            sheet.image_at(( 66, 196, 64, 64), Gl.alpha),
+            sheet.image_at((131, 196, 64, 64), Gl.alpha),
+            sheet.image_at((196, 196, 64, 64), Gl.alpha),
+            sheet.image_at((261, 196, 64, 64), Gl.alpha),
+            sheet.image_at((326, 196, 64, 64), Gl.alpha)]
+anim_golf = [sheet.image_at((  1, 261, 64, 64), Gl.alpha),
+             sheet.image_at(( 66, 261, 64, 64), Gl.alpha),
+             sheet.image_at((131, 261, 64, 64), Gl.alpha)]
 
 class PlayerStatus(Enum):
     damage     = 0
@@ -55,28 +57,22 @@ class Player(Entity):
         self.maxgolf    = 1000
 
 
-    def update(self,
-        input_down,
-        input_left,
-        input_up,
-        input_right,
-        input_A,
-        input_B):
+    def update(self):
 
         if self.status == PlayerStatus.damage:
             pass
         elif self.status == PlayerStatus.jumpcharge:
-            self.jump(input_A)
+            self.jump()
         elif self.status == PlayerStatus.golfcharge or self.status == PlayerStatus.golf:
-            self.golf(input_B)
+            self.golf()
         elif self.status == PlayerStatus.slide:
             self.slide()
-        elif input_A:
-            self.jump(input_A)
-        elif input_B:
-            self.golf(input_B)
-        elif input_left or input_right:
-            self.walk(input_left, input_right)
+        elif Gl.input_A:
+            self.jump()
+        elif Gl.input_B:
+            self.golf()
+        elif Gl.input_left or Gl.input_right:
+            self.walk()
         else:
             self.idle()
 
@@ -96,13 +92,13 @@ class Player(Entity):
         self.vel_x = 0
         self.image = anim_idle
 
-    def walk(self, input_left, input_right):
-        if input_left and input_right:
+    def walk(self):
+        if Gl.input_left and Gl.input_right:
             self.flip = False
             self.vel_x = 0
         else:
-            self.vel_x = self.maxvel_x if (input_right) else -self.maxvel_x
-            self.flip = input_left
+            self.vel_x = self.maxvel_x if Gl.input_right else -self.maxvel_x
+            self.flip = Gl.input_left
             if not self.inair:
                 self.status = PlayerStatus.walk
                 self.image = anim_walk
@@ -115,9 +111,9 @@ class Player(Entity):
         else:
             self.image = anim_fall
 
-    def jump(self, input_A):
+    def jump(self):
         if not self.inair:
-            if input_A:
+            if Gl.input_A:
                 if self.status != PlayerStatus.jumpcharge:
                     self.status = PlayerStatus.jumpcharge
                     self.jumpcharge = 100
@@ -131,21 +127,23 @@ class Player(Entity):
                 self.vel_y = -self.jumpcharge
                 self.jumpcharge = 0
 
-    def golf(self, input_B):
-        if input_B:
+    def golf(self):
+        if Gl.input_B and  self.status != PlayerStatus.golf:
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
             self.golfcharge += 100
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int((self.golfcharge) / self.maxgolf * 5)]
-        elif self.status == PlayerStatus.golfcharge or (self.golfanim < 30 and self.status == PlayerStatus.golf):
+        elif self.status == PlayerStatus.golfcharge or (self.golfanim < 20 and self.status == PlayerStatus.golf):
             #apply swing
             self.status = PlayerStatus.golf
-            if self.golfanim < 5:
+            if self.golfanim < 3:
                 self.image = anim_golf[0]
-            else:
+            elif self.golfanim < 6:
                 self.image = anim_golf[1]
+            else:
+                self.image = anim_golf[2]
             self.golfanim += 1
         else:
             self.golfanim = 0
