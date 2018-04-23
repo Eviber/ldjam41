@@ -15,6 +15,10 @@ def render(entities):
         rect = Gl.camera.apply(e.rect)
         if (rect.colliderect(Gl.screen_rect)):
             Gl.screen.blit(e.image, rect)
+        if e.fx and e.fx.rect and e.fx.image:
+            rect = Gl.camera.apply(e.fx.rect)
+            if (rect.colliderect(Gl.screen_rect)):
+                Gl.screen.blit(e.fx.image, rect)
 
 
 
@@ -25,8 +29,12 @@ def update_entities(player, entities):
 
     for e in entities:
         e.update()
-    if player.vel_y < 0 and not player_inair and player.inair:
+        if e.fx:
+            e.fx.update()
+
+    if player.vel_y < 0 and not player_inair and player.inair: # player jump
         Gl.camera.screenshake(player.vel_y / 50, 0, 2)
+        player.fx.play(Gl.fx_dust_large, player.rect.x, player.rect.y)
     if player.vel_y == 0 and player.inair: # player hit ceiling
         Gl.camera.screenshake(-player_speed / 50, 0, 3)
     if player_inair and not player.inair: # player landing
@@ -47,9 +55,6 @@ def main():
 
     player = Player(300, 300)
     entities.add(player)
-    
-    playerfx = Entity(Gl.fx_dust_large._images[0], player.rect.x, player.rect.y)
-    playerfx.fall_speed = 0
 
     entities.add(Ball(Gl.ball_golf, 16, 320, 250, player))
     entities.add(Ball(Gl.ball_poke, 16, 350, 250, player))
