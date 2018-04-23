@@ -41,7 +41,7 @@ def update_entities(player, entities):
     if player.vel_y == 0 and player.inair: # player hit ceiling
         Gl.camera.screenshake(-player_speed / 50, 0, 3)
     if player_inair and not player.inair: # player landing
-        player.fx.play(Gl.fx_dust_double, player.rect.midbottom[0] - 21, player.rect.y + 54, player.flip)
+        player.fx.play(Gl.fx_dust_double, player.rect.midbottom[0] - 27, player.rect.y + 54, player.flip)
         Gl.camera.screenshake(player_speed / 30, 0, 3)
         Gl.sfx_land.set_volume(player_speed / player.maxvel_y)
         Gl.sfx_land.play()
@@ -53,6 +53,16 @@ def update_entities(player, entities):
                 e.hit(player.golfcharge, player.golfcharge)
                 Gl.camera.screenshake(player.golfcharge / 50, 2, 0)
                 Gl.sfx_golf_hit.play()
+        if player.golfcharge >= player.maxgolf - 100:
+            for col in range(int(player.hitbox.x / Gl.tile_size) - (player.flip == True), int((player.hitbox.x + player.hitbox.w) / Gl.tile_size) + (player.flip == False)):
+                for row in range(int(player.hitbox.y / Gl.tile_size), int((player.hitbox.y + player.hitbox.h) / Gl.tile_size)):
+                    if Gl.tiles[row][col]:
+                        Gl.tiles[row][col] = None
+                        Gl.sfx_explosion.play()
+                        if Gl.tiles[row + 1][col] is None:
+                            Gl.fx.play(Gl.fx_explosion_aerial_big , (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size, player.flip)
+                        else:
+                            Gl.fx.play(Gl.fx_explosion_ground_big , (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size + 10, player.flip)
 
 
 
