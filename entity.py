@@ -18,6 +18,7 @@ class Entity(pygame.sprite.Sprite):
         self.fall_speed = 12
         self.flip = False
         self.inair = True
+        self.bounce_threshold = 10
 
     def update(self):
         if (self.inair):
@@ -53,9 +54,13 @@ class Entity(pygame.sprite.Sprite):
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_x > 0:
                         self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
+                        if hasattr(self, "bounce_sfx") and self.vel_x > self.bounce_threshold:
+                            self.bounce_sfx.play()
                         self.hitbox.right = tile.rect.left
                     if vel_x < 0:
                         self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
+                        if hasattr(self, "bounce_sfx") and self.vel_x > -self.bounce_threshold:
+                            self.bounce_sfx.play()
                         self.hitbox.left = tile.rect.right
 
     def check_collisions_y(self, vel_y):
@@ -67,10 +72,14 @@ class Entity(pygame.sprite.Sprite):
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
                         self.vel_y = 0 if not hasattr(self, "bounce_y") else -self.vel_y * self.bounce_y
+                        if hasattr(self, "bounce_sfx") and self.vel_y > self.bounce_threshold:
+                            self.bounce_sfx.play()
                         self.hitbox.bottom = tile.rect.top
                         self.inair = False
                     if vel_y < 0:
                         self.vel_y = 0 if not hasattr(self, "bounce_y") else -self.vel_y * self.bounce_y
+                        if hasattr(self, "bounce_sfx") and self.vel_y > -self.bounce_threshold:
+                            self.bounce_sfx.play()
                         self.hitbox.top = tile.rect.bottom
                 if tile and floor.colliderect(tile.rect):
                     floor_collide = True

@@ -11,6 +11,7 @@ class Ball(Entity):
         self.cur_orient = 0
         self.player = player
 
+        self.bounce_sfx = Gl.sfx_ball_bounce
         self.bounce_x = 0.6
         self.bounce_y = 0.7
         self.isrolling = False
