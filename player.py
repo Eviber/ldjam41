@@ -42,7 +42,7 @@ class Player(Entity):
         self.hitbox = pygame.Rect(0, 0, 32, 48)
         self.hitbox.midbottom = self.rect.midbottom
         self.maxvel_x = 35
-        self.maxvel_y = 500
+        self.maxvel_y = 400
 
         self.status = PlayerStatus.idle
         self.prev_status = PlayerStatus.idle
@@ -125,10 +125,14 @@ class Player(Entity):
                 self.jumpcharge += 10
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
+                    Gl.camera.screenshake(10, 0, 1)
                 self.image = anim_jumpcharge[int(self.jumpcharge / self.maxvel_y * 2)]
             else:
                 self.status = PlayerStatus.jump
                 self.vel_y = -self.jumpcharge
+                Gl.sfx_jump.play()
+                if self.jumpcharge >= self.maxvel_y:
+                    Gl.sfx_tiger.play()
                 self.jumpcharge = 0
 
     def golf(self):
