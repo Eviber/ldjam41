@@ -79,14 +79,6 @@ class Player(Entity):
         self.update_rect()
         self.rect.midbottom = self.hitbox.midbottom
 
-        if self.status == PlayerStatus.golf:
-            for col in range(int(self.hitbox.x / Gl.tile_size) - (self.flip == True), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + (self.flip == False)):
-                for row in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size)):
-                    if Gl.tiles[row][col]:
-                        Gl.tiles[row][col] = None
-                        Gl.sfx_explosion.play()
-                        Gl.fx.play(Gl.fx_explosion_aerial_big, (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size, self.flip)
-
         if isinstance(self.image, pyganim.PygAnimation):
             self.image = self.image.getCurrentFrame()
         if self.flip:
@@ -138,12 +130,17 @@ class Player(Entity):
 
     def golf(self):
         if Gl.input_B and self.status != PlayerStatus.golf:
-            self.status = PlayerStatus.golfcharge
+            if self.status != PlayerStatus.golfcharge:
+                self.status = PlayerStatus.golfcharge
+                self.golfanim = 0
             self.vel_x = 0
-            self.golfcharge += 10
-            #print(self.golfcharge)
-            if self.golfcharge > self.maxgolf:
+            self.golfcharge += (10 if self.golfanim == 0 else -10)
+            if self.golfcharge < 0:
+                self.golfcharge = 0
+                self.golfanim = 0
+            elif self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
+                self.golfanim = -1
             self.image = anim_golfcharge[int(self.golfcharge / self.maxgolf * 5)]
         elif self.status == PlayerStatus.golfcharge or (self.golfanim < 20 and self.status == PlayerStatus.golf):
             #apply swing
