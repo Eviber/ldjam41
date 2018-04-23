@@ -85,7 +85,9 @@ def main():
     while True:
         Gl.get_input()
 
-        if Gl.input_B and Gl.input_down:
+        if Gl.input_down and player.bombs > 0:
+            player.bombs -= 1
+            Gl.input_down = False
             entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player, entities))
 
         update_entities(player, entities)
