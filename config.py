@@ -1,4 +1,5 @@
 import sys, pygame, spritesheet, pyganim
+from random import randint
 from pygame import *
 from level_gen import map_gen
 
@@ -28,7 +29,7 @@ class Gl:
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
     tile_size = 32
-    level = map_gen(screen)
+    level = map_gen(screen, seed = randint(0, 100000000))
     level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
 
     fullscr = False
