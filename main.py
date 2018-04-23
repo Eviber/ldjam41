@@ -118,7 +118,7 @@ def main():
     entities = pygame.sprite.Group()
     entities.add(player)
 
-    ball = Ball(img_ball, 8, 320, 300, player)
+    ball = Ball(img_ball, 16, 320, 250, player)
     entities.add(ball)
 
     while True:
@@ -142,8 +142,13 @@ def main():
         if player_status == PlayerStatus.golfcharge and player.status == PlayerStatus.golf:
             for e in entities:
                 if isinstance(e, Ball) and e.rect.colliderect(player.rect):
-                    e.hit(10, 10)
+                    e.hit(player.golfcharge, player.golfcharge)
 
+        for e in entities:
+            if isinstance(e, Ball):
+                ball.update(tiles)
+            elif not isinstance(e, Player):
+                e.update();
         render(camera, tiles, entities)
         pygame.display.update()
 

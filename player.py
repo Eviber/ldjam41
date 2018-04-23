@@ -110,7 +110,7 @@ class Player(Entity):
         if input_B:
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
-            self.golfcharge += 1
+            self.golfcharge += 100
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int((self.golfcharge) / self.maxgolf * 5)]
@@ -123,8 +123,7 @@ class Player(Entity):
             else:
                 self.image = anim_golf[1]
             self.status = PlayerStatus.golf
-            #ball.vel_y = -(self.golfcharge * 10)
-            self.golfcharge -= 1
+            self.golfcharge -= 100
         else:
             self.golfcharge = 0
             self.status = PlayerStatus.idle
