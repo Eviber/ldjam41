@@ -77,9 +77,9 @@ class Bomb(Ball):
     def explode(self):
         self.kill()
         for e in self.entities:
-                if (isinstance(e, Bomb) and hypot(e.hitbox.center[0] - self.hitbox.center[0],
-                          e.hitbox.center[1] - self.hitbox.center[1]) < self.xploradius):
-                    e.explode()
+            if (isinstance(e, Bomb) and hypot(e.hitbox.center[0] - self.hitbox.center[0],
+                    e.hitbox.center[1] - self.hitbox.center[1]) < self.xploradius):
+                e.explode()
         rows = range(int((self.hitbox.center[0] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[0] + self.xploradius) / Gl.tile_size))
         cols = range(int((self.hitbox.center[1] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[1] + self.xploradius) / Gl.tile_size))
         lvl_w = Gl.level_width / Gl.tile_size
