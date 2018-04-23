@@ -47,12 +47,12 @@ def main():
 
     player = Player(300, 300)
     entities.add(player)
-    
+
     playerfx = Entity(Gl.fx_dust_large._images[0], player.rect.x, player.rect.y)
     playerfx.fall_speed = 0
 
     entities.add(Ball(Gl.ball_golf, 10, 320, 250, player))
-    entities.add(Ball(Gl.ball_poke, 16, 340, 250, player))
+    entities.add(Bomb(340, 250, player))
 
 
     while True:
