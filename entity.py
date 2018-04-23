@@ -5,6 +5,7 @@ from math import sqrt
 from config import *
 
 
+
 class Entity(pygame.sprite.Sprite):
     def __init__(self, image, x, y):
         pygame.sprite.Sprite.__init__(self)
@@ -16,6 +17,7 @@ class Entity(pygame.sprite.Sprite):
         self.vel_y = 0.0
         self.maxvel_x = 0
         self.maxvel_y = 0
+        self.fx = Effect(self)
         self.fall_speed = 12
         self.flip = False
         self.inair = True
