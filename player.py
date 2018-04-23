@@ -32,13 +32,14 @@ anim_golf = [sheet.image_at(( 1, 261, 64, 64), alpha),
 sfx_jump = pygame.mixer.Sound("sfx_jump.wav")
 
 class PlayerStatus(Enum):
-	idle		= 0
-	walk		= 1
-	jumpcharge	= 2
-	jump		= 3
-	golfcharge	= 4
-	golf		= 5
-	damage		= 6
+    damage     = 0
+    idle       = 1
+    walk       = 2
+    jumpcharge = 3
+    jump       = 4
+    golfcharge = 5
+    golf       = 6
+    slide      = 7
 
 class Player(Entity):
     def __init__(self, x, y):
@@ -69,6 +70,8 @@ class Player(Entity):
             self.jump(input_A)
         elif self.status == PlayerStatus.golfcharge or self.status == PlayerStatus.golf:
             self.golf(input_B)
+        elif self.status == PlayerStatus.slide:
+            self.slide()
         elif input_A or input_down:
             self.jump(input_A)
         elif input_B:
@@ -151,3 +154,6 @@ class Player(Entity):
         else:
             self.golfcharge = 0
             self.status = PlayerStatus.idle
+
+    def slide(self):
+        pass

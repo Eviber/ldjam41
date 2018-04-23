@@ -314,7 +314,7 @@ class Camera(object):
     def apply(self, target):
         result = target.move(self.state.topleft)
         if (screenshake_frames > 0):
-            shake = (screenshake_x, screenshake_y) if (framecount % 2 == 0) else (-screenshake_x, -screenshake_y)
+            shake = (screenshake_x, screenshake_y) if (framecount % 4 < 2) else (-screenshake_x, -screenshake_y)
             result = result.move(shake)
         return result
 
