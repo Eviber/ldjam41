@@ -2,6 +2,7 @@ import pygame
 import random
 import copy
 
+
 class Cell:
     def __init__(self, color, grid, pos):
         self.color = color
@@ -147,30 +148,37 @@ class CellGrid:
         # modes after this line use rank 1 nbhood
 
         # the following mode is rank 0 and is used for spritesheet definition; "SPRITE"
-        elif mode == "SPRITE":
+        elif mode == "SPRITE1":
             if nbhood[0] == '0':
                 return 0
             else:
                 s = nbhood[1:5]
-                if s == "0101":
+                if s == "0101" or s == "0111" or s == "0110" or s == "1101" or s == "1111" or s == "1110" or s == "1001" or s == "1011" or s == "1010":
                     return 1
-                if s == "0111":
-                    return 2
-                if s == "0110":
-                    return 3
-                if s == "1101":
-                    return 4
-                if s == "1111":
-                    return 5
-                if s == "1110":
-                    return 6
-                if s == "1001":
-                    return 7
-                if s == "1011":
-                    return 8
-                if s == "1010":
-                    return 9
-            return 0
+                else:
+                    return 0
+        elif mode == "SPRITE2":
+            s = nbhood[1:5]
+            if s == "0101":
+                return 1
+            elif s == "0111":
+                return 2
+            elif s == "0110":
+                return 3
+            elif s == "1101":
+                return 4
+            elif s == "1111":
+                return 5
+            elif s == "1110":
+                return 6
+            elif s == "1001":
+                return 7
+            elif s == "1011":
+                return 8
+            elif s == "1010":
+                return 9
+            else:
+                return 0
 
 
     def update_rule(self, mode=None):
@@ -193,6 +201,7 @@ class CellGrid:
                                 res = "".join(s)
                                 dict[res] = self.child_choice(mode, res)
         return dict
+
 
     def get_nbhood(self, x, y, rank):
         #rank == 0 => manhattan nbhood, dist 1 ; rank == 1 => square nbh, dist 1
@@ -250,10 +259,17 @@ class CellGrid:
 
     def clean(self, boolgrid):
         #boolgrid should be false on unstable spots
+        grid = []
         for y in range(self.height):
+            row = []
             for x in range(self.width):
                 if not boolgrid[y][x]:
-                    self.grid[y][x] = Cell(0, self.grid, (x, y))
+                    row.append(Cell(0, grid, (x,y)))
+                else:
+                    row.append(copy.copy(self.grid[y][x]))
+            grid.append(row)
+        self.grid = grid
+                    #self.grid[y][x] = Cell(0, self.grid, (x, y))
 
 
     def scale3x(self):
@@ -285,14 +301,14 @@ G H I --/  7 8 9
                     lc[1] = s[1]
                 if s[1] == s[5] and s[1] != s[3] and s[5] != s[7]:
                     lc[2] = s[5]
-                if ( s[7] == s[3] and s[7] != s[5] and s[3] != s[1] and c != s[0]) or ( s[3] == s[1] and s[3] != s[7] and s[1] != s[5] and c != s[6]):
+                if (s[7] == s[3] and s[7] != s[5] and s[3] != s[1] and c != s[0]) or (s[3] == s[1] and s[3] != s[7] and s[1] != s[5] and c != s[6]):
                     lc[3] = s[3]
                     #sl[4] = c
-                if (s[1] == s[5] and s[1] != s[3] and s[5] != s[7] and c != s[8]) or ( s[5] == s[7] and s[5] != s[1] and s[7] != s[3] and c != s[2]):
+                if (s[1] == s[5] and s[1] != s[3] and s[5] != s[7] and c != s[8]) or (s[5] == s[7] and s[5] != s[1] and s[7] != s[3] and c != s[2]):
                     lc[5] = s[5]
                 if s[7] == s[3] and s[7] != s[5] and s[3] != s[1]:
                     lc[6] = s[3]
-                if (s[5] == s[7] and s[5] != s[1] and s[7] != s[3] and c != s[6]) or ( s[7] == s[3] and s[7] != s[5] and s[3] != s[1] and c != s[8]):
+                if (s[5] == s[7] and s[5] != s[1] and s[7] != s[3] and c != s[6]) or (s[7] == s[3] and s[7] != s[5] and s[3] != s[1] and c != s[8]):
                     lc[7] = s[7]
                 if s[5] == s[7] and s[5] != s[1] and s[7] != s[3]:
                     lc[8] = s[5]
@@ -583,18 +599,27 @@ walltemplate = [
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
 "1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
-"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",]
+"1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"]
 
 """
 
 def gen_walltemplate(x, y):
     res = []
-    #s = [c for ]
+    s = "".join(['1' for i in range(x)])
+    s2 = "11" + "".join(['0' for i in range(x - 4)]) + "11"
+    res.append(s)
+    for i in range(y-5):
+        res.append(s2)
+    res.append(s)
+    res.append(s)
+    res.append(s)
+    res.append(s)
+    return res
 
 
 
 def map_gen(screen, mapsize=(1600,1200), seed=4201337):
-    #full map's size in pixels
+    #full map's size in pixels, the camera will show a portion
     random.seed(seed)
     colornb = 2
     x_cells = int(mapsize[0] / 10)
@@ -616,7 +641,7 @@ def map_gen(screen, mapsize=(1600,1200), seed=4201337):
     status = 0
     done = False
 
-    while not done and i <= 100:
+    while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
@@ -630,7 +655,7 @@ def map_gen(screen, mapsize=(1600,1200), seed=4201337):
             if grid == gparent or i == 100:
                 unstables = gparent & parent
                 grid.clean(unstables)
-                print(grid)
+                #print(grid)
                 status = 1
             else:
                 gparent = copy.copy(parent)
@@ -640,9 +665,11 @@ def map_gen(screen, mapsize=(1600,1200), seed=4201337):
             #tmp = zeros(grid.width, grid.height)
             #loots = grid.get_areas
             grid.scale3x()
-            print(grid)
-            grid.update(mode="SPRITE")
-            print(grid)
+            #print(grid)
+            grid.update(mode="SPRITE1")
+            grid.update(mode="SPRITE2")
+            #if debug:
+            #    print(grid)
             done = 1
         i += 1
 
