@@ -27,8 +27,9 @@ anim_golfcharge = [sheet.image_at((  1, 196, 64, 64), Gl.alpha),
             sheet.image_at((196, 196, 64, 64), Gl.alpha),
             sheet.image_at((261, 196, 64, 64), Gl.alpha),
             sheet.image_at((326, 196, 64, 64), Gl.alpha)]
-anim_golf = [sheet.image_at(( 1, 261, 64, 64), Gl.alpha),
-            sheet.image_at((66, 261, 64, 64), Gl.alpha)]
+anim_golf = [sheet.image_at((  1, 261, 64, 64), Gl.alpha),
+             sheet.image_at(( 66, 261, 64, 64), Gl.alpha),
+             sheet.image_at((131, 261, 64, 64), Gl.alpha)]
 
 class PlayerStatus(Enum):
     damage     = 0
@@ -127,20 +128,22 @@ class Player(Entity):
                 self.jumpcharge = 0
 
     def golf(self):
-        if Gl.input_B:
+        if Gl.input_B and  self.status != PlayerStatus.golf:
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
             self.golfcharge += 100
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int((self.golfcharge) / self.maxgolf * 5)]
-        elif self.status == PlayerStatus.golfcharge or (self.golfanim < 30 and self.status == PlayerStatus.golf):
+        elif self.status == PlayerStatus.golfcharge or (self.golfanim < 20 and self.status == PlayerStatus.golf):
             #apply swing
             self.status = PlayerStatus.golf
-            if self.golfanim < 5:
+            if self.golfanim < 3:
                 self.image = anim_golf[0]
-            else:
+            elif self.golfanim < 6:
                 self.image = anim_golf[1]
+            else:
+                self.image = anim_golf[2]
             self.golfanim += 1
         else:
             self.golfanim = 0
