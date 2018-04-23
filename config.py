@@ -61,7 +61,7 @@ tilesheet = spritesheet.spritesheet("tileset_ruins.png")
 tileset = [[tilesheet.image_at(pygame.Rect(x * tile_size, y * tile_size, tile_size, tile_size)) for x in range(3)] for y in range(3)]
 
 ballsheet = spritesheet.spritesheet("ball_golf.png")
-img_ball = ballsheet.image_at((0, 0, 8, 8))
+img_ball = ballsheet.image_at((0, 0, 16, 16))
 
 level = map_gen(screen)
 print(level)

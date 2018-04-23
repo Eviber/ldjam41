@@ -55,11 +55,11 @@ class Entity(pygame.sprite.Sprite):
                     if vel_x > 0:
                         self.hitbox.right = tile.rect.left
                         if hasattr(self, "bounce"):
-                            self.vel_x = -self.vel_x * 0.8
+                            self.vel_x = -self.vel_x * 0.6
                     if vel_x < 0:
                         self.hitbox.left = tile.rect.right
                         if hasattr(self, "bounce"):
-                            self.vel_x = -self.vel_x * 0.8
+                            self.vel_x = -self.vel_x * 0.6
         self.rect.midbottom = self.hitbox.midbottom
 
     def check_collisions_y(self, tiles, vel_y):
@@ -70,11 +70,11 @@ class Entity(pygame.sprite.Sprite):
             for tile in row:
                 if self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
-                        self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * 0.8
+                        self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * 0.7
                         self.hitbox.bottom = tile.rect.top
                         self.inair = False
                     if vel_y < 0:
-                        self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * 0.8
+                        self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * 0.7
                         self.hitbox.top = tile.rect.bottom
                 if (floor.colliderect(tile.rect)):
                     floor_collide = True

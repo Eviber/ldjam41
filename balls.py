@@ -34,7 +34,7 @@ class Ball(Entity):
             self.vel_x -= 1
 
     def hit(self, xvel, yvel):
-        self.vel_x += xvel
+        self.vel_x += xvel if self.player.flip else -xvel
         self.vel_y -= yvel
 
     def update(self, tiles):
