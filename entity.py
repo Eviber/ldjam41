@@ -53,8 +53,16 @@ class Entity(pygame.sprite.Sprite):
 
     def check_collisions_x(self, vel_x):
         tiles = []
-        for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
-            for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
+        rows = range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1)
+        cols = range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1)
+        lvl_w = Gl.level_width / Gl.tile_size
+        lvl_h = Gl.level_height / Gl.tile_size
+        for row in rows:
+            if row < 0 or row > lvl_h:
+                break
+            for col in cols:
+                if col < 0 or col > lvl_w:
+                    break
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_x > 0:
@@ -77,14 +85,21 @@ class Entity(pygame.sprite.Sprite):
         tiles = []
         floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
         floor_collide = False
-        for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
-            for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
+        rows = range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1)
+        cols = range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1)
+        lvl_w = Gl.level_width / Gl.tile_size
+        lvl_h = Gl.level_height / Gl.tile_size
+        for row in rows:
+            if row < 0 or row > lvl_h:
+                break
+            for col in cols:
+                if col < 0 or col > lvl_w:
+                    break
                 tile = Gl.tiles[col][row]
                 if tile and floor.colliderect(tile.rect):
                     floor_collide = True
                     if hasattr(self, "bounce") and 0 <= vel_y and vel_y < 80:
                         self.isrolling = True
-
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
                         self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * self.bounce * (not self.isrolling)
