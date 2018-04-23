@@ -37,8 +37,9 @@ class PlayerStatus(Enum):
     slide      = 7
 
 class Player(Entity):
-    def __init__(self, x, y):
-        Entity.__init__(self, anim_idle, x, y)
+    def __init__(self, x, y, entities):
+        Entity.__init__(self, anim_idle, x, y, entities)
+        self.entities = entities
         self.hitbox = pygame.Rect(0, 0, 32, 48)
         self.hitbox.midbottom = self.rect.midbottom
         self.maxvel_x = 35

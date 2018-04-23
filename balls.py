@@ -2,8 +2,9 @@ from entity import *
 from math import hypot
 
 class Ball(Entity):
-    def __init__(self, image, size, x, y, player):
-        Entity.__init__(self, image, x, y)
+    def __init__(self, image, size, x, y, player, entities):
+        Entity.__init__(self, image, x, y, entities)
+        self.entities = entities
         self.size = size #serves as mass
         self.maxvel_x = 600
         self.maxvel_y = 600
@@ -60,20 +61,26 @@ class Ball(Entity):
         else:
             self.idle()
         collided = len(self.update_rect())
-        if (self.can_explode and collided and self.vel_x * self.vel_x + self.vel_y * self.vel_y > 10000):
+        if (self.can_explode and collided and self.vel_x * self.vel_x + self.vel_y * self.vel_y > 50000):
             self.explode()
         self.rect.center = self.hitbox.center
 
 
 
 class Bomb(Ball):
-    def __init__(self, x, y, player):
+    def __init__(self, x, y, player, entities):
         global img_bomb
-        Ball.__init__(self, Gl.ball_bomb, 16, x, y, player)
+        Ball.__init__(self, Gl.ball_bomb, 16, x, y, player, entities)
         self.can_explode = True
         self.xploradius = 100
 
     def explode(self):
+        self.kill()
+        for e in self.entities:
+                if (isinstance(e, Bomb) and hypot(e.hitbox.center[0] - self.hitbox.center[0],
+                          e.hitbox.center[1] - self.hitbox.center[1]) < self.xploradius):
+                    e.explode()
+
         for row in range(int((self.hitbox.center[0] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[0] + self.xploradius) / Gl.tile_size)):
             for col in range(int((self.hitbox.center[1] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[1] + self.xploradius) / Gl.tile_size)):
                 if (Gl.tiles[col][row] and hypot(
@@ -82,11 +89,10 @@ class Bomb(Ball):
                     Gl.tiles[col][row] = None
                     Gl.sfx_explosion.play()
                     Gl.fx.play(Gl.fx_explosion_normal_big , row * Gl.tile_size - 64, col * Gl.tile_size - 64)
-        self.kill()
 
 
 
 class Pebble(Ball):
-    def __init__(self, x, y, player):
+    def __init__(self, x, y, player, entities):
         global img_pebble
-        Ball.__init__(self, img_pebble, 8, x, y, player)
+        Ball.__init__(self, img_pebble, 8, x, y, player, entities)
