@@ -4,38 +4,6 @@ import spritesheet
 from math import sqrt
 from config import *
 
-class Effect(pygame.sprite.Sprite):
-    def __init__(self, parent):
-        pygame.sprite.Sprite.__init__(self)
-        self.parent = parent
-        self.image = None
-        self.rect = None
-        self.anim = None
-        self.playing = False
-        self.flip_x = False
-        self.flip_y = False
-
-    def update(self):
-        if self.playing:
-            if self.anim.isFinished():
-                self.image = None
-                self.rect = None
-                self.anim = None
-                self.playing = False
-            else:
-                self.image = self.anim.getCurrentFrame()
-                if self.flip_x or self.flip_y:
-                    self.image = pygame.transform.flip(self.image, self.flip_x, self.flip_y)
-
-    def play(self, anim, x, y, flip_x = False, flip_y = False):
-        self.image = anim._images[0]
-        self.rect = self.image.get_rect().move(x, y)
-        self.anim = anim
-        self.flip_x = flip_x
-        self.flip_y = flip_y
-        self.anim.play()
-        self.playing = True
-
 
 
 class Entity(pygame.sprite.Sprite):

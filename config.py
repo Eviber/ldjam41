@@ -48,6 +48,7 @@ class Gl:
     sheet_balls = spritesheet.spritesheet("balls.png")
     sheet_fx    = spritesheet.spritesheet("fx.png")
 
+    sfx_explosion   = pygame.mixer.Sound("sfx_explosion.wav")
     sfx_ball_bounce = pygame.mixer.Sound("sfx_ball_bounce.wav")
     sfx_golf_hit    = pygame.mixer.Sound("sfx_golf_hit.wav")
     sfx_golf_swing  = pygame.mixer.Sound("sfx_golf_swing.wav")
@@ -111,22 +112,54 @@ class Gl:
 
     @classmethod
     def set_fx(cls):
+        cls.fx = Effect(cls)
         cls.fx_explosion_ground_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x *  86,   1,  85,  54), cls.alpha), 0.1) for x in range(0, 11)], False)
         cls.fx_explosion_normal_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101,  58, 100,  84), cls.alpha), 0.1) for x in range(0,  8)], False)
-        cls.fx_explosion_aerial_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101, 145, 100, 100), cls.alpha), 0.1) for x in range(0,  8)], False)
+        cls.fx_explosion_aerial_big = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 101, 145, 100, 100), cls.alpha), 0.06) for x in range(0,  8)], False)
         cls.fx_explosion_ground = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 53, 248, 52,  33), cls.alpha), 0.1) for x in range(0, 11)], False)
         cls.fx_explosion_normal = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 64, 284, 63,  84), cls.alpha), 0.1) for x in range(0,  8)], False)
-        cls.fx_explosion_aerial = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 71, 340, 70, 100), cls.alpha), 0.1) for x in range(0,  8)], False)
+        cls.fx_explosion_aerial = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 71, 340, 70, 100), cls.alpha), 0.06) for x in range(0,  8)], False)
         cls.fx_dust_large = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 27, 413, 26, 25), cls.alpha), 0.08) for x in range(0,  6)], False)
-        cls.fx_dust_small = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 20, 441, 19, 11), cls.alpha), 0.08) for x in range(0,  6)], False)
+        cls.fx_dust_small = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x * 20, 441, 19, 11), cls.alpha), 0.07) for x in range(0,  6)], False)
 
 
+
+class Effect(pygame.sprite.Sprite):
+    def __init__(self, parent):
+        pygame.sprite.Sprite.__init__(self)
+        self.parent = parent
+        self.image = None
+        self.rect = None
+        self.anim = None
+        self.playing = False
+        self.flip_x = False
+        self.flip_y = False
+
+    def update(self):
+        if self.playing:
+            if self.anim.isFinished():
+                self.image = None
+                self.rect = None
+                self.anim = None
+                self.playing = False
+            else:
+                self.image = self.anim.getCurrentFrame()
+                if self.flip_x or self.flip_y:
+                    self.image = pygame.transform.flip(self.image, self.flip_x, self.flip_y)
+
+    def play(self, anim, x, y, flip_x = False, flip_y = False):
+        self.image = anim._images[0]
+        self.rect = self.image.get_rect().move(x, y)
+        self.anim = anim
+        self.flip_x = flip_x
+        self.flip_y = flip_y
+        self.anim.play()
+        self.playing = True
 
 class Tile(object):
     def __init__(self, image, x, y):
         self.image = image
         self.rect = pygame.Rect(x, y, Gl.tile_size, Gl.tile_size)
-
 
 def make_level():
     tiles = []

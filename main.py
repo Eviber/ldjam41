@@ -15,10 +15,12 @@ def render(entities):
         rect = Gl.camera.apply(e.rect)
         if (rect.colliderect(Gl.screen_rect)):
             Gl.screen.blit(e.image, rect)
-        if e.fx and e.fx.rect and e.fx.image:
+        if e.fx and e.fx.playing:
             rect = Gl.camera.apply(e.fx.rect)
             if (rect.colliderect(Gl.screen_rect)):
                 Gl.screen.blit(e.fx.image, rect)
+    if Gl.fx.playing:
+        Gl.screen.blit(Gl.fx.image, Gl.camera.apply(Gl.fx.rect))
 
 
 
@@ -31,6 +33,7 @@ def update_entities(player, entities):
         e.update()
         if e.fx:
             e.fx.update()
+    Gl.fx.update()
 
     if player.vel_y < 0 and not player_inair and player.inair: # player jump
         player.fx.play(Gl.fx_dust_small, player.rect.midbottom[0] - 10, player.rect.y + 60, player.flip)
