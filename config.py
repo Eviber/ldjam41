@@ -20,7 +20,7 @@ class Gl:
     timer = pygame.time.Clock()
 
 
-    #IT GOES OUT TOMORROW BUT IM NOT DAN WID DAH GRAPHICS
+    #WE GODDA SHIPPIT IT GOES OUT TOMORROW BUT IM NOT DAN WID DAH GRAPHICS
     platformcolor = (0x994422)
     bgcolor = (0, 0, 0)
     alpha = (211, 249, 188) # 0xD3F9BC
@@ -121,6 +121,7 @@ class Gl:
         cls.fx_explosion_aerial = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 340, 70, 100), cls.alpha), 0.1) for x in range(0,  8, 71)])
         cls.fx_dust_large = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 413, 26, 25), cls.alpha), 0.1) for x in range(0,  6, 26)])
         cls.fx_dust_small = pyganim.PygAnimation([(cls.sheet_fx.image_at((1 + x, 441, 19, 11), cls.alpha), 0.1) for x in range(0,  6, 20)])
+
 
 class Tile(object):
     def __init__(self, x, y, image):
