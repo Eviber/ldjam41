@@ -4,8 +4,8 @@ class Ball(Entity):
     def __init__(self, image, size, x, y, player):
         Entity.__init__(self, image, x, y)
         self.size = self.image.get_width
-        self.maxvel_x = 200
-        self.maxvel_y = 200
+        self.maxvel_x = 600
+        self.maxvel_y = 600
         self.ang_mmt = 0 #positive is clockwise
         #self.rotations = self.build_rotations #wtf dude
         self.cur_orient = 0

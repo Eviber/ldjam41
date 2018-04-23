@@ -13,6 +13,7 @@ class Gl:
     screen = pygame.display.set_mode(size)
     framerate = 60
     framecount = 0
+    frameincr = 1 / (1000 / 60)
     timer = pygame.time.Clock()
 
 

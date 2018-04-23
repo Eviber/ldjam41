@@ -127,7 +127,8 @@ class Player(Entity):
         if Gl.input_B and self.status != PlayerStatus.golf:
             self.status = PlayerStatus.golfcharge
             self.vel_x = 0
-            self.golfcharge += 100
+            self.golfcharge += 3
+            print(self.golfcharge)
             if self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
             self.image = anim_golfcharge[int(self.golfcharge / self.maxgolf * 5)]

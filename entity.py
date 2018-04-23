@@ -3,7 +3,6 @@ import pyganim
 import spritesheet
 from config import *
 
-framerate = 1 / (1000/60)
 
 class Entity(pygame.sprite.Sprite):
     def __init__(self, image, x, y):
@@ -42,9 +41,9 @@ class Entity(pygame.sprite.Sprite):
         if abs(self.vel_y) > self.maxvel_y:
             self.vel_y = self.maxvel_y if self.vel_y > 0 else -self.maxvel_y
 
-        self.hitbox.x += self.vel_x * framerate
+        self.hitbox.x += self.vel_x * Gl.frameincr
         self.check_collisions_x(self.vel_x)
-        self.hitbox.y += self.vel_y * framerate
+        self.hitbox.y += self.vel_y * Gl.frameincr
         self.check_collisions_y(self.vel_y)
 
     def check_collisions_x(self, vel_x):
@@ -58,7 +57,6 @@ class Entity(pygame.sprite.Sprite):
                     if vel_x < 0:
                         self.vel_x = 0 if not hasattr(self, "bounce_x") else -self.vel_x * self.bounce_x
                         self.hitbox.left = tile.rect.right
-        self.rect.midbottom = self.hitbox.midbottom
 
     def check_collisions_y(self, vel_y):
         floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
