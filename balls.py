@@ -14,6 +14,7 @@ class Ball(Entity):
         self.bounce_x = 0.6
         self.bounce_y = 0.7
         self.isrolling = False
+        self.hasMomentum = False
 
     def build_rotations(self):
         img = self.image
@@ -26,7 +27,7 @@ class Ball(Entity):
         return res
 
     def update_momentum(self):
-        self.hasMomentum = self.vel_x * self.vel_x + self.vel_y * self.vel_y > 10
+        self.hasMomentum = (self.vel_x * self.vel_x + self.vel_y * self.vel_y > 10)
 
     def fall(self):
         self.vel_y += 12
@@ -38,7 +39,7 @@ class Ball(Entity):
     def hit(self, xvel, yvel):
         self.vel_x += xvel if not self.player.flip else -xvel
         print(self.player.flip, xvel, self.vel_x)
-        self.vel_y -= yvel
+        self.vel_y += yvel
 
     def update(self):
         #TODO global tiles
