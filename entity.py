@@ -80,7 +80,7 @@ class Entity(pygame.sprite.Sprite):
                 tile = Gl.tiles[col][row]
                 if tile and floor.colliderect(tile.rect):
                     floor_collide = True
-                    if hasattr(self, "bounce") and vel_y < 80:
+                    if hasattr(self, "bounce") and 0 <= vel_y and vel_y < 80:
                         self.isrolling = True
 
                 if tile and self.hitbox.colliderect(tile.rect):
