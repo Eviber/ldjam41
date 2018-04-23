@@ -60,9 +60,9 @@ def update_entities(player, entities):
                         Gl.tiles[row][col] = None
                         Gl.sfx_explosion.play()
                         if Gl.tiles[row + 1][col] is None:
-                            Gl.fx.play(Gl.fx_explosion_aerial_big , (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size, player.flip)
+                            Gl.fx.play(Gl.fx_explosion_aerial_big , col * Gl.tile_size - 32, row * Gl.tile_size - 32, player.flip)
                         else:
-                            Gl.fx.play(Gl.fx_explosion_ground_big , (col - 1) * Gl.tile_size, (row - 1) * Gl.tile_size + 10, player.flip)
+                            Gl.fx.play(Gl.fx_explosion_ground_big , col * Gl.tile_size - 32, row * Gl.tile_size - 22, player.flip)
                     else:
                         Gl.sfx_golf_hit.play()
 
