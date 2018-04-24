@@ -74,9 +74,12 @@ def update_entities(player, entities):
 
 def show(image):
     Gl.screen.blit(image, image.get_rect())
+    pygame.display.update()
+    Gl.timer.tick(1)
 
 
 def main():
+    show(Gl.img_tutorial)
     entities = pygame.sprite.Group()
 
     player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size,  entities)
@@ -85,7 +88,7 @@ def main():
     entities.add(Ball(Gl.ball_golf, Gl.ball_golf_size, Gl.spawn_pos[0] * Gl.tile_size + 20, Gl.spawn_pos[1] * Gl.tile_size, player, entities))
 
 
-    while True:
+    while not Gl.level_finished:
         Gl.get_input()
 
         if Gl.input_down and player.bombs > 0:
@@ -101,7 +104,9 @@ def main():
 
         Gl.timer.tick(Gl.framerate)
         Gl.framecount += 1
+        Gl.level_finished = Gl.input_up
 
+    show(Gl.img_ending)
 
 
 if(__name__ == "__main__"):
