@@ -1,5 +1,5 @@
 import sys, pygame, spritesheet, pyganim
-from random import randint
+from random import randint, seed
 from pygame import *
 from level_gen import map_gen
 
@@ -107,7 +107,9 @@ class Gl:
     @classmethod
     def set_balls(cls):
         cls.ball_golf = cls.sheet_balls.image_at((4, 4, 10, 10), cls.alpha)
+        cls.ball_golf_size = 10
         cls.ball_poke = cls.sheet_balls.image_at((18, 1, 16, 16), cls.alpha)
+        cls.ball_poke_size = 16
         cls.ball_bomb = cls.ball_poke
 
     @classmethod
@@ -177,9 +179,10 @@ class Tile(object):
         self.rect = pygame.Rect(x, y, Gl.tile_size, Gl.tile_size)
 
 def make_level():
+    seed(time.get_ticks())
     Gl.seed = randint(0, 100000000)
     print("seed -> ", Gl.seed)
-    Gl.level = map_gen(Gl.screen, seed = Gl.seed)
+    Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = Gl.seed)
     Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
 
     tiles = []
