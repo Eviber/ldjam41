@@ -99,3 +99,10 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+#Aseprite
+*.ase
+
+#images
+bgs.png
+tilesets.png

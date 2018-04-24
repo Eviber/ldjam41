@@ -37,12 +37,13 @@ class PlayerStatus(Enum):
     slide      = 7
 
 class Player(Entity):
-    def __init__(self, x, y):
-        Entity.__init__(self, anim_idle, x, y)
+    def __init__(self, x, y, entities):
+        Entity.__init__(self, anim_idle, x, y, entities)
+        self.entities = entities
         self.hitbox = pygame.Rect(0, 0, 32, 48)
         self.hitbox.midbottom = self.rect.midbottom
         self.maxvel_x = 35
-        self.maxvel_y = 500
+        self.maxvel_y = 400
 
         self.status = PlayerStatus.idle
         self.prev_status = PlayerStatus.idle
@@ -50,7 +51,8 @@ class Player(Entity):
         self.jumpcharge = 0
         self.golfcharge = 0
         self.golfanim   = 0
-        self.maxgolf    = 1000
+        self.maxgolf    = 500
+        self.bombs      = 10
 
 
     def update(self):
@@ -77,11 +79,6 @@ class Player(Entity):
 
         self.update_rect()
         self.rect.midbottom = self.hitbox.midbottom
-
-        if self.status == PlayerStatus.golf:
-            for row in range(int(self.hitbox.x / Gl.tile_size) - (self.flip == True), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + (self.flip == False)):
-                for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size)):
-                    Gl.tiles[col][row] = None
 
         if isinstance(self.image, pyganim.PygAnimation):
             self.image = self.image.getCurrentFrame()
@@ -122,20 +119,29 @@ class Player(Entity):
                 self.jumpcharge += 10
                 if self.jumpcharge > self.maxvel_y:
                     self.jumpcharge = self.maxvel_y
+                    Gl.camera.screenshake(10, 0, 1)
                 self.image = anim_jumpcharge[int(self.jumpcharge / self.maxvel_y * 2)]
             else:
                 self.status = PlayerStatus.jump
                 self.vel_y = -self.jumpcharge
+                Gl.sfx_jump.play()
+                if self.jumpcharge >= self.maxvel_y:
+                    Gl.sfx_tiger.play()
                 self.jumpcharge = 0
 
     def golf(self):
         if Gl.input_B and self.status != PlayerStatus.golf:
-            self.status = PlayerStatus.golfcharge
+            if self.status != PlayerStatus.golfcharge:
+                self.status = PlayerStatus.golfcharge
+                self.golfanim = 0
             self.vel_x = 0
-            self.golfcharge += 10
-            #print(self.golfcharge)
-            if self.golfcharge > self.maxgolf:
+            self.golfcharge += (10 if self.golfanim == 0 else -10)
+            if self.golfcharge < 0:
+                self.golfcharge = 0
+                self.golfanim = 0
+            elif self.golfcharge > self.maxgolf:
                 self.golfcharge = self.maxgolf
+                self.golfanim = -1
             self.image = anim_golfcharge[int(self.golfcharge / self.maxgolf * 5)]
         elif self.status == PlayerStatus.golfcharge or (self.golfanim < 20 and self.status == PlayerStatus.golf):
             #apply swing

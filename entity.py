@@ -4,43 +4,12 @@ import spritesheet
 from math import sqrt
 from config import *
 
-class Effect(pygame.sprite.Sprite):
-    def __init__(self, parent):
-        pygame.sprite.Sprite.__init__(self)
-        self.parent = parent
-        self.image = None
-        self.rect = None
-        self.anim = None
-        self.playing = False
-        self.flip_x = False
-        self.flip_y = False
-
-    def update(self):
-        if self.playing:
-            if self.anim.isFinished():
-                self.image = None
-                self.rect = None
-                self.anim = None
-                self.playing = False
-            else:
-                self.image = self.anim.getCurrentFrame()
-                if self.flip_x or self.flip_y:
-                    self.image = pygame.transform.flip(self.image, self.flip_x, self.flip_y)
-
-    def play(self, anim, x, y, flip_x = False, flip_y = False):
-        self.image = anim._images[0]
-        self.rect = self.image.get_rect().move(x, y)
-        self.anim = anim
-        self.flip_x = flip_x
-        self.flip_y = flip_y
-        self.anim.play()
-        self.playing = True
-
 
 
 class Entity(pygame.sprite.Sprite):
-    def __init__(self, image, x, y):
+    def __init__(self, image, x, y, entities):
         pygame.sprite.Sprite.__init__(self)
+        self.entities = entities
         self.image = image
         self.rect = image.get_rect().move(x, y)
         self.hitbox = self.rect
@@ -85,21 +54,29 @@ class Entity(pygame.sprite.Sprite):
 
     def check_collisions_x(self, vel_x):
         tiles = []
-        for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
-            for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
+        rows = range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1)
+        cols = range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1)
+        lvl_w = Gl.level_width / Gl.tile_size
+        lvl_h = Gl.level_height / Gl.tile_size
+        for row in rows:
+            if row < 0 or row > lvl_w:
+                break
+            for col in cols:
+                if col < 0 or col > lvl_h:
+                    break
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_x > 0:
                         self.vel_x = 0 if not hasattr(self, "bounce") else -self.vel_x * self.bounce
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_x / self.maxvel_x * self.get_volume_distance())
+                            self.bounce_sfx.set_volume(self.vel_x / self.maxvel_x) # * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.right = tile.rect.left
                         tiles.append(Gl.tiles[col][row])
                     if vel_x < 0:
                         self.vel_x = 0 if not hasattr(self, "bounce") else -self.vel_x * self.bounce
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y * self.get_volume_distance())
+                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y) # * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.left = tile.rect.right
                         tiles.append(Gl.tiles[col][row])
@@ -109,19 +86,26 @@ class Entity(pygame.sprite.Sprite):
         tiles = []
         floor = pygame.Rect(self.hitbox.left, self.hitbox.bottom, self.hitbox.width, 1)
         floor_collide = False
-        for row in range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1):
-            for col in range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1):
+        rows = range(int(self.hitbox.x / Gl.tile_size), int((self.hitbox.x + self.hitbox.w) / Gl.tile_size) + 1)
+        cols = range(int(self.hitbox.y / Gl.tile_size), int((self.hitbox.y + self.hitbox.h) / Gl.tile_size) + 1)
+        lvl_w = Gl.level_width / Gl.tile_size
+        lvl_h = Gl.level_height / Gl.tile_size
+        for row in rows:
+            if row < 0 or row > lvl_w:
+                break
+            for col in cols:
+                if col < 0 or col > lvl_h:
+                    break
                 tile = Gl.tiles[col][row]
                 if tile and floor.colliderect(tile.rect):
                     floor_collide = True
                     if hasattr(self, "bounce") and 0 <= vel_y and vel_y < 80:
                         self.isrolling = True
-
                 if tile and self.hitbox.colliderect(tile.rect):
                     if vel_y > 0:
                         self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * self.bounce * (not self.isrolling)
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y * self.get_volume_distance())
+                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y) # * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.bottom = tile.rect.top
                         tiles.append(Gl.tiles[col][row])
@@ -129,7 +113,7 @@ class Entity(pygame.sprite.Sprite):
                     if vel_y < 0:
                         self.vel_y = 0 if not hasattr(self, "bounce") else -self.vel_y * self.bounce
                         if hasattr(self, "bounce_sfx"):
-                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y * self.get_volume_distance())
+                            self.bounce_sfx.set_volume(self.vel_y / self.maxvel_y) # * self.get_volume_distance())
                             self.bounce_sfx.play()
                         self.hitbox.top = tile.rect.bottom
                         tiles.append(Gl.tiles[col][row])
@@ -138,7 +122,7 @@ class Entity(pygame.sprite.Sprite):
         return tiles
 
     def get_volume_distance(self):
-        distance = sqrt((self.rect.x - Gl.camera.state.center[0])**2 + (self.rect.y - Gl.camera.state.center[1])**2)
+        distance = sqrt((self.rect.x + Gl.camera.state.center[0])**2 + (self.rect.y + Gl.camera.state.center[1])**2)
         distance = -1 / Gl.win_width * distance + 1
         if (distance < 0):
             distance = 0

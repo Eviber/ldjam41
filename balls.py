@@ -1,8 +1,10 @@
 from entity import *
+from math import hypot
 
 class Ball(Entity):
-    def __init__(self, image, size, x, y, player):
-        Entity.__init__(self, image, x, y)
+    def __init__(self, image, size, x, y, player, entities):
+        Entity.__init__(self, image, x, y, entities)
+        self.entities = entities
         self.size = size #serves as mass
         self.maxvel_x = 600
         self.maxvel_y = 600
@@ -17,6 +19,7 @@ class Ball(Entity):
         self.friction = 0.3         #ground friction dampening coef
         self.isrolling = False
         self.hasMomentum = False
+        self.can_explode = True
 
     def build_rotations(self):
         img = self.image
@@ -46,6 +49,9 @@ class Ball(Entity):
         print("face left : " if self.player.flip else "face right :", xvel, self.vel_x)
         self.vel_y -= yvel
 
+    def explode(self):
+        pass
+
     def update(self):
         self.update_momentum()
         if self.inair:
@@ -54,20 +60,47 @@ class Ball(Entity):
             self.roll()
         else:
             self.idle()
-        self.update_rect()
+        collided = len(self.update_rect())
+        if (self.can_explode and collided and self.vel_x * self.vel_x + self.vel_y * self.vel_y > 50000):
+            self.explode()
         self.rect.center = self.hitbox.center
 
 
 
 class Bomb(Ball):
-    def __init__(self, x, y):
+    def __init__(self, x, y, player, entities):
         global img_bomb
-        Ball.__init__(self, img_bomb, 16, x, y)
-        self.exploding = False
+        Ball.__init__(self, Gl.ball_bomb, 16, x, y, player, entities)
+        self.can_explode = True
+        self.xploradius = 100
+
+    def explode(self):
+        self.kill()
+        Gl.camera.screenshake(30, 5, 5)
+        for e in self.entities:
+            if (isinstance(e, Bomb) and hypot(e.hitbox.center[0] - self.hitbox.center[0],
+                    e.hitbox.center[1] - self.hitbox.center[1]) < self.xploradius):
+                e.explode()
+        rows = range(int((self.hitbox.center[0] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[0] + self.xploradius) / Gl.tile_size))
+        cols = range(int((self.hitbox.center[1] - self.xploradius) / Gl.tile_size), int((self.hitbox.center[1] + self.xploradius) / Gl.tile_size))
+        lvl_w = Gl.level_width / Gl.tile_size
+        lvl_h = Gl.level_height / Gl.tile_size
+        for row in rows:
+            if row < 0 or row > lvl_w:
+                break
+            for col in cols:
+                if col < 0 or col > lvl_h:
+                    break
+                if (Gl.tiles[col][row] and hypot(
+                    Gl.tiles[col][row].rect.center[0] - self.hitbox.center[0],
+                    Gl.tiles[col][row].rect.center[1] - self.hitbox.center[1]) < self.xploradius):
+                    Gl.tiles[col][row] = None
+                    Gl.sfx_explosion.play()
+                    Gl.play_fx(Gl.fx_explosion_normal_big, row * Gl.tile_size - randint(32, 96), col * Gl.tile_size - randint(32, 96))
 
 
 
 class Pebble(Ball):
-    def __init__(self, x, y):
+    def __init__(self, x, y, player, entities):
         global img_pebble
-        Ball.__init__(self, img_pebble, 8, x, y)
+        Ball.__init__(self, img_pebble, 8, x, y, player, entities)
