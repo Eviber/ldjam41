@@ -26,12 +26,17 @@ class Gl:
     icon = pygame.image.load("icon.gif")
     pygame.display.set_icon(icon)
 
+    img_tutorial = pygame.image.load("tutorial.png")
+    img_ending = pygame.image.load("ending.png")
+
     bgcolor = (0, 0, 0)
     bgsheet = spritesheet.spritesheet("bg.png")
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
     tile_size = 32
     fullscr = False
+
+    level_finished = False
 
     input_down  = False
     input_left  = False

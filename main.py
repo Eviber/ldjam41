@@ -75,6 +75,9 @@ def update_entities(player, entities):
 def winframe():
     print("A winner is you!")
 
+def show(image):
+    Gl.screen.blit(image, image.get_rect())
+
 def main():
     entities = pygame.sprite.Group()
 
