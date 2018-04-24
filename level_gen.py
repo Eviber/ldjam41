@@ -25,7 +25,7 @@ class Cell:
 
 class CellularAutomata:
 
-    colors = [(60, 128, 255), (128, 200, 40), (224, 20, 28), (0,0,0), (255,255,255)]
+    colors = [(60, 128, 255), (128, 200, 40), (224, 20, 28), (0, 0, 0), (255, 255, 255)]
 
     viridis = [(200, 200, 200),
                (68, 1, 84),    (69, 55, 129),  (35, 138, 141),
@@ -157,13 +157,15 @@ class CellularAutomata:
                 return 0
             else:
                 s = nbhood[1:5]
-                if s == "0101" or s == "0111" or s == "0110" or s == "1101" or s == "1111" or s == "1110" or s == "1001" or s == "1011" or s == "1010":
+                if s == "0101" or s == "0111" or s == "0110" or s == "1101" or s == "1111" or s == "1110" or s == "1001" or s == "1011" or s == "1010" or s == "1001" or s == "0110":
                     return 1
                 else:
                     return 0
         elif mode == "SPRITE2":
             s = nbhood[1:5]
-            if s == "0101":
+            if nbhood[0] == '0':
+                return 0
+            elif s == "0101":
                 return 1
             elif s == "0111":
                 return 2
@@ -244,15 +246,15 @@ class CellularAutomata:
             grid.append(row)
         self.grid = grid
 
-    def display(self, mode=None):
+    def display(self, mode=None, dim=None):
         colorarr = self.colors if mode is None else self.viridis
 
         #print("DEBUG DISPLAY")
         #print(self.grid[2][2])
         #print(self.cell_width)
         #print(self.cell_height)
-        for row in self.grid:
-            for cell in row:
+        for y in range(self.height):
+            for x in range(self.width):
                 #print(cell.pos)
                 #print(self.cell_width)
                 #print(self.cell_height)
@@ -273,7 +275,6 @@ class CellularAutomata:
                     row.append(copy.copy(self.grid[y][x]))
             grid.append(row)
         self.grid = grid
-                    #self.grid[y][x] = Cell(0, self.grid, (x, y))
 
     def scale3x(self):
         """
@@ -418,20 +419,24 @@ class CellularAutomata:
                 if self.grid[y][x].color == 0:
                     heatmap[y][x] = dist_to_obst(x, y, self.grid)
 
- #       for row in heatmap:
- #           print(("".join(["\t" + str(x) for x in row])).join(","))
+        print("heatmap:")
+        for row in heatmap:
+            print(("".join(["\t" + str(x) for x in row])) + ",")
 
         heatlist = []
         for row in heatmap:
             for col in row:
                 heatlist.append(col)
+
+        print("heat list : ", heatlist)
+
         seen = []
         for i in heatlist:
             if not i in seen:
                 seen.append(i)
         seen.sort()
 
-        #print(seen)
+        print(seen)
 
         heatpoints = []
         for i in range(max(heatlist) - 1, len(seen) - 8, -2):
@@ -443,10 +448,12 @@ class CellularAutomata:
                         heatpoints.append((x, y))
                         heatmap[y][x] = -heatmap[y][x]
 
-        #for row in heatmap:
-        #    print("".join(["\t" + str(x) for x in row]), ",")
+        print("heatmap:")
+        for row in heatmap:
+            print("".join(["\t" + str(x) for x in row]), ",")
 
-        #print(heatpoints)
+        print("heatpoints")
+        print(heatpoints)
 
         point_to_map = []
         for i in range(len(heatpoints) - 1):
@@ -461,8 +468,8 @@ class CellularAutomata:
                 tup = key, dist
                 point_to_map.append(tup)
 
-        #for i in point_to_map:
-        #    print(i)
+        for i in point_to_map:
+            print(i)
 
         max_pair = ((0,0), (0,0))
         m = 0
@@ -471,7 +478,7 @@ class CellularAutomata:
                 max_pair = point_to_map[i][0]
                 m = point_to_map[i][1]
 
-        #print(m)
+        print(m)
         print(max_pair)
         print(max_pair[1])
 
@@ -480,6 +487,8 @@ class CellularAutomata:
             print(max_pair[1][1])
 
         max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] - 1))
+        if max_pair[0][1] > max_pair[1][1]:
+            max_pair = (max_pair[1], max_pair[0])
         return max_pair
 
 
