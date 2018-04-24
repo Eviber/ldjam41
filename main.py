@@ -103,9 +103,6 @@ def main():
 
         Gl.timer.tick(Gl.framerate)
         Gl.framecount += 1
-        if Gl.input_up:
-            Gl.input_up = False
-            Gl.levelfinished = True
         entities.empty()
 
     winframe()
