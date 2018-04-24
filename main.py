@@ -76,10 +76,10 @@ def update_entities(player, entities):
 def main():
     entities = pygame.sprite.Group()
 
-    player = Player(300, 300, entities)
+    player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size,  entities)
     entities.add(player)
 
-    entities.add(Ball(Gl.ball_golf, 10, 320, 250, player, entities))
+    entities.add(Ball(Gl.ball_golf, Gl.ball_golf_size, Gl.spawn_pos[0] * Gl.tile_size + 20, Gl.spawn_pos[1] * Gl.tile_size, player, entities))
 
 
     while True:

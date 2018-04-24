@@ -36,7 +36,7 @@ class Gl:
     tile_size = 32
     seed = randint(0, 100000000)
     print("seed -> ", seed)
-    level = map_gen(screen, seed = seed)
+    level, (spawn_pos, goal_pos) = map_gen(screen, seed = seed)
     level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
 
     fullscr = False
@@ -115,7 +115,9 @@ class Gl:
     @classmethod
     def set_balls(cls):
         cls.ball_golf = cls.sheet_balls.image_at((4, 4, 10, 10), cls.alpha)
+        cls.ball_golf_size = 10
         cls.ball_poke = cls.sheet_balls.image_at((18, 1, 16, 16), cls.alpha)
+        cls.ball_poke_size = 16
         cls.ball_bomb = cls.ball_poke
 
     @classmethod

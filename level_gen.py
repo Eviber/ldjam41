@@ -345,7 +345,7 @@ class CellularAutomata:
         for y in range(self.height):
             for x in range(self.width):
                 areas[y][x].color = 0 if areas[y][x].color == nb_maxarea else 1
-        print(areas)
+        #print(areas)
         self.grid = areas
 
 
@@ -418,8 +418,8 @@ class CellularAutomata:
                 if self.grid[y][x].color == 0:
                     heatmap[y][x] = dist_to_obst(x, y, self.grid)
 
-        for row in heatmap:
-            print(("".join(["\t" + str(x) for x in row])).join(","))
+ #       for row in heatmap:
+ #           print(("".join(["\t" + str(x) for x in row])).join(","))
 
         heatlist = []
         for row in heatmap:
@@ -470,8 +470,14 @@ class CellularAutomata:
                 m = point_to_map[i][1]
 
         #print(m)
-        #print(max_pair)
+        print(max_pair)
+        print(max_pair[1])
 
+        while self.grid[max_pair[1][1]][max_pair[1][0]] != 1:
+            max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] + 1))
+            print(max_pair[1][1])
+
+        max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] - 1))
         return max_pair
 
 
