@@ -437,6 +437,8 @@ class CellularAutomata:
         for i in range(max(heatlist) - 1, len(seen) - 8, -2):
             for y in range(self.height):
                 for x in range(self.width):
+                    if i < 0:
+                        break
                     if heatmap[y][x] == seen[i]:
                         heatpoints.append((x, y))
                         heatmap[y][x] = -heatmap[y][x]
@@ -546,7 +548,6 @@ def gen_walltemplate(x, y):
 
 
 def map_gen(screen, mapsize=(400,300), seed=4201337):
-    seed = 12
     #full map's size in pixels, the camera will show a portion
     random.seed(seed)
     colornb = 2
