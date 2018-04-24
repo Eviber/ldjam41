@@ -72,34 +72,41 @@ def update_entities(player, entities):
                         Gl.sfx_golf_hit.play()
 
 
+def winframe():
+    print("A winner is you!")
 
 def main():
     entities = pygame.sprite.Group()
 
-    player = Player(300, 300, entities)
-    entities.add(player)
+    for i in range(18):
+        Gl.set_camera_and_tiles(make_level())
+        Gl.levelfinished = False
+        player = Player(300, 300, entities)
+        entities.add(player)
+        entities.add(Ball(Gl.ball_golf, 10, 300, 300, player, entities))
 
-    entities.add(Ball(Gl.ball_golf, 10, 320, 250, player, entities))
+        while not Gl.levelfinished:
+            Gl.get_input()
 
+            if Gl.input_down and player.bombs > 0:
+                player.bombs -= 1
+                Gl.input_down = False
+                entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player, entities))
 
-    while True:
-        Gl.get_input()
+            update_entities(player, entities)
+            Gl.camera.update(player)
+            render(entities)
+            Gl.update_fx();
+            pygame.display.update()
 
-        if Gl.input_down and player.bombs > 0:
-            player.bombs -= 1
-            Gl.input_down = False
-            entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player, entities))
+            Gl.timer.tick(Gl.framerate)
+            Gl.framecount += 1
+            if Gl.input_up:
+                Gl.input_up = False
+                Gl.levelfinished = True
+        entities.empty()
 
-        update_entities(player, entities)
-        Gl.camera.update(player)
-        render(entities)
-        Gl.update_fx();
-        pygame.display.update()
-
-        Gl.timer.tick(Gl.framerate)
-        Gl.framecount += 1
-
-
+    winframe()
 
 if(__name__ == "__main__"):
     main()

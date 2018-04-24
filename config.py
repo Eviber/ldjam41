@@ -31,11 +31,6 @@ class Gl:
     bg = bgsheet.image_at((0, 0, 2000, 992), bgcolor)
 
     tile_size = 32
-    seed = randint(0, 100000000)
-    print("seed -> ", seed)
-    level = map_gen(screen, seed = seed)
-    level_size = (level_width, level_height) = (len(level[0]) * tile_size, len(level) * tile_size)
-
     fullscr = False
 
     input_down  = False
@@ -182,6 +177,11 @@ class Tile(object):
         self.rect = pygame.Rect(x, y, Gl.tile_size, Gl.tile_size)
 
 def make_level():
+    Gl.seed = randint(0, 100000000)
+    print("seed -> ", Gl.seed)
+    Gl.level = map_gen(Gl.screen, seed = Gl.seed)
+    Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
+
     tiles = []
     tile_x = 0
     tile_y = 0
@@ -220,6 +220,5 @@ def make_level():
 import camera
 
 Gl.set_tileset()
-Gl.set_camera_and_tiles(make_level())
 Gl.set_balls()
 Gl.set_fx()
