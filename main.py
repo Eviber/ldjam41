@@ -72,20 +72,22 @@ def update_entities(player, entities):
                         Gl.sfx_golf_hit.play()
 
 
+def winframe():
+    print("A winner is you!")
+
 def show(image):
     Gl.screen.blit(image, image.get_rect())
-
 
 def main():
     entities = pygame.sprite.Group()
 
-    player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size,  entities)
+    Gl.set_camera_and_tiles(make_level())
+    Gl.levelfinished = False
+    player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size, entities)
     entities.add(player)
-
     entities.add(Ball(Gl.ball_golf, Gl.ball_golf_size, Gl.spawn_pos[0] * Gl.tile_size + 20, Gl.spawn_pos[1] * Gl.tile_size, player, entities))
 
-
-    while True:
+    while not Gl.levelfinished:
         Gl.get_input()
 
         if Gl.input_down and player.bombs > 0:
@@ -101,8 +103,12 @@ def main():
 
         Gl.timer.tick(Gl.framerate)
         Gl.framecount += 1
+        if Gl.input_up:
+            Gl.input_up = False
+            Gl.levelfinished = True
+        entities.empty()
 
-
+    winframe()
 
 if(__name__ == "__main__"):
     main()
