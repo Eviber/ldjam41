@@ -60,6 +60,8 @@ class Ball(Entity):
             self.roll()
         else:
             self.idle()
+        if self.rect.colliderect(pygame.rect.Rect(Gl.goal_pos[0] * Gl.tile_size, Gl.goal_pos[1] * Gl.tile_size, Gl.tile_size, Gl.tile_size)) and self.size == 10:
+            Gl.level_finished = True
         collided = len(self.update_rect())
         if (self.can_explode and collided and self.vel_x * self.vel_x + self.vel_y * self.vel_y > 50000):
             self.explode()

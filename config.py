@@ -38,6 +38,8 @@ class Gl:
 
     fullscr = False
 
+    level_finished = False
+
     input_down  = False
     input_left  = False
     input_up    = False
