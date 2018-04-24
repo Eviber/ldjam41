@@ -223,6 +223,7 @@ def make_level():
             tile_x += 1
         tile_x = 0
         tile_y += 1
+    tiles[Gl.goal_pos[1]][Gl.goal_pos[0]] = Tile(Gl.goal_flag, Gl.tile_size * Gl.goal_pos[0], Gl.tile_size * Gl.goal_pos[1])
     return tiles
 
 import camera

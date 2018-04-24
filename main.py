@@ -108,8 +108,6 @@ def main():
         Gl.timer.tick(Gl.framerate)
         Gl.framecount += 1
 
-        Gl.level_finished = Gl.input_up
-
     show(Gl.img_ending)
 
 
