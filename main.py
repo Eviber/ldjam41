@@ -72,6 +72,9 @@ def update_entities(player, entities):
                         Gl.sfx_golf_hit.play()
 
 
+def show(image):
+    Gl.screen.blit(image, image.get_rect())
+
 
 def main():
     entities = pygame.sprite.Group()
