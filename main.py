@@ -77,8 +77,11 @@ def winframe():
 
 def show(image):
     Gl.screen.blit(image, image.get_rect())
+    pygame.display.update()
+    Gl.timer.tick(1)
 
 def main():
+    show(Gl.img_tutorial)
     entities = pygame.sprite.Group()
 
     Gl.set_camera_and_tiles(make_level())
@@ -87,7 +90,8 @@ def main():
     entities.add(player)
     entities.add(Ball(Gl.ball_golf, Gl.ball_golf_size, Gl.spawn_pos[0] * Gl.tile_size + 20, Gl.spawn_pos[1] * Gl.tile_size, player, entities))
 
-    while not Gl.levelfinished:
+
+    while not Gl.level_finished:
         Gl.get_input()
 
         if Gl.input_down and player.bombs > 0:
@@ -103,9 +107,11 @@ def main():
 
         Gl.timer.tick(Gl.framerate)
         Gl.framecount += 1
-        entities.empty()
 
-    winframe()
+        Gl.level_finished = Gl.input_up
+
+    show(Gl.img_ending)
+
 
 if(__name__ == "__main__"):
     main()
