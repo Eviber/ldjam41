@@ -101,7 +101,8 @@ class Gl:
 
     @classmethod
     def set_tileset(cls):
-        cls.tileset =[[cls.sheet_tiles.image_at(pygame.Rect(x * cls.tile_size, y * cls.tile_size, cls.tile_size, cls.tile_size), cls.alpha) for x in range(3)] for y in range(3)]
+        cls.tileset = [[cls.sheet_tiles.image_at((x * cls.tile_size, y * cls.tile_size, cls.tile_size, cls.tile_size), cls.alpha) for x in range(3)] for y in range(3)]
+        cls.goal_flag = cls.sheet_balls.image_at((1, 18, 32, 48), cls.alpha)
 
     @classmethod
     def set_camera_and_tiles(cls, tiles):

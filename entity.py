@@ -59,10 +59,10 @@ class Entity(pygame.sprite.Sprite):
         lvl_w = Gl.level_width / Gl.tile_size
         lvl_h = Gl.level_height / Gl.tile_size
         for row in rows:
-            if row < 0 or row > lvl_h:
+            if row < 0 or row > lvl_w:
                 break
             for col in cols:
-                if col < 0 or col > lvl_w:
+                if col < 0 or col > lvl_h:
                     break
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
@@ -91,10 +91,10 @@ class Entity(pygame.sprite.Sprite):
         lvl_w = Gl.level_width / Gl.tile_size
         lvl_h = Gl.level_height / Gl.tile_size
         for row in rows:
-            if row < 0 or row > lvl_h:
+            if row < 0 or row > lvl_w:
                 break
             for col in cols:
-                if col < 0 or col > lvl_w:
+                if col < 0 or col > lvl_h:
                     break
                 tile = Gl.tiles[col][row]
                 if tile and floor.colliderect(tile.rect):
