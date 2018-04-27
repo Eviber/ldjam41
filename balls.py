@@ -88,10 +88,10 @@ class Bomb(Ball):
         lvl_w = Gl.level_width / Gl.tile_size
         lvl_h = Gl.level_height / Gl.tile_size
         for row in rows:
-            if row < 0 or row > lvl_w:
+            if row < 0 or row >= lvl_w:
                 break
             for col in cols:
-                if col < 0 or col > lvl_h:
+                if col < 0 or col >= lvl_h:
                     break
                 if (Gl.tiles[col][row] and hypot(
                     Gl.tiles[col][row].rect.center[0] - self.hitbox.center[0],
