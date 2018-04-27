@@ -62,7 +62,7 @@ class Entity(pygame.sprite.Sprite):
             if row < 0 or row >= lvl_w:
                 break
             for col in cols:
-                if col < 0 or col >= lvl_h:
+                if col < 0 or col >= lvl_h or (row, col) == Gl.goal_pos:
                     break
                 tile = Gl.tiles[col][row]
                 if tile and self.hitbox.colliderect(tile.rect):
