@@ -46,7 +46,7 @@ class Ball(Entity):
         self.isrolling = False
         self.inair = True
         self.vel_x += xvel if not self.player.flip else -xvel
-        print("face left : " if self.player.flip else "face right :", xvel, self.vel_x)
+        #print("face left : " if self.player.flip else "face right :", xvel, self.vel_x)
         self.vel_y -= yvel
 
     def explode(self):

@@ -419,16 +419,16 @@ class CellularAutomata:
                 if self.grid[y][x].color == 0:
                     heatmap[y][x] = dist_to_obst(x, y, self.grid)
 
-        print("heatmap:")
-        for row in heatmap:
-            print(("".join(["\t" + str(x) for x in row])) + ",")
+        #print("heatmap:")
+        #for row in heatmap:
+            #print(("".join(["\t" + str(x) for x in row])) + ",")
 
         heatlist = []
         for row in heatmap:
             for col in row:
                 heatlist.append(col)
 
-        print("heat list : ", heatlist)
+        #print("heat list : ", heatlist)
 
         seen = []
         for i in heatlist:
@@ -436,7 +436,7 @@ class CellularAutomata:
                 seen.append(i)
         seen.sort()
 
-        print(seen)
+        #print(seen)
 
         heatpoints = []
         for i in range(max(heatlist) - 1, len(seen) - 8, -2):
@@ -448,12 +448,12 @@ class CellularAutomata:
                         heatpoints.append((x, y))
                         heatmap[y][x] = -heatmap[y][x]
 
-        print("heatmap:")
-        for row in heatmap:
-            print("".join(["\t" + str(x) for x in row]), ",")
+        #print("heatmap:")
+        #for row in heatmap:
+            #print("".join(["\t" + str(x) for x in row]), ",")
 
-        print("heatpoints")
-        print(heatpoints)
+        #print("heatpoints")
+        #print(heatpoints)
 
         point_to_map = []
         for i in range(len(heatpoints) - 1):
@@ -468,8 +468,8 @@ class CellularAutomata:
                 tup = key, dist
                 point_to_map.append(tup)
 
-        for i in point_to_map:
-            print(i)
+        #for i in point_to_map:
+            #print(i)
 
         max_pair = ((0,0), (0,0))
         m = 0
@@ -478,13 +478,13 @@ class CellularAutomata:
                 max_pair = point_to_map[i][0]
                 m = point_to_map[i][1]
 
-        print(m)
-        print(max_pair)
-        print(max_pair[1])
+        #print(m)
+        #print(max_pair)
+        #print(max_pair[1])
 
         while self.grid[max_pair[1][1]][max_pair[1][0]] != 1:
             max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] + 1))
-            print(max_pair[1][1])
+            #print(max_pair[1][1])
 
         max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] - 1))
         if max_pair[0][1] > max_pair[1][1]:
@@ -606,9 +606,9 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
             grid.floodfill()
             #print(grid)
             grid.scale3x()
-            print(grid)
+            #print(grid)
             spawnpos_n_goalpos_2tup = grid.build_obstacle_heatmap_and_heatpoints()
-            print(spawnpos_n_goalpos_2tup)
+            #print(spawnpos_n_goalpos_2tup)
             grid.update(mode="SPRITE1")
             grid.update(mode="SPRITE2")
             #if debug:

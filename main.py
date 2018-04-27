@@ -72,9 +72,6 @@ def update_entities(player, entities):
                         Gl.sfx_golf_hit.play()
 
 
-def winframe():
-    print("A winner is you!")
-
 def show(image):
     Gl.screen.blit(image, image.get_rect())
     pygame.display.update()
