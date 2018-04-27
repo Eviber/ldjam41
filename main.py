@@ -78,10 +78,19 @@ def winframe():
 def show(image):
     Gl.screen.blit(image, image.get_rect())
     pygame.display.update()
-    Gl.timer.tick(1)
 
 def main():
     show(Gl.img_tutorial)
+    space = False
+    while not space:
+        for e in pygame.event.get():
+            if e.type == QUIT:
+                sys.exit()
+            if e.type == KEYDOWN:
+                if e.key in (K_ESCAPE, K_q):
+                    sys.exit()
+                if e.key == K_SPACE:
+                    space = True
     entities = pygame.sprite.Group()
 
     Gl.set_camera_and_tiles(make_level())
@@ -109,7 +118,7 @@ def main():
         Gl.framecount += 1
 
     show(Gl.img_ending)
-
+    pygame.time.wait(2000)
 
 if(__name__ == "__main__"):
     main()
