@@ -184,11 +184,16 @@ class Tile(object):
         self.rect = pygame.Rect(x, y, Gl.tile_size, Gl.tile_size)
 
 def make_level():
-    seed(time.get_ticks())
-    Gl.seed = randint(0, 100000000)
-    print("seed -> ", Gl.seed)
-    Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = Gl.seed)
-    Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
+    while True:
+        seed(time.get_ticks())
+        Gl.seed = randint(0, 100000000)
+        try:
+            Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = Gl.seed)
+        except Exception:
+            continue
+        Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
+        print("seed -> ", Gl.seed)
+        break
 
     tiles = []
     tile_x = 0
