@@ -49,6 +49,7 @@ class Gl:
     sheet_tiger = spritesheet.spritesheet("tiger.png")
     sheet_balls = spritesheet.spritesheet("balls.png")
     sheet_fx    = spritesheet.spritesheet("fx.png")
+    sheet_load  = spritesheet.spritesheet("load.png")
 
     sfx_explosion   = pygame.mixer.Sound("sfx_explosion.wav")
     sfx_ball_bounce = pygame.mixer.Sound("sfx_ball_bounce.wav")

@@ -90,32 +90,40 @@ def main():
                     space = True
     entities = pygame.sprite.Group()
 
-    Gl.set_camera_and_tiles(make_level())
-    Gl.levelfinished = False
-    player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size, entities)
-    entities.add(player)
-    entities.add(Ball(Gl.ball_golf, Gl.ball_golf_size, Gl.spawn_pos[0] * Gl.tile_size + 20, Gl.spawn_pos[1] * Gl.tile_size, player, entities))
+    for i in range(18):
+        show(Gl.sheet_load.image_at((  0,  360 * i,640,360), Gl.alpha))
+        entities.empty()
+        Gl.set_camera_and_tiles(make_level())
+        Gl.levelfinished = False
+        player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size, entities)
+        entities.add(player)
+        entities.add(Ball(Gl.ball_golf, Gl.ball_golf_size, Gl.spawn_pos[0] * Gl.tile_size + 20, Gl.spawn_pos[1] * Gl.tile_size, player, entities))
+        Gl.level_finished = False
 
+        while not Gl.level_finished:
+            Gl.get_input()
 
-    while not Gl.level_finished:
-        Gl.get_input()
+            if Gl.input_down and player.bombs > 0:
+                player.bombs -= 1
+                Gl.input_down = False
+                entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player, entities))
 
-        if Gl.input_down and player.bombs > 0:
-            player.bombs -= 1
-            Gl.input_down = False
-            entities.add(Bomb(player.hitbox.center[0], player.hitbox.center[1], player, entities))
+            update_entities(player, entities)
+            Gl.camera.update(player)
+            render(entities)
+            Gl.update_fx();
+            pygame.display.update()
 
-        update_entities(player, entities)
-        Gl.camera.update(player)
-        render(entities)
-        Gl.update_fx();
-        pygame.display.update()
+            Gl.timer.tick(Gl.framerate)
+            Gl.framecount += 1
 
-        Gl.timer.tick(Gl.framerate)
-        Gl.framecount += 1
 
     show(Gl.img_ending)
-    pygame.time.wait(2000)
+    finished = False
+    while not finished:
+        for e in pygame.event.get():
+            if e.type == QUIT or e.type == KEYDOWN:
+                finished = True
 
 if(__name__ == "__main__"):
     main()
