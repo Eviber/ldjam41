@@ -3,6 +3,8 @@ import random
 import copy
 
 
+debug = True
+
 
 class Cell:
     def __init__(self, color, grid, pos):
@@ -419,16 +421,16 @@ class CellularAutomata:
                 if self.grid[y][x].color == 0:
                     heatmap[y][x] = dist_to_obst(x, y, self.grid)
 
-        #print("heatmap:")
-        #for row in heatmap:
-            #print(("".join(["\t" + str(x) for x in row])) + ",")
+        print("heatmap:")
+        for row in heatmap:
+            print(("".join(["\t" + str(x) for x in row])) + ",")
 
         heatlist = []
         for row in heatmap:
             for col in row:
                 heatlist.append(col)
 
-        #print("heat list : ", heatlist)
+        print("heat list : ", heatlist)
 
         seen = []
         for i in heatlist:
@@ -436,10 +438,10 @@ class CellularAutomata:
                 seen.append(i)
         seen.sort()
 
-        #print(seen)
+        print(seen)
 
         heatpoints = []
-        for i in range(max(heatlist) - 1, len(seen) - 8, -2):
+        for i in range(seen.index(max(heatlist) - 1), len(seen) - 8, -2):
             for y in range(self.height):
                 for x in range(self.width):
                     if i < 0:
@@ -493,6 +495,7 @@ class CellularAutomata:
 
 
     def build_manhattan_distance_map(self, x, y, m, n, obstmap):
+        #returns a manhattan distance heatmap with obstacles
         k = 0
         kmax = 1
         distmap_center_xy = [[-1 for x in range(n)] for y in range(m)]
@@ -511,6 +514,9 @@ class CellularAutomata:
                             distmap_center_xy[y][x+1] = k+1
                         kmax = k+1
             k += 1
+        if debug:
+            print("Manhattan map centered in " + str((x, y)))
+            print(distmap_center_xy)
         return distmap_center_xy
 
 
@@ -604,17 +610,17 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
             #tmp = zeros(grid.width, grid.height)
             #loots = grid.get_areas
             grid.floodfill()
-            #print(grid)
+            print(grid)
             grid.scale3x()
-            #print(grid)
+            print(grid)
             spawnpos_n_goalpos_2tup = grid.build_obstacle_heatmap_and_heatpoints()
-            #print(spawnpos_n_goalpos_2tup)
+            print(spawnpos_n_goalpos_2tup)
             grid.update(mode="SPRITE1")
             grid.update(mode="SPRITE2")
-            #if debug:
-            #    print(grid)
+            if Gl.debug:
+                print(grid)
             done = 1
         i += 1
 
-    #grid.display("SPRITE")
+    grid.display("SPRITE")
     return grid.grid, spawnpos_n_goalpos_2tup

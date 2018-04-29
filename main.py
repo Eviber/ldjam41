@@ -30,6 +30,7 @@ def render(entities):
 
 
 
+
 def update_entities(player, entities):
     player_status = player.status
     player_inair = player.inair

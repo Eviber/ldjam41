@@ -8,7 +8,7 @@ pygame.display.set_caption("Golf Rush")
 pygame.mixer.init(44000)
 
 class Gl:
-    debug = 0
+    debug = True
     size = (win_width, win_height) = (640, 360)
 
     screen_rect = pygame.Rect(0, 0, win_width, win_height)
@@ -188,10 +188,13 @@ def make_level():
     while True:
         seed(time.get_ticks())
         Gl.seed = randint(0, 100000000)
-        try:
-            Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = Gl.seed)
-        except Exception:
-            continue
+        if not Gl.debug:
+            try:
+                Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = Gl.seed)
+            except Exception:
+                continue
+        else:
+            Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = 4201337) #seed = Gl.seed)
         Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
         print("seed -> ", Gl.seed)
         break
