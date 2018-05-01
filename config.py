@@ -196,7 +196,7 @@ def make_level(lvl_nb):
 #        except Exception:
 #            continue
 #    else:
-    Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, mapsize=map_cell_dims, seed = Gl.seed)
+    Gl.level, (Gl.spawn_pos, Gl.goal_pos), Gl.minimap = map_gen(Gl.screen, mapsize=map_cell_dims, seed = Gl.seed)
     Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
     print("seed -> ", Gl.seed)
 

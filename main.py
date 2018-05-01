@@ -27,6 +27,7 @@ def render(entities):
             rect = Gl.camera.apply(e.fx.rect)
             if (rect.colliderect(Gl.screen_rect)):
                 Gl.screen.blit(e.fx.image, rect)
+    Gl.screen.blit(Gl.minimap, Gl.minimap.get_rect().move(20,20))
 
 
 

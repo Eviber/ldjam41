@@ -25,7 +25,6 @@ class Cell:
 class CellularAutomata:
 
     colors = [(60, 128, 255), (128, 200, 40), (224, 20, 28), (0, 0, 0), (255, 255, 255)]
-
     viridis = [(200, 200, 200),
                (68, 1, 84),    (69, 55, 129),  (35, 138, 141),
                (31, 150, 139), (41, 175, 127), (85, 198, 103),
@@ -186,7 +185,6 @@ class CellularAutomata:
             else:
                 return 0
 
-
     def update_rule(self, mode=None):
         if mode is None:
             mode = 7
@@ -207,7 +205,6 @@ class CellularAutomata:
                                 res = "".join(s)
                                 dict[res] = self.child_choice(mode, res)
         return dict
-
 
     def get_nbhood(self, x, y, rank):
         #rank == 0 => manhattan nbhood, dist 1 ; rank == 1 => square nbh, dist 1
@@ -242,14 +239,14 @@ class CellularAutomata:
             for x in range(self.width):
                 s = self.get_nbhood(x, y, rank)
                 color = dict[s]
-                row.append(Cell(color, self.grid, (x * self.cell_width, y * self.cell_height)))
+                row.append(Cell(color, self.grid, (x, y)))
             grid.append(row)
         self.grid = grid
 
-
-    def display(self, mode=None, dim=None):
+    def build_minimap(self, spawn_n_goal, mode=None, dim=None):
         colorarr = self.colors if mode is None else self.viridis
-
+        minimap = pygame.Surface((self.width * self.cell_width, self.height * self.cell_height))
+        """
         #print("DEBUG DISPLAY")
         #print(self.grid[2][2])
         #print(self.cell_width)
@@ -257,11 +254,23 @@ class CellularAutomata:
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.grid[y][x]
-                #print(cell.pos)
                 pygame.draw.rect(self.screen,
                                  colorarr[cell.color],
                                  pygame.Rect((cell.pos[0], cell.pos[1]),
                                              (self.cell_width, self.cell_height)))
+        """
+        for y in range(self.height):
+            for x in range(self.width):
+                if (x,y) == spawn_n_goal[0]:
+                    color = (0, 0, 0)
+                elif (x,y) == spawn_n_goal[1]:
+                    color = (255, 255, 255)
+                else:
+                    color = colorarr[self.grid[y][x].color]
+                for px in range(self.cell_height):
+                    for py in range(self.cell_width):
+                        minimap.set_at((x * self.cell_width + px, y * self.cell_height + py), color)
+        return minimap
 
 
     def clean(self, boolgrid):
@@ -314,8 +323,6 @@ class CellularAutomata:
                 row += tiles_9by9[y * self.width + x][start:start+3]
             sl.append(row)
         self.update_grid_with_strls(sl)
-        self.cell_width = int(self.screen.get_width() / self.width)
-        self.cell_height = int(self.screen.get_height() / self.height)
 
 
     def floodfill(self):
@@ -353,7 +360,7 @@ class CellularAutomata:
         self.grid = areas
 
 
-    def build_obstacle_heatmap_and_heatpoints(self):
+    def build_spawnpos_and_goalpos(self):
         #heatmaps = disttoobst foreach (x,y)
         #heatpoints = list of topological maxima in discrete manifold/"heat mountaintops"
 
@@ -532,7 +539,6 @@ def gen_walltemplate(x, y):
     return res
 
 
-
 def map_gen(screen, mapsize=(400,300), seed=4201337):
     #full map's size in pixels, the camera will show a portion
     random.seed(seed)
@@ -585,7 +591,7 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
             print(grid)
             grid.scale3x()
             print(grid)
-            spawnpos_n_goalpos_2tup = grid.build_obstacle_heatmap_and_heatpoints()
+            spawnpos_n_goalpos_2tup = grid.build_spawnpos_and_goalpos()
             print(spawnpos_n_goalpos_2tup)
             grid.update(mode="SPRITE1")
             grid.update(mode="SPRITE2")
@@ -593,6 +599,5 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
             done = 1
         i += 1
 
-    #map_rect = \
-    grid.display(mode="SPRITE")
-    return grid.grid, spawnpos_n_goalpos_2tup #, map_rect
+    minimap = grid.build_minimap(spawnpos_n_goalpos_2tup, mode="SPRITE")
+    return grid.grid, spawnpos_n_goalpos_2tup, minimap
