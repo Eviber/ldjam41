@@ -37,6 +37,8 @@ class Gl:
     fullscr = False
 
     level_finished = False
+    init_map_size = (200, 150)
+    level_size_incr = 5
 
     input_down  = False
     input_left  = False
@@ -184,20 +186,19 @@ class Tile(object):
         self.image = image
         self.rect = pygame.Rect(x, y, Gl.tile_size, Gl.tile_size)
 
-def make_level():
-    while True:
-        seed(time.get_ticks())
-        Gl.seed = randint(0, 100000000)
-        if not Gl.debug:
-            try:
-                Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = Gl.seed)
-            except Exception:
-                continue
-        else:
-            Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, seed = 4201337) #seed = Gl.seed)
-        Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
-        print("seed -> ", Gl.seed)
-        break
+def make_level(lvl_nb):
+    seed(time.get_ticks())
+    Gl.seed = randint(0, 100000000)
+    map_cell_dims = (Gl.init_map_size[0] + lvl_nb * Gl.level_size_incr * 4, Gl.init_map_size[1] + lvl_nb * Gl.level_size_incr * 3)
+#    if not Gl.debug:
+#        try:
+#            Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, mapsize=map_cell_dims, seed = Gl.seed)
+#        except Exception:
+#            continue
+#    else:
+    Gl.level, (Gl.spawn_pos, Gl.goal_pos) = map_gen(Gl.screen, mapsize=map_cell_dims, seed = Gl.seed)
+    Gl.level_size = (Gl.level_width, Gl.level_height) = (len(Gl.level[0]) * Gl.tile_size, len(Gl.level) * Gl.tile_size)
+    print("seed -> ", Gl.seed)
 
     tiles = []
     tile_x = 0

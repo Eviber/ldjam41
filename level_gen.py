@@ -3,9 +3,6 @@ import random
 import copy
 
 
-debug = True
-
-
 class Cell:
     def __init__(self, color, grid, pos):
         self.color = color
@@ -34,6 +31,9 @@ class CellularAutomata:
                (31, 150, 139), (41, 175, 127), (85, 198, 103),
                (115, 208, 85), (184, 222, 41), (253, 231, 37)]
 
+    cell_width = 3
+    cell_height = 3
+
     def __init__(self, colornb, width, height, screen, seed=None):
         self.colornb = colornb
         self.width = width      #number of cells
@@ -47,12 +47,14 @@ class CellularAutomata:
                     color = random.randrange(colornb)
                     row.append(Cell(color, self.grid, (x, y)))
                 self.grid.append(row)
-            self.cell_width = int(screen.get_width() / width)  # size of cells
-            self.cell_height = int(screen.get_height() / height)
         else:
             self.update_grid_with_strls(seed)
         self.update_dict = self.update_rule()
         #print(self.update_dict)
+
+    def inbounds(self, point):
+        return (0 <= point[0] and point[0] <= self.width and
+                0 <= point[1] and point[1] <= self.height)
 
     def update_grid_with_strls(self, sl):
         height = len(sl)
@@ -60,10 +62,6 @@ class CellularAutomata:
         self.grid = [[Cell(int(sl[y][x]), self.grid, (x, y)) for x in range(width)] for y in range(height)]
         self.height = height
         self.width = width
-        self.cell_width = int(self.screen.get_width() / width)
-        self.cell_height = int(self.screen.get_height() / height)
-        #print(width, height)
-        #print(self.cell_width, self.cell_height)
 
     def child_choice(self, mode, nbhood):
 
@@ -248,6 +246,7 @@ class CellularAutomata:
             grid.append(row)
         self.grid = grid
 
+
     def display(self, mode=None, dim=None):
         colorarr = self.colors if mode is None else self.viridis
 
@@ -257,13 +256,13 @@ class CellularAutomata:
         #print(self.cell_height)
         for y in range(self.height):
             for x in range(self.width):
+                cell = self.grid[y][x]
                 #print(cell.pos)
-                #print(self.cell_width)
-                #print(self.cell_height)
                 pygame.draw.rect(self.screen,
                                  colorarr[cell.color],
                                  pygame.Rect((cell.pos[0], cell.pos[1]),
                                              (self.cell_width, self.cell_height)))
+
 
     def clean(self, boolgrid):
         #boolgrid should be false on unstable spots
@@ -277,6 +276,7 @@ class CellularAutomata:
                     row.append(copy.copy(self.grid[y][x]))
             grid.append(row)
         self.grid = grid
+
 
     def scale3x(self):
         """
@@ -316,6 +316,7 @@ class CellularAutomata:
         self.update_grid_with_strls(sl)
         self.cell_width = int(self.screen.get_width() / self.width)
         self.cell_height = int(self.screen.get_height() / self.height)
+
 
     def floodfill(self):
 
@@ -359,78 +360,57 @@ class CellularAutomata:
         heatmap = [[0 for x in range(self.width)] for y in range(self.height)]
 
         def dist_to_obst(x, y, map):
-
-            tested_grid = [[False for x in range(self.width)] for y in range(self.height)]
-
-            def floodfill_backtrack(x, y, map, dist, depth, tested_grid, rotiter):
-                if tested_grid[y][x]:
-                    return
-                tested_grid[y][x] = True
-                if depth >= dist[0]:
-                    return
-                if map[y][x].color == 0:
-                    if rotiter == 0:
-                        if x != 0:
-                            floodfill_backtrack(x - 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if x != self.width:
-                            floodfill_backtrack(x + 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if y != 0:
-                            floodfill_backtrack(x, y - 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if y != self.height:
-                            floodfill_backtrack(x, y + 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-
-                    elif rotiter == 1:
-                        if x != self.width:
-                            floodfill_backtrack(x + 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if y != 0:
-                            floodfill_backtrack(x, y - 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if y != self.height:
-                            floodfill_backtrack(x, y + 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if x != 0:
-                            floodfill_backtrack(x - 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-
-                    elif rotiter == 2:
-                        if y != 0:
-                            floodfill_backtrack(x, y - 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if y != self.height:
-                            floodfill_backtrack(x, y + 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if x != 0:
-                            floodfill_backtrack(x - 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if x != self.width:
-                            floodfill_backtrack(x + 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-
-                    else:
-                        if y != self.height:
-                            floodfill_backtrack(x, y + 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if x != 0:
-                            floodfill_backtrack(x - 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if x != self.width:
-                            floodfill_backtrack(x + 1, y, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-                        if y != 0:
-                            floodfill_backtrack(x, y - 1, map, dist, depth + 1, tested_grid, (rotiter + 1) % 4)
-
-
-                else:
-                    dist[0] = depth
-            dist = [500]
-            floodfill_backtrack(x, y, map, dist, 0, tested_grid, 4)
-            return dist[0]
+            if map[y][x] == 1:
+                return 0
+            def circle_of_manhattan_radius_n(map, center, n):
+                points = []
+                for orient in range(4): #building the points in the trigonometric order
+                    iter = (0,0)
+                    start = (0,0)
+                    if orient == 0:     #east
+                        start = (x + n, y    )
+                        iter = (-1, -1)
+                    elif orient == 1:   #north
+                        start = (x    , y - n)
+                        iter = (-1,  1)
+                    elif orient == 2:   #west
+                        start = (x - n, y    )
+                        iter = ( 1,  1)
+                    else:               #south
+                        start = (x    , y + n)
+                        iter = ( 1, -1)
+                    for i in range(n):
+                        if self.inbounds(start):
+                            points.append(start)
+                        start = (start[0] + iter[0], start[1] + iter[1])
+                return points
+            d2o = -1
+            tmpd2o = 1
+            while d2o == -1:
+                points = circle_of_manhattan_radius_n(map, (x, y), tmpd2o)
+                #print(points)
+                for p in points:
+                    if map[p[1]][p[0]] == 1:
+                        d2o = tmpd2o
+                        break
+                tmpd2o += 1
+            return d2o
 
         for y in range(self.height):
             for x in range(self.width):
                 if self.grid[y][x].color == 0:
                     heatmap[y][x] = dist_to_obst(x, y, self.grid)
 
-        print("heatmap:")
-        for row in heatmap:
-            print(("".join(["\t" + str(x) for x in row])) + ",")
+        #print("heatmap:")
+        #for row in heatmap:
+        #    print(("".join(["\t" + str(x) for x in row])) + ",")
 
         heatlist = []
         for row in heatmap:
             for col in row:
                 heatlist.append(col)
 
-        print("heat list : ", heatlist)
+        #print("heat list : ", heatlist)
 
         seen = []
         for i in heatlist:
@@ -438,85 +418,74 @@ class CellularAutomata:
                 seen.append(i)
         seen.sort()
 
-        print(seen)
+        #print(seen)
 
         heatpoints = []
-        for i in range(seen.index(max(heatlist) - 1), len(seen) - 8, -2):
-            for y in range(self.height):
-                for x in range(self.width):
-                    if i < 0:
-                        break
-                    if heatmap[y][x] == seen[i]:
-                        heatpoints.append((x, y))
-                        heatmap[y][x] = -heatmap[y][x]
+        maxval = seen[-1]
+        for y in range(self.height):
+            for x in range(self.width):
+                if i < 0:
+                    break
+                if heatmap[y][x] == maxval:
+                    heatpoints.append((x, y))
+                    heatmap[y][x] = -heatmap[y][x]
 
         #print("heatmap:")
         #for row in heatmap:
-            #print("".join(["\t" + str(x) for x in row]), ",")
+        #    print("".join(["\t" + str(x) for x in row]), ",")
 
         #print("heatpoints")
         #print(heatpoints)
 
-        point_to_map = []
-        for i in range(len(heatpoints) - 1):
-            p1 = heatpoints[i]
-            #print("P1" + str(p1))
-            distmap = self.build_manhattan_distance_map(p1[0], p1[1], self.height, self.width, self.grid)
-            for j in range(i+1, len(heatpoints)):
-                p2 = heatpoints[j]
-                #print("P2" + str(p2))
-                key = (p1, p2)
-                dist = distmap[p2[1]][p2[0]]
-                tup = key, dist
-                point_to_map.append(tup)
+        x, y = random.choice(heatpoints)
+        while self.grid[y+1][x].color != 1:
+            y += 1
 
-        #for i in point_to_map:
-            #print(i)
+        goalpos = (x, y)
 
-        max_pair = ((0,0), (0,0))
-        m = 0
-        for i in range(len(point_to_map)):
-            if point_to_map[i][1] > m:
-                max_pair = point_to_map[i][0]
-                m = point_to_map[i][1]
+        distmap = self.build_manhattan_distance_map(x, y)
+        maxdist = 0
+        maxp = (0,0)
+        for y in range(self.height):
+            for x in range(self.width):
+                if distmap[y][x] >= maxdist:
+                    maxdist = distmap[y][x]
+                    maxp = (x,y)
 
-        #print(m)
-        #print(max_pair)
-        #print(max_pair[1])
+        while self.grid[maxp[1]+1][maxp[0]].color != 1:
+            maxp = (maxp[0], maxp[1] + 1)
 
-        while self.grid[max_pair[1][1]][max_pair[1][0]] != 1:
-            max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] + 1))
-            #print(max_pair[1][1])
+        self.grid[maxp[1] - 1][maxp[0] - 1].color = 0
+        self.grid[maxp[1] - 1][maxp[0]    ].color = 0
+        self.grid[maxp[1] - 1][maxp[0] + 1].color = 0
+        self.grid[maxp[1]    ][maxp[0] - 1].color = 0
+        self.grid[maxp[1]    ][maxp[0] + 1].color = 0
 
-        max_pair = (max_pair[0], (max_pair[1][0], max_pair[1][1] - 1))
-        if max_pair[0][1] > max_pair[1][1]:
-            max_pair = (max_pair[1], max_pair[0])
-        return max_pair
+        return maxp, goalpos
 
 
-    def build_manhattan_distance_map(self, x, y, m, n, obstmap):
+    def build_manhattan_distance_map(self, x, y):
         #returns a manhattan distance heatmap with obstacles
         k = 0
         kmax = 1
-        distmap_center_xy = [[-1 for x in range(n)] for y in range(m)]
+        distmap_center_xy = [[-1 for x in range(self.width)] for y in range(self.height)]
         distmap_center_xy[y][x] = 0
         while k <= kmax:
-            for y in range(m):
-                for x in range(n):
+            for y in range(self.height):
+                for x in range(self.width):
                     if distmap_center_xy[y][x] == k:
-                        if  y     != 0 and distmap_center_xy[y-1][x] == -1 and obstmap[y-1][x] == 0:
+                        if  y     != 0 and distmap_center_xy[y-1][x] == -1 and self.grid[y - 1][x] == 0:
                             distmap_center_xy[y-1][x] = k+1
-                        if  y + 1 != m and distmap_center_xy[y+1][x] == -1 and obstmap[y+1][x] == 0:
+                        if  y + 1 != self.height and distmap_center_xy[y + 1][x] == -1 and self.grid[y + 1][x] == 0:
                             distmap_center_xy[y+1][x] = k+1
-                        if  x     != 0 and distmap_center_xy[y][x-1] == -1 and obstmap[y][x-1] == 0:
+                        if  x     != 0 and distmap_center_xy[y][x-1] == -1 and self.grid[y][x - 1] == 0:
                             distmap_center_xy[y][x-1] = k+1
-                        if  x + 1 != n and distmap_center_xy[y][x+1] == -1 and obstmap[y][x+1] == 0:
+                        if  x + 1 != self.width and distmap_center_xy[y][x + 1] == -1 and self.grid[y][x + 1] == 0:
                             distmap_center_xy[y][x+1] = k+1
                         kmax = k+1
             k += 1
-        if debug:
-            print("Manhattan map centered in " + str((x, y)))
-            print(distmap_center_xy)
+        #print("Manhattan map centered in " + str((x, y)))
+        #print(distmap_center_xy)
         return distmap_center_xy
 
 
@@ -552,7 +521,9 @@ def gen_walltemplate(x, y):
     s = "".join(['1' for i in range(x)])
     s2 = "11" + "".join(['0' for i in range(x - 4)]) + "11"
     res.append(s)
-    for i in range(y-5):
+    res.append(s)
+    res.append(s)
+    for i in range(y-7):
         res.append(s2)
     res.append(s)
     res.append(s)
@@ -566,6 +537,8 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
     #full map's size in pixels, the camera will show a portion
     random.seed(seed)
     colornb = 2
+    print("mapsize")
+    print(mapsize)
     x_cells = int(mapsize[0] / 10)
     y_cells = int(mapsize[1] / 10)
 
@@ -606,7 +579,6 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
                 gparent = copy.copy(parent)
                 parent = copy.copy(grid)
         if status == 1:
-            #TODO floodfill ?
             #tmp = zeros(grid.width, grid.height)
             #loots = grid.get_areas
             grid.floodfill()
@@ -617,10 +589,10 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
             print(spawnpos_n_goalpos_2tup)
             grid.update(mode="SPRITE1")
             grid.update(mode="SPRITE2")
-            if Gl.debug:
-                print(grid)
+#            print(grid)
             done = 1
         i += 1
 
-    grid.display("SPRITE")
-    return grid.grid, spawnpos_n_goalpos_2tup
+    #map_rect = \
+    grid.display(mode="SPRITE")
+    return grid.grid, spawnpos_n_goalpos_2tup #, map_rect

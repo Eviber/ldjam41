@@ -94,7 +94,7 @@ def main():
     for i in range(18):
         show(Gl.sheet_load.image_at((  0,  360 * i,640,360), Gl.alpha))
         entities.empty()
-        Gl.set_camera_and_tiles(make_level())
+        Gl.set_camera_and_tiles(make_level(i))
         Gl.levelfinished = False
         player = Player(Gl.spawn_pos[0] * Gl.tile_size, Gl.spawn_pos[1] * Gl.tile_size, entities)
         entities.add(player)
