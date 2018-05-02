@@ -19,7 +19,7 @@ class Ball(Entity):
         self.friction = 0.3         #ground friction dampening coef
         self.isrolling = False
         self.hasMomentum = False
-        self.can_explode = True
+        self.can_explode = False
 
     def build_rotations(self):
         img = self.image

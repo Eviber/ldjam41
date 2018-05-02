@@ -1,7 +1,7 @@
 import sys, pygame, spritesheet, config
 from player import *
 from balls import *
-
+import copy
 
 
 def render(entities):
@@ -19,7 +19,13 @@ def render(entities):
                 break
             if Gl.tiles[col][row] != None:
                 Gl.screen.blit(Gl.tiles[col][row].image, Gl.camera.apply(Gl.tiles[col][row].rect))
+    player = 0
+    ball = 0
     for e in entities:
+        if isinstance(e, Player):
+            player = e
+        elif isinstance(e, Ball) and e.can_explode == False:
+            ball = e
         rect = Gl.camera.apply(e.rect)
         if (rect.colliderect(Gl.screen_rect)):
             Gl.screen.blit(e.image, rect)
@@ -27,7 +33,15 @@ def render(entities):
             rect = Gl.camera.apply(e.fx.rect)
             if (rect.colliderect(Gl.screen_rect)):
                 Gl.screen.blit(e.fx.image, rect)
-    Gl.screen.blit(Gl.minimap, Gl.minimap.get_rect().move(20,20))
+    minimap_w_ball_n_player = copy.copy(Gl.minimap)
+    playpos = int(player.rect.x / Gl.tile_size) + 1, int(player.rect.y / Gl.tile_size) + 1
+    ballpos = int(ball.rect.x / Gl.tile_size), int(ball.rect.y / Gl.tile_size)
+    for px in range(3):
+        for py in range(3):
+            minimap_w_ball_n_player.set_at((playpos[0] * 3 + px, playpos[1] * 3 + py), (255, 0, 0))
+            minimap_w_ball_n_player.set_at((ballpos[0] * 3 + px, ballpos[1] * 3 + py), (0, 0, 255))
+    minimap_w_ball_n_player.set_at((ballpos[0] * 3 + 1, ballpos[1] * 3 + 1), (255, 255, 255))
+    Gl.screen.blit(minimap_w_ball_n_player, minimap_w_ball_n_player.get_rect().move(20, 20))
 
 
 
