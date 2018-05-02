@@ -523,6 +523,7 @@ class CellularAutomata:
         return s
 
 
+
 def gen_walltemplate(x, y):
     res = []
     s = "".join(['1' for i in range(x)])
@@ -570,8 +571,6 @@ def map_gen(screen, mapsize=(400,300), seed=4201337):
             if event.type == pygame.QUIT:
                 done = True
 
-    #   if (status != 2):
-    #       grid.display()
         pygame.display.flip()
         if status == 0:
             grid.update()
